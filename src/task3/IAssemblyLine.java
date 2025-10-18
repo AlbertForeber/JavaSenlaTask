@@ -1,4 +1,5 @@
 package task3;
 
-public class IAssemblyLine {
+public interface IAssemblyLine {
+    IProduct assembleProduct(IProduct product);
 }
