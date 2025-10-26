@@ -39,10 +39,16 @@ public class Test {
         System.out.println("\nTest #4: changeOrderStatus");
         System.out.println(bookStore.orderManager.getOrder(1).getStatus());
         System.out.println(bookStore.bookStorage.getBook("Book1"));
+
+        bookStore.bookStorage.getBook("Book1").setStatus(BookStatus.SOLD_OUT);
         bookStore.changeOrderStatus(1, OrderStatus.COMPLETED);
         System.out.println(bookStore.orderManager.getOrder(1).getStatus());
         System.out.println(bookStore.bookStorage.getBook("Book1"));
 
+        bookStore.bookStorage.getBook("Book1").setStatus(BookStatus.FREE);
+        bookStore.changeOrderStatus(1, OrderStatus.COMPLETED);
+        System.out.println(bookStore.orderManager.getOrder(1).getStatus());
+        System.out.println(bookStore.bookStorage.getBook("Book1"));
         // ---------------------------------------------------
         System.out.println("\nTest #5: createRequest");
 

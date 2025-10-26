@@ -21,7 +21,10 @@ public class BookStore {
         orderManager.addOrder(orderId, order);
 
         for (String bookName : bookNames) {
-            bookStorage.getBook(bookName).setStatus(BookStatus.RESERVED);
+            if (bookStorage.getBook(bookName).getStatus() != BookStatus.FREE) {
+                Request request = new Request(bookName);
+                requestManager.addRequest(request);
+            } else bookStorage.getBook(bookName).setStatus(BookStatus.RESERVED);
         }
     }
 
@@ -36,6 +39,14 @@ public class BookStore {
 
     public void changeOrderStatus(int orderId, OrderStatus newStatus) {
         Order order = orderManager.getOrder(orderId);
+
+        if (newStatus == OrderStatus.COMPLETED) {
+            for (String bookName:  order.getOrderedBookNames()) {
+                if (bookStorage.getBook(bookName).getStatus() != BookStatus.FREE) {
+                    return;
+                }
+            }
+        }
         order.setStatus(newStatus);
 
         BookStatus requiredBookStatus = BookStatus.RESERVED;
