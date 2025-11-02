@@ -1,8 +1,8 @@
-package task4.presentation;
+package task.presentation;
 
-import task4.data.BookStore;
-import task4.data.dto.BookStatus;
-import task4.data.dto.OrderStatus;
+import task.data.BookStore;
+import task.data.dto.status.BookStatus;
+import task.data.dto.status.OrderStatus;
 
 import java.util.List;
 
@@ -49,6 +49,7 @@ public class Test {
         bookStore.changeOrderStatus(1, OrderStatus.COMPLETED);
         System.out.println(bookStore.orderManager.getOrder(1).getStatus());
         System.out.println(bookStore.bookStorage.getBook("Book1"));
+
         // ---------------------------------------------------
         System.out.println("\nTest #5: createRequest");
 
@@ -59,5 +60,6 @@ public class Test {
         System.out.println(bookStore.requestManager.getRequests());
         bookStore.addBookToStorage("Book1");
         System.out.println(bookStore.requestManager.getRequests());
+
     }
 }

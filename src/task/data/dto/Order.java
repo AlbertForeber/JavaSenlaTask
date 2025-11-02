@@ -1,4 +1,6 @@
-package task4.data.dto;
+package task.data.dto;
+
+import task.data.dto.status.OrderStatus;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -9,14 +11,17 @@ public class Order {
     private final List<String> orderedBookNames;
     private final String customerName;
     private final Calendar completionDate = new GregorianCalendar();
+    private final int totalSum;
     private OrderStatus status;
 
     
-    public Order(int id, List<String> bookNames, String customerName) {
+    public Order(int id, List<String> bookNames, int totalSum, String customerName) {
         this.id = id;
         this.orderedBookNames = bookNames;
         this.customerName = customerName;
+        this.totalSum = totalSum;
         status = OrderStatus.NEW;
+
     }
 
     public int getId() {
@@ -45,5 +50,30 @@ public class Order {
 
     public Calendar getCompletionDate() {
         return completionDate;
+    }
+
+    public int getTotalSum() {
+        return totalSum;
+    }
+
+
+    @Override
+    public String toString() {
+        return String.format("""
+                ORDER:
+                    id: %d,
+                    bookNames: %s,
+                    customerName: %s,
+                    completionDate: %s,
+                    totalSum: %d,
+                    status: %s
+                """,
+                id,
+                orderedBookNames,
+                customerName,
+                completionDate,
+                totalSum,
+                status
+                );
     }
 }

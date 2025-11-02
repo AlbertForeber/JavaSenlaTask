@@ -1,10 +1,17 @@
-package task4.data;
+package task.data;
 
-import task4.data.dto.Book;
-import task4.data.dto.Order;
-import task4.domain.OrderManager;
-import task4.data.dto.OrderStatus;
+import task.data.comparators.book.*;
+import task.data.comparators.order.OrderComplDateComparator;
+import task.data.comparators.order.OrderComplDatePriceComparator;
+import task.data.comparators.order.OrderPriceComparator;
+import task.data.comparators.order.OrderStatusComparator;
+import task.data.dto.Book;
+import task.data.dto.Order;
+import task.data.dto.sortby.OrderSortBy;
+import task.domain.OrderManager;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class BookOrderManager implements OrderManager {
@@ -31,5 +38,19 @@ public class BookOrderManager implements OrderManager {
 
     public HashMap<Integer, Order> getOrderMap() {
         return orders;
+    }
+
+    @Override
+    public Order[] getSortedOrdersBy(OrderSortBy sortBy) {
+        Comparator<Order> comparator = switch (sortBy) {
+            case PRICE -> new OrderPriceComparator();
+            case STATUS -> new OrderStatusComparator();
+            case COMPLETION_DATE -> new OrderComplDateComparator();
+            case PRICE_DATE -> new OrderComplDatePriceComparator();
+        };
+
+        Order[] arr = orders.values().toArray(new Order[0]);
+        Arrays.sort(arr, comparator);
+        return arr;
     }
 }

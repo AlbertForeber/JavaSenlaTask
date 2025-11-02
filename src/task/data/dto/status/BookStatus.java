@@ -1,4 +1,4 @@
-package task4.data.dto;
+package task.data.dto.status;
 
 public enum BookStatus {
     FREE,

@@ -1,7 +1,10 @@
-package task4.data.dto;
+package task.data.dto;
+
+import task.data.dto.status.BookStatus;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Random;
 
 public class Book {
     private final String title;
@@ -23,6 +26,17 @@ public class Book {
         this.description = description;
         this.admissionDate.set(year, month, date);
         this.status = initStatus;
+
+        // Случайное заполнение даты публикации и цены
+        Random random = new Random();
+
+        setPublicationDate(
+                random.nextInt(1885, 2000),
+                random.nextInt(1, 13),
+                random.nextInt(1, 29)
+        );
+
+        setPrice(random.nextInt(100, 1000));
     }
 
     public String getTitle() {
@@ -45,12 +59,12 @@ public class Book {
         return price;
     }
 
-    public Calendar getDate() {
-        return publicationDate;
+    public void setPublicationDate(int year, int month, int date) {
+        this.publicationDate.set(year, month, date);
     }
 
-    public void setDate(int year, int month, int date) {
-        this.publicationDate.set(year, month, date);
+    public Calendar getPublicationDate() {
+        return publicationDate;
     }
 
     public Calendar getAdmissionDate() {
@@ -61,20 +75,17 @@ public class Book {
         return description;
     }
 
-    public Calendar getPublicationDate() {
-        return publicationDate;
-    }
 
     @Override
     public String toString() {
         return String.format("""
                 BOOK:
-                title: %s
-                description: %s
-                publicationDate: %d %d %d
-                admissionDate: %d %d %d
-                price: %d
-                bookStatus: %s
+                    title: %s
+                    description: %s
+                    publicationDate: %d %d %d
+                    admissionDate: %d %d %d
+                    price: %d
+                    bookStatus: %s
                 """,
                 title,
                 description,
