@@ -1,0 +1,13 @@
+package task.data.comparators.order;
+
+import task.data.dto.Book;
+import task.data.dto.Order;
+
+import java.util.Comparator;
+
+public class OrderComplDateComparator implements Comparator<Order> {
+    @Override
+    public int compare(Order o1, Order o2) {
+        return o1.getCompletionDate().compareTo(o2.getCompletionDate());
+    }
+}
