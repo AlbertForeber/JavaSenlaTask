@@ -13,6 +13,7 @@ public class Book {
     private final Calendar admissionDate = new GregorianCalendar();
     private int price;
     private BookStatus status;
+    private String reservist = null;
 
     public Book(
             String title,
@@ -32,7 +33,7 @@ public class Book {
 
         setPublicationDate(
                 random.nextInt(1885, 2000),
-                random.nextInt(1, 13),
+                random.nextInt(0, 12),
                 random.nextInt(1, 29)
         );
 
@@ -48,6 +49,16 @@ public class Book {
     }
 
     public void setStatus(BookStatus status) {
+        if (status != BookStatus.RESERVED) {
+            this.status = status;
+            this.reservist = null;
+        }
+    }
+
+    public void setStatus(BookStatus status, String reservist) {
+        if (status == BookStatus.RESERVED) {
+            this.reservist = reservist;
+        }
         this.status = status;
     }
 
@@ -60,7 +71,7 @@ public class Book {
     }
 
     public void setPublicationDate(int year, int month, int date) {
-        this.publicationDate.set(year, month, date);
+        this.publicationDate.set(year, month - 1, date);
     }
 
     public Calendar getPublicationDate() {
@@ -75,6 +86,9 @@ public class Book {
         return description;
     }
 
+    public String getReservist() {
+        return reservist;
+    }
 
     @Override
     public String toString() {
@@ -90,10 +104,10 @@ public class Book {
                 title,
                 description,
                 publicationDate.get(Calendar.YEAR),
-                publicationDate.get(Calendar.MONTH),
+                publicationDate.get(Calendar.MONTH) + 1,
                 publicationDate.get(Calendar.DATE),
                 admissionDate.get(Calendar.YEAR),
-                admissionDate.get(Calendar.MONTH),
+                admissionDate.get(Calendar.MONTH) + 1,
                 admissionDate.get(Calendar.DATE),
                 price,
                 status

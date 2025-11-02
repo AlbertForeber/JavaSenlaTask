@@ -3,15 +3,13 @@ package task.data;
 import task.data.dto.*;
 import task.data.dto.sortby.BookSortBy;
 import task.data.dto.sortby.OrderSortBy;
+import task.data.dto.sortby.RequestSortBy;
 import task.data.dto.status.BookStatus;
 import task.data.dto.status.OrderStatus;
 import task.domain.RequestManager;
 import task.domain.Storage;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 public class BookStore {
     // public for debugging
@@ -20,17 +18,19 @@ public class BookStore {
     public RequestManager requestManager = new BookRequestManager();
 
     public void writeOffBook(String bookName) {
-        bookStorage.getBook(bookName).setStatus(BookStatus.SOLD_OUT);
+        bookStorage.getBook(bookName).setStatus(BookStatus.SOLD_OUT, null);
     }
 
     public void createOrder(int orderId, List<String> bookNames, String customerName) {
         int totalSum = 0;
 
         for (String bookName : bookNames) {
+
             if (bookStorage.getBook(bookName).getStatus() != BookStatus.FREE) {
                 Request request = new Request(bookName);
                 requestManager.addRequest(request);
-            } else bookStorage.getBook(bookName).setStatus(BookStatus.RESERVED);
+
+            } else bookStorage.getBook(bookName).setStatus(BookStatus.RESERVED, customerName);
 
             totalSum += bookStorage.getBook(bookName).getPrice();
         }
@@ -53,7 +53,8 @@ public class BookStore {
 
         if (newStatus == OrderStatus.COMPLETED) {
             for (String bookName:  order.getOrderedBookNames()) {
-                if (bookStorage.getBook(bookName).getStatus() != BookStatus.FREE) {
+                Book book = bookStorage.getBook(bookName);
+                if (book.getStatus() != BookStatus.FREE && !Objects.equals(book.getReservist(), order.getCustomerName())) {
                     return;
                 }
             }
@@ -82,7 +83,19 @@ public class BookStore {
         requestManager.addRequest(request);
     }
 
-    public Order[] getOrdersInInterval(
+    public Book[] getSorted(BookSortBy sortBy) {
+        return bookStorage.getSortedBooks(sortBy);
+    }
+
+    public Order[] getSorted(OrderSortBy sortBy) {
+        return orderManager.getSortedOrders(sortBy);
+    }
+
+    public Request[] getSorted(RequestSortBy sortBy) {
+        return requestManager.getSortedRequests(sortBy);
+    }
+
+    public Order[] getCompletedOrdersInInterval(
             int fromYear,
             int fromMonth,
             int fromDate,
@@ -90,15 +103,15 @@ public class BookStore {
             int toMonth,
             int toDate
     ) {
-        Order[] orders = orderManager.getSortedOrdersBy(OrderSortBy.PRICE_DATE);
+        Order[] orders = orderManager.getSortedOrders(OrderSortBy.PRICE_DATE);
         ArrayList<Order> toReturn = new ArrayList<>();
 
-        long from = new GregorianCalendar(fromYear, fromMonth, fromDate).getTimeInMillis();
-        long to = new GregorianCalendar(toYear, toMonth, toDate).getTimeInMillis();
+        long from = new GregorianCalendar(fromYear, fromMonth - 1, fromDate).getTimeInMillis();
+        long to = new GregorianCalendar(toYear, toMonth - 1, toDate).getTimeInMillis();
 
         for (Order order : orders) {
             long orderTime = order.getCompletionDate().getTimeInMillis();
-            if (from <= orderTime && orderTime <= to) {
+            if (from <= orderTime && orderTime <= to && order.getStatus() == OrderStatus.COMPLETED) {
                 toReturn.add(order);
             }
         }
@@ -116,7 +129,7 @@ public class BookStore {
     ) {
         int toReturn = 0;
 
-        for (Order order : getOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate)) {
+        for (Order order : getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate)) {
             toReturn += order.getTotalSum();
         }
 
@@ -131,7 +144,7 @@ public class BookStore {
             int toMonth,
             int toDate
     ) {
-        return getOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate).length;
+        return getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate).length;
     }
 
     public Book[] getHardToSell(
@@ -145,7 +158,8 @@ public class BookStore {
         Calendar now = new GregorianCalendar(nowYear, nowMonth, nowDate);
 
         for (Book book : books) {
-            if (now.get(Calendar.MONTH) - book.getAdmissionDate().get(Calendar.MONTH) >= 6) {
+            if (now.get(Calendar.MONTH) - book.getAdmissionDate().get(Calendar.MONTH) >= 6
+                    && book.getStatus() == BookStatus.FREE) {
                 toReturn.add(book);
             }
         }

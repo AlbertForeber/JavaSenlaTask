@@ -25,6 +25,13 @@ public class Request {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Request) {
+            return this.bookName.equals(((Request) obj).bookName);
+        } else return false;
+    }
+
+    @Override
     public String toString() {
         return String.format("""
                 REQUEST:
@@ -35,4 +42,6 @@ public class Request {
                 amount
         );
     }
+
+
 }

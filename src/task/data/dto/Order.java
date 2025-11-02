@@ -10,8 +10,8 @@ public class Order {
     private final int id;
     private final List<String> orderedBookNames;
     private final String customerName;
-    private final Calendar completionDate = new GregorianCalendar();
     private final int totalSum;
+    private Calendar completionDate = null;
     private OrderStatus status;
 
     
@@ -45,7 +45,8 @@ public class Order {
     }
 
     public void setCompletionDate(int year, int month, int date) {
-        completionDate.set(year, month, date);
+        if (completionDate == null) completionDate = new GregorianCalendar();
+        completionDate.set(year, month - 1, date);
     }
 
     public Calendar getCompletionDate() {
@@ -64,14 +65,16 @@ public class Order {
                     id: %d,
                     bookNames: %s,
                     customerName: %s,
-                    completionDate: %s,
+                    completionDate: %d %d %d
                     totalSum: %d,
                     status: %s
                 """,
                 id,
                 orderedBookNames,
                 customerName,
-                completionDate,
+                completionDate.get(Calendar.YEAR),
+                completionDate.get(Calendar.MONTH) + 1,
+                completionDate.get(Calendar.DATE),
                 totalSum,
                 status
                 );

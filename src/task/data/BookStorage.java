@@ -54,10 +54,12 @@ public class BookStorage implements Storage {
             case ADMISSION_DATE -> new BookAdmiDateComparator();
             case PUBLICATION_DATE -> new BookPublDateComparator();
             case DATE_PRICE -> new BookAdmiDatePriceComparator();
+            case NO_SORT -> null;
         };
 
         Book[] arr = storage.values().toArray(new Book[0]);
-        Arrays.sort(arr, comparator);
+
+        if (comparator != null) Arrays.sort(arr, comparator);
         return arr;
     }
 }

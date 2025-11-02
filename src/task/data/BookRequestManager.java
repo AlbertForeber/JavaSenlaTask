@@ -35,14 +35,15 @@ public class BookRequestManager implements RequestManager {
     }
 
     @Override
-    public Request[] getSortedRequestsBy(RequestSortBy sortBy) {
+    public Request[] getSortedRequests(RequestSortBy sortBy) {
         Comparator<Request> comparator = switch (sortBy) {
             case AMOUNT -> new RequestAmountComparator();
             case BOOK_NAME -> new RequestBookNameComparator();
+            case NO_SORT -> null;
         };
 
         Request[] arr = requests.toArray(new Request[0]);
-        Arrays.sort(arr, comparator);
+        if (comparator != null) Arrays.sort(arr, comparator);
 
         return arr;
     }

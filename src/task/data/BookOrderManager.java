@@ -41,16 +41,18 @@ public class BookOrderManager implements OrderManager {
     }
 
     @Override
-    public Order[] getSortedOrdersBy(OrderSortBy sortBy) {
+    public Order[] getSortedOrders(OrderSortBy sortBy) {
         Comparator<Order> comparator = switch (sortBy) {
             case PRICE -> new OrderPriceComparator();
             case STATUS -> new OrderStatusComparator();
             case COMPLETION_DATE -> new OrderComplDateComparator();
             case PRICE_DATE -> new OrderComplDatePriceComparator();
+            case NO_SORT -> null;
         };
 
         Order[] arr = orders.values().toArray(new Order[0]);
-        Arrays.sort(arr, comparator);
+        if (comparator != null) Arrays.sort(arr, comparator);
+
         return arr;
     }
 }
