@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
-public class BookOrderManager implements OrderManager {
+public class BookOrderManagerService implements OrderManagerService {
     private final HashMap<Integer, Order> orders = new HashMap<>();
 
 

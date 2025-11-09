@@ -1,6 +1,6 @@
-package task.old.data.comparators.book;
+package task.model.comparators.book;
 
-import task.old.data.dto.Book;
+import task.model.entity.Book;
 
 import java.util.Comparator;
 

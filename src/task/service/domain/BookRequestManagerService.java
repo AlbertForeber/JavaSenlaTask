@@ -7,7 +7,7 @@ import task.model.entity.sortby.RequestSortBy;
 
 import java.util.*;
 
-public class BookRequestManager implements RequestManager {
+public class BookRequestManagerService implements RequestManagerService {
     private final List<Request> requests = new ArrayList<>();
 
     @Override
@@ -25,7 +25,8 @@ public class BookRequestManager implements RequestManager {
 
     @Override
     public List<Request> getRequests() {
-        return requests;
+        // Возвращаем копию для безопасности
+        return new ArrayList<>(requests);
     }
 
     @Override

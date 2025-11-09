@@ -1,6 +1,6 @@
-package task.old.data.comparators.order;
+package task.model.comparators.order;
 
-import task.old.data.dto.Order;
+import task.model.entity.Order;
 
 import java.util.Comparator;
 

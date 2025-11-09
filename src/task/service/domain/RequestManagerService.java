@@ -6,7 +6,7 @@ import task.model.entity.sortby.RequestSortBy;
 
 import java.util.List;
 
-public interface RequestManager {
+public interface RequestManagerService {
     void addRequest(Request request);
     void cancelRequests(String bookName);
     List<Request> getRequests();

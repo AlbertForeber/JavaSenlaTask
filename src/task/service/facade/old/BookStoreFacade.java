@@ -1,4 +1,4 @@
-package task.service.facade;
+package task.service.facade.old;
 
 import task.model.entity.Book;
 import task.model.entity.Order;
@@ -11,7 +11,6 @@ import task.model.entity.status.OrderStatus;
 import task.service.domain.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class BookStoreFacade {
     // public for debugging
@@ -24,12 +23,8 @@ public class BookStoreFacade {
     }
 
     public void createOrder(int orderId, List<String> bookNames, String customerName) {
-        AtomicInteger totalSum = new AtomicInteger();
+        int totalSum = 0;
 
-        bookNames.stream()
-                .peek(bookName -> totalSum.addAndGet(bookStorageService.getBook(bookName).getPrice()))
-                .collect(Collections.list());
-        
         for (String bookName : bookNames) {
 
             if (bookStorageService.getBook(bookName).getStatus() != BookStatus.FREE) {
@@ -38,10 +33,10 @@ public class BookStoreFacade {
 
             } else bookStorageService.getBook(bookName).setStatus(BookStatus.RESERVED, customerName);
 
-            totalSum.addAndGet(bookStorageService.getBook(bookName).getPrice());
+            totalSum += bookStorageService.getBook(bookName).getPrice();
         }
 
-        Order order = new Order(orderId, bookNames, totalSum.get(), customerName);
+        Order order = new Order(orderId, bookNames, totalSum, customerName);
         orderManagerService.addOrder(orderId, order);
     }
 

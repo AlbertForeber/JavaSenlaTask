@@ -10,10 +10,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
-public class BookStorage implements Storage {
+public class BookStorageService implements StorageService {
     private final HashMap<String, Book> storage = new HashMap<>();
 
-    public BookStorage() {
+    public BookStorageService() {
         addBook(new Book("I_Book1", "Desc1", 2025, 1, 1, BookStatus.FREE));
         addBook(new Book("G_Book2", "Desc2", 2025, 2, 2, BookStatus.FREE));
         addBook(new Book("F_Book3", "Desc3", 2025, 3, 3, BookStatus.FREE));

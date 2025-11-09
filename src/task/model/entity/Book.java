@@ -1,6 +1,6 @@
-package task.old.data.dto;
+package task.model.entity;
 
-import task.old.data.dto.status.BookStatus;
+import task.model.entity.status.BookStatus;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

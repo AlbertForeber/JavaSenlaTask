@@ -1,4 +1,4 @@
-package task.old.data.dto;
+package task.model.entity;
 
 public class Request {
     private final String bookName;

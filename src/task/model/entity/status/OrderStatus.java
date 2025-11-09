@@ -1,4 +1,4 @@
-package task.old.data.dto.status;
+package task.model.entity.status;
 
 public enum OrderStatus {
     NEW,

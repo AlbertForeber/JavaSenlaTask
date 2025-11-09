@@ -1,4 +1,4 @@
-package task.old.data.dto.sortby;
+package task.model.entity.sortby;
 
 public enum OrderSortBy {
     COMPLETION_DATE,

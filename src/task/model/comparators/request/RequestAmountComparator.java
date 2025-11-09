@@ -1,6 +1,6 @@
-package task.old.data.comparators.request;
+package task.model.comparators.request;
 
-import task.old.data.dto.Request;
+import task.model.entity.Request;
 
 import java.util.Comparator;
 
