@@ -1,11 +1,13 @@
-package task.service.domain;
+package task.repository;
 
 import task.model.entity.Order;
 import task.model.entity.sortby.OrderSortBy;
 
-public interface OrderManagerService {
+import java.util.List;
+
+public interface OrderManagerRepository {
     void addOrder(int orderId, Order order);
     Order getOrder(int orderId);
-    Order[] getSortedOrders(OrderSortBy sortBy);
+    List<Order> getSortedOrders(OrderSortBy sortBy);
     boolean removeOrder(int orderId);
 }

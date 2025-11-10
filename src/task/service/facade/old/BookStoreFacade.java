@@ -1,5 +1,9 @@
 package task.service.facade.old;
 
+import task.repository.*;
+import task.repository.inmemory.InMemoryOrderManagerRepository;
+import task.repository.inmemory.InMemoryRequestManagerRepository;
+import task.repository.inmemory.InMemoryStorageRepository;
 import task.model.entity.Book;
 import task.model.entity.Order;
 import task.model.entity.Request;
@@ -8,18 +12,17 @@ import task.model.entity.sortby.OrderSortBy;
 import task.model.entity.sortby.RequestSortBy;
 import task.model.entity.status.BookStatus;
 import task.model.entity.status.OrderStatus;
-import task.service.domain.*;
 
 import java.util.*;
 
 public class BookStoreFacade {
     // public for debugging
-    public BookOrderManagerService orderManagerService = new BookOrderManagerService();
-    public StorageService bookStorageService = new BookStorageService();
-    public RequestManagerService requestManagerService = new BookRequestManagerService();
+    public InMemoryOrderManagerRepository orderManagerService = new InMemoryOrderManagerRepository();
+    public StorageRepository bookStorageRepository = new InMemoryStorageRepository();
+    public RequestManagerRepository requestManagerRepository = new InMemoryRequestManagerRepository();
 
     public void writeOffBook(String bookName) {
-        bookStorageService.getBook(bookName).setStatus(BookStatus.SOLD_OUT, null);
+        bookStorageRepository.getBook(bookName).setStatus(BookStatus.SOLD_OUT, null);
     }
 
     public void createOrder(int orderId, List<String> bookNames, String customerName) {
@@ -27,13 +30,13 @@ public class BookStoreFacade {
 
         for (String bookName : bookNames) {
 
-            if (bookStorageService.getBook(bookName).getStatus() != BookStatus.FREE) {
+            if (bookStorageRepository.getBook(bookName).getStatus() != BookStatus.FREE) {
                 Request request = new Request(bookName);
-                requestManagerService.addRequest(request);
+                requestManagerRepository.addRequest(request);
 
-            } else bookStorageService.getBook(bookName).setStatus(BookStatus.RESERVED, customerName);
+            } else bookStorageRepository.getBook(bookName).setStatus(BookStatus.RESERVED, customerName);
 
-            totalSum += bookStorageService.getBook(bookName).getPrice();
+            totalSum += bookStorageRepository.getBook(bookName).getPrice();
         }
 
         Order order = new Order(orderId, bookNames, totalSum, customerName);
@@ -45,7 +48,7 @@ public class BookStoreFacade {
         order.setStatus(OrderStatus.CANCELED);
 
         for (String bookName : order.getOrderedBookNames()) {
-            bookStorageService.getBook(bookName).setStatus(BookStatus.FREE);
+            bookStorageRepository.getBook(bookName).setStatus(BookStatus.FREE);
         }
     }
 
@@ -54,7 +57,7 @@ public class BookStoreFacade {
 
         if (newStatus == OrderStatus.COMPLETED) {
             for (String bookName:  order.getOrderedBookNames()) {
-                Book book = bookStorageService.getBook(bookName);
+                Book book = bookStorageRepository.getBook(bookName);
                 if (book.getStatus() != BookStatus.FREE && !Objects.equals(book.getReservist(), order.getCustomerName())) {
                     return;
                 }
@@ -70,30 +73,30 @@ public class BookStoreFacade {
         }
 
         for (String bookName : order.getOrderedBookNames()) {
-            bookStorageService.getBook(bookName).setStatus(requiredBookStatus);
+            bookStorageRepository.getBook(bookName).setStatus(requiredBookStatus);
         }
     }
 
     public void addBookToStorage(String bookName) {
-        bookStorageService.getBook(bookName).setStatus(BookStatus.FREE);
-        requestManagerService.cancelRequests(bookName);
+        bookStorageRepository.getBook(bookName).setStatus(BookStatus.FREE);
+        requestManagerRepository.cancelRequests(bookName);
     }
 
     public void createRequest(String bookName) {
         Request request = new Request(bookName);
-        requestManagerService.addRequest(request);
+        requestManagerRepository.addRequest(request);
     }
 
-    public Book[] getSorted(BookSortBy sortBy) {
-        return bookStorageService.getSortedBooks(sortBy);
+    public List<Book> getSorted(BookSortBy sortBy) {
+        return bookStorageRepository.getSortedBooks(sortBy);
     }
 
-    public Order[] getSorted(OrderSortBy sortBy) {
+    public List<Order> getSorted(OrderSortBy sortBy) {
         return orderManagerService.getSortedOrders(sortBy);
     }
 
-    public Request[] getSorted(RequestSortBy sortBy) {
-        return requestManagerService.getSortedRequests(sortBy);
+    public List<Request> getSorted(RequestSortBy sortBy) {
+        return requestManagerRepository.getSortedRequests(sortBy);
     }
 
     public Order[] getCompletedOrdersInInterval(
@@ -104,7 +107,7 @@ public class BookStoreFacade {
             int toMonth,
             int toDate
     ) {
-        Order[] orders = orderManagerService.getSortedOrders(OrderSortBy.PRICE_DATE);
+        List<Order> orders = orderManagerService.getSortedOrders(OrderSortBy.PRICE_DATE);
         ArrayList<Order> toReturn = new ArrayList<>();
 
         long from = new GregorianCalendar(fromYear, fromMonth - 1, fromDate).getTimeInMillis();
@@ -153,7 +156,7 @@ public class BookStoreFacade {
             int nowMonth,
             int nowDate
     ) {
-        Book[] books = bookStorageService.getSortedBooks(BookSortBy.DATE_PRICE);
+        List<Book> books = bookStorageRepository.getSortedBooks(BookSortBy.DATE_PRICE);
         ArrayList<Book> toReturn = new ArrayList<>();
 
         Calendar now = new GregorianCalendar(nowYear, nowMonth, nowDate);
@@ -173,6 +176,6 @@ public class BookStoreFacade {
     }
 
     public String getBookDescription(String bookName) {
-        return bookStorageService.getBook(bookName).getDescription();
+        return bookStorageRepository.getBook(bookName).getDescription();
     }
 }

@@ -1,4 +1,4 @@
-package task.service.domain;
+package task.repository;
 
 import task.model.entity.Request;
 import task.model.entity.sortby.RequestSortBy;
@@ -6,9 +6,9 @@ import task.model.entity.sortby.RequestSortBy;
 
 import java.util.List;
 
-public interface RequestManagerService {
+public interface RequestManagerRepository {
     void addRequest(Request request);
     void cancelRequests(String bookName);
     List<Request> getRequests();
-    Request[] getSortedRequests(RequestSortBy sortBy);
+    List<Request> getSortedRequests(RequestSortBy sortBy);
 }

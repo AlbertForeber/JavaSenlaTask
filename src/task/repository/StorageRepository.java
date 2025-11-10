@@ -1,11 +1,13 @@
-package task.service.domain;
+package task.repository;
 
 import task.model.entity.Book;
 import task.model.entity.sortby.BookSortBy;
 
-public interface StorageService {
+import java.util.List;
+
+public interface StorageRepository {
     void addBook(Book book);
     Book getBook(String bookName);
-    Book[] getSortedBooks(BookSortBy sortBy);
+    List<Book> getSortedBooks(BookSortBy sortBy);
     boolean removeBook(String bookName);
 }

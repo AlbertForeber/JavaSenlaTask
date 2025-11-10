@@ -1,5 +1,6 @@
-package task.service.domain;
+package task.repository.inmemory;
 
+import task.repository.OrderManagerRepository;
 import task.model.comparators.order.OrderComplDateComparator;
 import task.model.comparators.order.OrderComplDatePriceComparator;
 import task.model.comparators.order.OrderPriceComparator;
@@ -7,11 +8,9 @@ import task.model.comparators.order.OrderStatusComparator;
 import task.model.entity.Order;
 import task.model.entity.sortby.OrderSortBy;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
-public class BookOrderManagerService implements OrderManagerService {
+public class InMemoryOrderManagerRepository implements OrderManagerRepository {
     private final HashMap<Integer, Order> orders = new HashMap<>();
 
 
@@ -38,7 +37,7 @@ public class BookOrderManagerService implements OrderManagerService {
     }
 
     @Override
-    public Order[] getSortedOrders(OrderSortBy sortBy) {
+    public List<Order> getSortedOrders(OrderSortBy sortBy) {
         Comparator<Order> comparator = switch (sortBy) {
             case PRICE -> new OrderPriceComparator();
             case STATUS -> new OrderStatusComparator();
@@ -47,9 +46,9 @@ public class BookOrderManagerService implements OrderManagerService {
             case NO_SORT -> null;
         };
 
-        Order[] arr = orders.values().toArray(new Order[0]);
-        if (comparator != null) Arrays.sort(arr, comparator);
+        List<Order> arr = new ArrayList<>(orders.values().stream().toList());
 
+        if (comparator != null) arr.sort(comparator);
         return arr;
     }
 }

@@ -1,19 +1,18 @@
-package task.service.domain;
+package task.repository.inmemory;
 
 
+import task.repository.StorageRepository;
 import task.model.comparators.book.*;
 import task.model.entity.Book;
 import task.model.entity.sortby.BookSortBy;
 import task.model.entity.status.BookStatus;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
-public class BookStorageService implements StorageService {
+public class InMemoryStorageRepository implements StorageRepository {
     private final HashMap<String, Book> storage = new HashMap<>();
 
-    public BookStorageService() {
+    public InMemoryStorageRepository() {
         addBook(new Book("I_Book1", "Desc1", 2025, 1, 1, BookStatus.FREE));
         addBook(new Book("G_Book2", "Desc2", 2025, 2, 2, BookStatus.FREE));
         addBook(new Book("F_Book3", "Desc3", 2025, 3, 3, BookStatus.FREE));
@@ -45,7 +44,7 @@ public class BookStorageService implements StorageService {
     }
 
     @Override
-    public Book[] getSortedBooks(BookSortBy sortBy) {
+    public List<Book> getSortedBooks(BookSortBy sortBy) {
         Comparator<Book> comparator = switch (sortBy) {
             case TITLE -> new BookTitleComparator();
             case PRICE -> new BookPriceComparator();
@@ -56,9 +55,9 @@ public class BookStorageService implements StorageService {
             case NO_SORT -> null;
         };
 
-        Book[] arr = storage.values().toArray(new Book[0]);
+        List<Book> arr = new ArrayList<>(storage.values().stream().toList());
 
-        if (comparator != null) Arrays.sort(arr, comparator);
+        if (comparator != null) arr.sort(comparator);
         return arr;
     }
 }
