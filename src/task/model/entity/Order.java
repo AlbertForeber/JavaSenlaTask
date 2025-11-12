@@ -60,6 +60,7 @@ public class Order {
 
     @Override
     public String toString() {
+
         return String.format("""
                 ORDER:
                     id: %d,
@@ -72,9 +73,9 @@ public class Order {
                 id,
                 orderedBookNames,
                 customerName,
-                completionDate.get(Calendar.YEAR),
-                completionDate.get(Calendar.MONTH) + 1,
-                completionDate.get(Calendar.DATE),
+                completionDate != null ? completionDate.get(Calendar.YEAR) : 0,
+                completionDate != null ? completionDate.get(Calendar.MONTH) + 1 : 0,
+                completionDate != null ? completionDate.get(Calendar.DATE) : 0,
                 totalSum,
                 status
                 );

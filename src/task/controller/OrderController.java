@@ -42,9 +42,11 @@ public class OrderController extends BaseController {
             bookNames.add(ioHandler.handleInput());
         }
 
-        orderService.createOrder(orderId, bookNames, customerName);
+        if (orderService.createOrder(orderId, bookNames, customerName)) {
+            ioHandler.showMessage(Colors.YELLOW + "ЗАКАЗ #" + orderId + " СОЗДАН" + Colors.RESET);
+        } else ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ПРИ СОЗДАНИИ ЗАКАЗА #" + orderId + Colors.RESET);
 
-        ioHandler.showMessage(Colors.YELLOW + "ЗАКАЗ #" + orderId + " СОЗДАН");
+
     }
 
     public void cancelOrder() {
@@ -53,7 +55,7 @@ public class OrderController extends BaseController {
 
         orderService.cancelOrder(orderId);
 
-        ioHandler.showMessage(Colors.YELLOW + "ЗАКАЗ #" + orderId + " ОТМЕНЕН");
+        ioHandler.showMessage(Colors.YELLOW + "ЗАКАЗ #" + orderId + " ОТМЕНЕН" + Colors.RESET);
     }
 
     public void changeOrderStatus() {
@@ -77,7 +79,7 @@ public class OrderController extends BaseController {
 
         if (orderService.changeOrderStatus(orderId, newStatus)) {
             ioHandler.showMessage(Colors.YELLOW + "СТАТУС ЗАКАЗА #" + orderId + " УСПЕШНО ИЗМЕНЕН");
-        } else ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ИЗМЕНЕНИЯ СТАТУСА ЗАКАЗА #" + orderId);
+        } else ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ИЗМЕНЕНИЯ СТАТУСА ЗАКАЗА #" + orderId + Colors.RESET);
     }
 
     public void getSorted() {
@@ -119,7 +121,7 @@ public class OrderController extends BaseController {
 
         if (dateFrom != null && dateTo != null) {
             orderQueryService.getCompletedOrdersInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]);
-        } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ");
+        } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
 
     }
 
@@ -134,7 +136,7 @@ public class OrderController extends BaseController {
 
         if (dateFrom != null && dateTo != null) {
             orderQueryService.getIncomeInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]);
-        } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ");
+        } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
     }
 
     public void getOrderAmountInInterval() {
@@ -148,7 +150,7 @@ public class OrderController extends BaseController {
 
         if (dateFrom != null && dateTo != null) {
             orderQueryService.getOrderAmountInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]);
-        } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ");
+        } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
     }
 
     public void getOrderDetails() {

@@ -9,6 +9,8 @@ import task.model.entity.Request;
 import task.model.entity.status.BookStatus;
 import task.model.entity.status.OrderStatus;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,22 +34,34 @@ public class OrderService {
         this.requestManagerRepository = requestManagerRepository;
     }
 
-    public void createOrder(int orderId, List<String> bookNames, String customerName) {
+    public boolean createOrder(int orderId, List<String> bookNames, String customerName) {
         int totalSum = 0;
+        List<String> copyOfBookNames = new ArrayList<>(bookNames);
 
         for (String bookName : bookNames) {
+            Book book = bookStorageRepository.getBook(bookName);
 
-            if (bookStorageRepository.getBook(bookName).getStatus() != BookStatus.FREE) {
+            // Проверка наличия книги
+            if (book == null) {
+                copyOfBookNames.remove(bookName);
+                continue;
+            }
+
+            else if (book.getStatus() != BookStatus.FREE) {
                 Request request = new Request(bookName);
                 requestManagerRepository.addRequest(request);
 
-            } else bookStorageRepository.getBook(bookName).setStatus(BookStatus.RESERVED, customerName);
+            } else book.setStatus(BookStatus.RESERVED, customerName);
 
-            totalSum += bookStorageRepository.getBook(bookName).getPrice();
+            totalSum += book.getPrice();
         }
 
-        Order order = new Order(orderId, bookNames, totalSum, customerName);
-        orderManagerRepository.addOrder(orderId, order);
+        if (!copyOfBookNames.isEmpty()) {
+            Order order = new Order(orderId, bookNames, totalSum, customerName);
+            orderManagerRepository.addOrder(orderId, order);
+            return true;
+        } else return false;
+
     }
 
     public void cancelOrder(int orderId) {
@@ -69,6 +83,14 @@ public class OrderService {
                     return false;
                 }
             }
+
+            // Обновление даты
+            Calendar currentDate = Calendar.getInstance();
+            order.setCompletionDate(
+                    currentDate.get(Calendar.YEAR),
+                    currentDate.get(Calendar.MONTH) + 1,
+                    currentDate.get(Calendar.DATE)
+            );
         }
         order.setStatus(newStatus);
 
