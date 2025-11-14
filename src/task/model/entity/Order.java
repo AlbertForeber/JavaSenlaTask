@@ -50,7 +50,7 @@ public class Order {
     }
 
     public Calendar getCompletionDate() {
-        return completionDate;
+        return completionDate != null ? completionDate : (new GregorianCalendar());
     }
 
     public int getTotalSum() {
