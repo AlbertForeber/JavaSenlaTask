@@ -8,10 +8,6 @@ public class Request {
         this.bookName = bookName;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
     public void incrementAmount() {
         this.amount++;
     }

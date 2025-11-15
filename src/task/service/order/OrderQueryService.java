@@ -27,7 +27,7 @@ public class OrderQueryService {
         return orderManagerRepository.getSortedOrders(sortBy);
     }
 
-    public Order[] getCompletedOrdersInInterval(
+    public List<Order> getCompletedOrdersInInterval(
             int fromYear,
             int fromMonth,
             int fromDate,
@@ -36,7 +36,7 @@ public class OrderQueryService {
             int toDate
     ) {
         List<Order> orders = orderManagerRepository.getSortedOrders(OrderSortBy.PRICE_DATE);
-        ArrayList<Order> toReturn = new ArrayList<>();
+        List<Order> toReturn = new ArrayList<>();
 
         long from = new GregorianCalendar(fromYear, fromMonth - 1, fromDate).getTimeInMillis();
         long to = new GregorianCalendar(toYear, toMonth - 1, toDate).getTimeInMillis();
@@ -48,7 +48,7 @@ public class OrderQueryService {
             }
         }
 
-        return toReturn.toArray(new Order[0]);
+        return toReturn;
     }
 
     public long getIncomeInInterval (
@@ -76,7 +76,7 @@ public class OrderQueryService {
             int toMonth,
             int toDate
     ) {
-        return getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate).length;
+        return getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate).size();
     }
 
     public String getOrderDetails(int orderId) {

@@ -9,6 +9,7 @@ import task.utils.DataConverter;
 import task.view.IOHandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class OrderController extends BaseController {
@@ -120,7 +121,7 @@ public class OrderController extends BaseController {
         int[] dateTo = DataConverter.getDateInArray(input);
 
         if (dateFrom != null && dateTo != null) {
-            orderQueryService.getCompletedOrdersInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]);
+            ioHandler.showMessage(orderQueryService.getCompletedOrdersInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]).toString());
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
 
     }
@@ -135,7 +136,7 @@ public class OrderController extends BaseController {
         int[] dateTo = DataConverter.getDateInArray(input);
 
         if (dateFrom != null && dateTo != null) {
-            orderQueryService.getIncomeInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]);
+            ioHandler.showMessage(Long.toString(orderQueryService.getIncomeInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0])));
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
     }
 
@@ -149,7 +150,7 @@ public class OrderController extends BaseController {
         int[] dateTo = DataConverter.getDateInArray(input);
 
         if (dateFrom != null && dateTo != null) {
-            orderQueryService.getOrderAmountInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]);
+            ioHandler.showMessage(Integer.toString(orderQueryService.getOrderAmountInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0])));
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
     }
 

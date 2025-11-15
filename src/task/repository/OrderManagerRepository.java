@@ -6,7 +6,7 @@ import task.model.entity.sortby.OrderSortBy;
 import java.util.List;
 
 public interface OrderManagerRepository {
-    void addOrder(int orderId, Order order);
+    void addOrder(int orderId, Order order) throws IllegalArgumentException;
     Order getOrder(int orderId);
     List<Order> getSortedOrders(OrderSortBy sortBy);
     boolean removeOrder(int orderId);
