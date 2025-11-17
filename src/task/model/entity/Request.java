@@ -1,11 +1,21 @@
 package task.model.entity;
 
 public class Request {
+    private final int id;
     private final String bookName;
     private int amount = 1;
 
-    public Request(String bookName) {
+    public Request(int id, String bookName) {
+        this.id = id;
         this.bookName = bookName;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     public void incrementAmount() {
@@ -31,9 +41,11 @@ public class Request {
     public String toString() {
         return String.format("""
                 REQUEST:
+                    id: %d,
                     bookName: %s,
                     amount: %d
                 """,
+                id,
                 bookName,
                 amount
         );

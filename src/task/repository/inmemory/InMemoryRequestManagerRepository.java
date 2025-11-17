@@ -9,25 +9,48 @@ import task.model.entity.sortby.RequestSortBy;
 import java.util.*;
 
 public class InMemoryRequestManagerRepository implements RequestManagerRepository {
-    private final List<Request> requests = new ArrayList<>();
+    private final LinkedHashMap<Integer, Request> requests = new LinkedHashMap<>();
 
     @Override
-    public void addRequest(Request request) {
-        int sameRequestIndex = requests.indexOf(request);
+    public void addRequest(int requestId, String bookName) {
+        if (requests.containsKey(requestId)) requests.get(requestId).incrementAmount();
+        else requests.put(requestId, new Request(requestId, bookName));
+    }
 
-        if (sameRequestIndex != -1) requests.get(sameRequestIndex).incrementAmount();
-        else requests.add(request);
+    @Override
+    public void addRequest(String bookName) {
+
+        int lastId = 0;
+
+        for (Request request : requests.values()) {
+            if (Objects.equals(request.getBookName(), bookName)) {
+                request.incrementAmount();
+                return;
+            }
+            lastId = request.getId();
+        }
+        requests.put(lastId + 1, new Request(lastId + 1, bookName));
+
+    }
+
+
+    @Override
+    public Request getRequest(int requestId) {
+        return requests.get(requestId);
     }
 
     @Override
     public void cancelRequests(String bookName) {
-        requests.removeIf(r -> Objects.equals(r.getBookName(), bookName));
+        //requests.removeIf(r -> Objects.equals(r.getBookName(), bookName));
+        for (Request request : requests.values()) {
+            if (Objects.equals(request.getBookName(), bookName)) requests.remove(request.getId());
+        }
     }
 
     @Override
     public List<Request> getRequests() {
         // Возвращаем копию для безопасности
-        return new ArrayList<>(requests);
+        return new ArrayList<>(requests.values());
     }
 
     @Override
@@ -38,7 +61,7 @@ public class InMemoryRequestManagerRepository implements RequestManagerRepositor
             case NO_SORT -> null;
         };
 
-        List<Request> arr = new ArrayList<>(requests);
+        List<Request> arr = new ArrayList<>(requests.values());
 
         if (comparator != null) arr.sort(comparator);
         return arr;

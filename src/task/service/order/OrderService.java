@@ -8,11 +8,7 @@ import task.model.entity.Order;
 import task.model.entity.Request;
 import task.model.entity.status.BookStatus;
 import task.model.entity.status.OrderStatus;
-import task.utils.DataConverter;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 
 
@@ -35,30 +31,28 @@ public class OrderService {
         this.requestManagerRepository = requestManagerRepository;
     }
 
-    public boolean createOrder(int orderId, List<String> bookNames, String customerName) {
+    public boolean createOrder(int orderId, List<Integer> bookIds, String customerName) {
         int totalSum = 0;
-        List<String> copyOfBookNames = new ArrayList<>(bookNames);
+        List<Integer> presentBookIds = new ArrayList<>();
 
-        for (String bookName : bookNames) {
-            Book book = bookStorageRepository.getBook(bookName);
+        for (int id : bookIds) {
+            Book book = bookStorageRepository.getBook(id);
 
             // Проверка наличия книги
-            if (book == null) {
-                copyOfBookNames.remove(bookName);
-                continue;
-            }
+            if (book != null) {
+                presentBookIds.add(id);
+            } else continue;
 
-            else if (book.getStatus() != BookStatus.FREE) {
-                Request request = new Request(bookName);
-                requestManagerRepository.addRequest(request);
+            if (book.getStatus() != BookStatus.FREE) {;
+                requestManagerRepository.addRequest(book.getTitle());
 
             } else book.setStatus(BookStatus.RESERVED, customerName);
 
             totalSum += book.getPrice();
         }
 
-        if (!copyOfBookNames.isEmpty()) {
-            Order order = new Order(orderId, bookNames, totalSum, customerName);
+        if (!presentBookIds.isEmpty()) {
+            Order order = new Order(orderId, presentBookIds, totalSum, customerName);
             orderManagerRepository.addOrder(orderId, order);
             return true;
         } else return false;
@@ -69,8 +63,8 @@ public class OrderService {
         Order order = orderManagerRepository.getOrder(orderId);
         order.setStatus(OrderStatus.CANCELED);
 
-        for (String bookName : order.getOrderedBookNames()) {
-            bookStorageRepository.getBook(bookName).setStatus(BookStatus.FREE);
+        for (int bookId : order.getOrderedBookIds()) {
+            bookStorageRepository.getBook(bookId).setStatus(BookStatus.FREE);
         }
     }
 
@@ -78,8 +72,8 @@ public class OrderService {
         Order order = orderManagerRepository.getOrder(orderId);
 
         if (newStatus == OrderStatus.COMPLETED) {
-            for (String bookName:  order.getOrderedBookNames()) {
-                Book book = bookStorageRepository.getBook(bookName);
+            for (int bookId : order.getOrderedBookIds()) {
+                Book book = bookStorageRepository.getBook(bookId);
                 if (book.getStatus() != BookStatus.FREE && !Objects.equals(book.getReservist(), order.getCustomerName())) {
                     return false;
                 }
@@ -102,8 +96,8 @@ public class OrderService {
             case COMPLETED -> requiredBookStatus = BookStatus.SOLD_OUT;
         }
 
-        for (String bookName : order.getOrderedBookNames()) {
-            bookStorageRepository.getBook(bookName).setStatus(requiredBookStatus);
+        for (int bookId : order.getOrderedBookIds()) {
+            bookStorageRepository.getBook(bookId).setStatus(requiredBookStatus);
         }
 
         return true;

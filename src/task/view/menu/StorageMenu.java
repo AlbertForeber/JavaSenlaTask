@@ -36,7 +36,15 @@ public class StorageMenu implements Menu {
                     controller.writeOffBook();
                     navigator.navigateTo(NavigateTo.STORAGE);
                 }),
-                new MenuAction("6. Назад",  _ -> navigator.navigateTo(NavigateTo.MAIN))
+                new MenuAction("6. Импорт книги",  _ -> {
+                    controller.importBook();
+                    navigator.navigateTo(NavigateTo.STORAGE);
+                }),
+                new MenuAction("7. Экспорт книги",  _ -> {
+                    controller.exportBook();
+                    navigator.navigateTo(NavigateTo.STORAGE);
+                }),
+                new MenuAction("8. Назад",  _ -> navigator.navigateTo(NavigateTo.MAIN))
 
         );
     }

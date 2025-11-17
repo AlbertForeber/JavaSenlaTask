@@ -48,7 +48,15 @@ public class OrderMenu implements Menu {
                     controller.getIncomeInInterval();
                     navigator.navigateTo(NavigateTo.ORDER);
                 }),
-                new MenuAction("9. Назад",  _ -> navigator.navigateTo(NavigateTo.MAIN))
+                new MenuAction("9. Импорт заказа ",  _ -> {
+                    controller.importOrder();
+                    navigator.navigateTo(NavigateTo.ORDER);
+                }),
+                new MenuAction("10. Экспорт заказа ",  _ -> {
+                    controller.exportOrder();
+                    navigator.navigateTo(NavigateTo.ORDER);
+                }),
+                new MenuAction("11. Назад",  _ -> navigator.navigateTo(NavigateTo.MAIN))
 
         );
     }

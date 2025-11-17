@@ -14,6 +14,7 @@ import java.io.*;
 import java.security.InvalidParameterException;
 import java.security.KeyException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryOrderManagerRepository implements OrderManagerRepository {
     private final HashMap<Integer, Order> orders = new HashMap<>();
@@ -50,7 +51,11 @@ public class InMemoryOrderManagerRepository implements OrderManagerRepository {
             case NO_SORT -> null;
         };
 
-        List<Order> arr = new ArrayList<>(orders.values().stream().toList());
+        List<Order> arr = new ArrayList<>(orders.values());
+
+        if (sortBy == OrderSortBy.COMPLETION_DATE || sortBy == OrderSortBy.PRICE_DATE) {
+            arr = arr.stream().filter(x -> x.getCompletionDate() != null).collect(Collectors.toList());
+        }
 
         if (comparator != null) arr.sort(comparator);
         return arr;

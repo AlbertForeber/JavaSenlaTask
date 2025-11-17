@@ -2,6 +2,6 @@ package task.service.order.io;
 
 import java.io.IOException;
 
-public interface OrderImport {
+public interface OrderImportService {
     void importOrder(String fileName) throws IllegalArgumentException, IOException;
 }
