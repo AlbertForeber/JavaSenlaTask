@@ -34,30 +34,24 @@ public class CsvOrderExportService implements OrderExportService {
     public void writeOrder(String fileName, Order order) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
 
-            bw.write("id;" + order.getId());
+            bw.write("id;bookIds;customerName;totalSum;completionDate;status");
             bw.newLine();
+            bw.write(order.getId() + ";");
 
             bw.write(
-                    "bookIds;" + order.getOrderedBookIds()
+                    order.getOrderedBookIds()
                             .stream()
                             .map(x -> Integer.toString(x))
                             .collect(Collectors.joining(","))
-            );
-            bw.newLine();
+            + ";");
 
-            bw.write("customerName;" + order.getCustomerName());
-            bw.newLine();
-
-            bw.write("totalSum;" + Long.toString(order.getTotalSum()));
-            bw.newLine();
+            bw.write(order.getCustomerName() + ";");
+            bw.write(Long.toString(order.getTotalSum()) + ";");
 
             Calendar completionDate = order.getCompletionDate();
-            if (completionDate != null) {
-                bw.write("completionDate;" + DataConverter.calendarToString(completionDate));
-                bw.newLine();
-            }
+            bw.write(completionDate != null ? (DataConverter.calendarToString(completionDate) + ";") : ";");
 
-            bw.write("status;" + order.getStatus().name());
+            bw.write(order.getStatus().name());
 
         }
     }

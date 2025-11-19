@@ -5,10 +5,7 @@ import task.service.order.io.OrderImportConstants;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class FileParser {
     public static int parseNumericField(String toParse, String fieldName) {
@@ -19,38 +16,51 @@ public class FileParser {
         }
     }
 
-    public static Map<String, String> parseFile(String fileName, Set<String> allowedFields) throws IOException, IllegalArgumentException {
-        Map<String, String> fields = new HashMap<>();
+    public static Map<String, ArrayList<String>> parseFile(String fileName, Set<String> allowedFields, Set<String> requiredFields) throws IOException, IllegalArgumentException {
+        LinkedHashMap<String, ArrayList<String>> fields = new LinkedHashMap<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String curLine;
+            String curLine = br.readLine();
+
+            if (curLine == null) throw new IllegalArgumentException("Файл '" + fileName + "' пуст");
+
+            Arrays.stream(curLine.split(";")).forEach(x -> fields.put(x, new ArrayList<>(List.of())));
+            validateFields(fields, requiredFields, allowedFields);
 
             while ((curLine = br.readLine()) != null) {
-                processLine(curLine, fields, allowedFields);
+                processLine(curLine, fields);
             }
         }
         return fields;
     }
 
     // Fast-fail принцип, сразу выбрасываем ошибку (void + throw) вместо большого количества if-else блоков (bool + if-else)
-    public static void validateRequiredFields(Map<String, String> fields, Set<String> requiredFields) {
+    public static void validateFields(Map<String, ArrayList<String>> fields, Set<String> requiredFields, Set<String> allowedFields) {
         for (String field : requiredFields) {
             if (!fields.containsKey(field)) throw new IllegalArgumentException("Требуемое поле '" + field + "' не найдено");
         }
-    }
 
-    private static void processLine(String line, Map<String, String> fields, Set<String> allowedFields) throws IllegalArgumentException {
-        List<String> keyValue = List.of(line.split(";"));
-        if (keyValue.size() != 2) throw new IllegalArgumentException("Неверный формат строки '" + line + "'");
+        Set<String> keysCopy = new HashSet<>(Set.copyOf(fields.keySet()));
+        keysCopy.removeAll(allowedFields);
 
-        String key = keyValue.getFirst().trim();
-        String value = keyValue.getLast().trim();
+        if (!keysCopy.isEmpty()) throw new IllegalArgumentException("Файл содержит неизвестные поля: " + keysCopy);
 
-        if (fields.containsKey(key)) throw new IllegalArgumentException("Дубликат поля '" + key + "'");
-        if (!allowedFields.contains(key)) throw new IllegalArgumentException("Неизвестное поле '" + key + "'");
-
-        fields.put(key, value);
 
     }
 
+    private static void processLine(String line, LinkedHashMap<String, ArrayList<String>> fields) throws IllegalArgumentException {
+        line = line + ";";
+        List<String> values = List.of(line.split(";"));
+
+        int i = 0;
+
+        for (String value : fields.sequencedKeySet()) {
+            if (i >= values.size()) throw new IllegalArgumentException("Строка содержит недостаточно полей\n" + line);
+
+            fields.get(value).add(values.get(i));
+            i ++;
+        }
+
+        if (i < values.size()) throw new IllegalArgumentException("Строка содержит лишние поля\n" + line);
+    }
 }

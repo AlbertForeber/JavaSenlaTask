@@ -22,9 +22,6 @@ public class InMemoryOrderManagerRepository implements OrderManagerRepository {
 
     @Override
     public void addOrder(int orderId, Order order) throws IllegalArgumentException {
-        if (orders.containsKey(orderId)) {
-            throw new IllegalArgumentException("Заказ уже существует");
-        }
         orders.put(orderId, order);
     }
 

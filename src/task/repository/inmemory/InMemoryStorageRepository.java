@@ -18,18 +18,24 @@ public class InMemoryStorageRepository implements StorageRepository {
         addBook(new Book(3, "F_Book3", "Desc3", 2025, 3, 3, BookStatus.FREE));
         addBook(new Book(4, "H_Book4", "Desc4", 2025, 4, 4, BookStatus.FREE));
         addBook(new Book(5, "C_Book5", "Desc5", 2025, 5, 5, BookStatus.FREE));
-        addBook(new Book(6, "D_Book6", "Desc6", 2025, 6, 6, BookStatus.RESERVED));
-        addBook(new Book(7, "E_Book7", "Desc7", 2025, 7, 7, BookStatus.RESERVED));
-        addBook(new Book(8, "B_Book8", "Desc8", 2025, 8, 8, BookStatus.RESERVED));
+
+        addBook(new Book(6, "D_Book6", "Desc6", 2025, 6, 6, BookStatus.FREE));
+        storage.get(6).setStatus(BookStatus.RESERVED, "reservist6");
+
+        addBook(new Book(7, "E_Book7", "Desc7", 2025, 7, 7, BookStatus.FREE));
+        storage.get(7).setStatus(BookStatus.RESERVED, "reservist7");
+
+        addBook(new Book(8, "B_Book8", "Desc8", 2025, 8, 8, BookStatus.FREE));
+        storage.get(8).setStatus(BookStatus.RESERVED, "reservist8");
+
         addBook(new Book(9, "A_Book9", "Desc9", 2025, 9, 9, BookStatus.FREE));
+
         addBook(new Book(10, "J_Book10", "Desc10", 2025, 10, 10, BookStatus.RESERVED));
+        storage.get(10).setStatus(BookStatus.RESERVED, "reservist10");
     }
 
     @Override
     public void addBook(Book book) throws IllegalArgumentException {
-        if (storage.containsKey(book.getId())) {
-            throw new IllegalArgumentException("Книга с таким ID уже есть");
-        }
         storage.put(book.getId(), book);
     }
 

@@ -31,32 +31,21 @@ public class CsvStorageExportService implements StorageExportService {
 
     private void writeBook(String fileName, Book book) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-            bw.write("id;" + book.getId());
+            bw.write("id;title;description;publicationDate;admissionDate;price;status;reservist");
             bw.newLine();
 
-            bw.write("title;" + book.getTitle());
-            bw.newLine();
-
-            bw.write("description;" + book.getDescription());
-            bw.newLine();
-
-            bw.write("publicationDate;" + DataConverter.calendarToString(book.getPublicationDate()));
-            bw.newLine();
-
-            bw.write("admissionDate;" + DataConverter.calendarToString(book.getAdmissionDate()));
-            bw.newLine();
-
-            bw.write("price;" + book.getPrice());
-            bw.newLine();
-
-            bw.write("status;" + book.getStatus().name());
-            bw.newLine();
+            bw.write(
+                    book.getId() + ";" +
+                            book.getTitle() + ";" +
+                            book.getDescription() + ";" +
+                            DataConverter.calendarToString(book.getPublicationDate()) + ";" +
+                            DataConverter.calendarToString(book.getAdmissionDate()) + ";" +
+                            book.getPrice() + ";" +
+                            book.getStatus().name() + ";"
+            );
 
             String reservist = book.getReservist();
-            if (reservist != null) {
-                bw.write("reservist;" + reservist);
-                bw.newLine();
-            }
+            bw.write(reservist != null ? (reservist) : "");
         }
     }
 }

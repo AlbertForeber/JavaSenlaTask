@@ -53,6 +53,11 @@ public class OrderService {
 
         if (!presentBookIds.isEmpty()) {
             Order order = new Order(orderId, presentBookIds, totalSum, customerName);
+
+            if (orderManagerRepository.getOrder(orderId) != null) {
+                cancelOrder(orderId);
+            }
+
             orderManagerRepository.addOrder(orderId, order);
             return true;
         } else return false;

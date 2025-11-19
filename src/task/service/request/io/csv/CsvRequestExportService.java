@@ -31,14 +31,14 @@ public class CsvRequestExportService implements RequestExportService {
 
     private void writeRequest(String fileName, Request request) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-            bw.write("id;" + request.getId());
+            bw.write("id;bookName;amount");
             bw.newLine();
 
-            bw.write("bookName;" + request.getBookName());
-            bw.newLine();
-
-            bw.write("amount;" + request.getAmount());
-            bw.newLine();
+            bw.write(
+                    request.getId() + ";" +
+                            request.getBookName() + ";" +
+                            request.getAmount()
+            );
         }
     }
 }

@@ -3,12 +3,14 @@ package task.service.storage.io.csv;
 import task.model.entity.Book;
 import task.model.entity.status.BookStatus;
 import task.repository.StorageRepository;
+import task.service.order.io.OrderImportConstants;
 import task.service.storage.io.StorageImportService;
 import task.service.storage.io.BookImportConstants;
 import task.utils.DataConverter;
 import task.utils.FileParser;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class CsvStorageImportService implements StorageImportService {
@@ -20,57 +22,64 @@ public class CsvStorageImportService implements StorageImportService {
 
     @Override
     public void importBook(String fileName) throws IllegalArgumentException, IOException {
-        Map<String, String> fields = FileParser.parseFile(fileName, BookImportConstants.ALLOWED_FIELDS);
-        FileParser.validateRequiredFields(fields, BookImportConstants.REQUIRED_FIELDS);
-
-        int[] publicationDate = DataConverter.getDateInArray(fields.get("publicationDate"));
-        int[] admissionDate = DataConverter.getDateInArray(fields.get("admissionDate"));
-
-        if (publicationDate == null) throw new IllegalArgumentException("Неверный формат даты публикации");
-        if (admissionDate == null) throw new IllegalArgumentException("Неверный формат даты поступления");
-
-
-        BookStatus bookStatus = getVerifiedStatus(fields);
-
-        Book book = new Book(
-            FileParser.parseNumericField(fields.get("id"), "id"),
-                fields.get("title"),
-                fields.get("description"),
-                admissionDate[2],
-                admissionDate[1],
-                admissionDate[0],
-                bookStatus
+        Map<String, ArrayList<String>> fields = FileParser.parseFile(
+                fileName, BookImportConstants.ALLOWED_FIELDS, BookImportConstants.REQUIRED_FIELDS
         );
 
-        book.setPublicationDate(publicationDate[2], publicationDate[1], publicationDate[0]);
+        for (int i = 0; i < fields.get("id").size(); i ++) {
 
-        if (fields.get("reservist") != null) book.setStatus(BookStatus.RESERVED, fields.get("reservist"));
+            int[] publicationDate = DataConverter.getDateInArray(fields.get("publicationDate").get(i));
+            int[] admissionDate = DataConverter.getDateInArray(fields.get("admissionDate").get(i));
 
-        storageRepository.addBook(book);
+            if (publicationDate == null) throw new IllegalArgumentException("Неверный формат даты публикации");
+            if (admissionDate == null) throw new IllegalArgumentException("Неверный формат даты поступления");
+
+
+            BookStatus bookStatus = getVerifiedStatus(fields.get("status").get(i), fields, i);
+
+            Book book = new Book(
+                    FileParser.parseNumericField(fields.get("id").get(i), "id"),
+                    fields.get("title").get(i),
+                    fields.get("description").get(i),
+                    admissionDate[2],
+                    admissionDate[1],
+                    admissionDate[0],
+                    bookStatus
+            );
+
+            book.setPublicationDate(publicationDate[2], publicationDate[1], publicationDate[0]);
+
+            if (fields.get("reservist") != null) book.setStatus(BookStatus.RESERVED, fields.get("reservist").get(i));
+
+            storageRepository.addBook(book);
+        }
     }
 
-    public BookStatus getVerifiedStatus(Map<String, String> fields) throws IllegalArgumentException {
-        return switch (fields.get("status")) {
+    public BookStatus getVerifiedStatus(String status, Map<String, ArrayList<String>> fields, int index) throws IllegalArgumentException {
+        return switch (status) {
             case "FREE" -> {
-                if (fields.get("reservist") != null)
+                if (fields.get("reservist") != null &&
+                        !fields.get("reservist").get(index).trim().isEmpty())
                     throw new IllegalArgumentException("Книга со статусом FREE не может иметь резервиста");
                 yield BookStatus.FREE;
             }
 
             case "SOLD_OUT" -> {
-                if (fields.get("reservist") != null)
+                if (fields.get("reservist") != null &&
+                        !fields.get("reservist").get(index).trim().isEmpty())
                     throw new IllegalArgumentException("Книга со статусом SOLD_OUT не может иметь резервиста");
 
                 yield BookStatus.SOLD_OUT;
             }
 
             case "RESERVED" -> {
-                if (fields.get("reservist") == null)
+                if (fields.get("reservist") == null ||
+                        fields.get("reservist").get(index).trim().isEmpty())
                     throw new IllegalArgumentException("Книга со статусом RESERVED должна иметь резервиста");
 
                 yield BookStatus.RESERVED;
             }
-            default -> throw new IllegalArgumentException("Неверный статус: " + fields.get("status"));
+            default -> throw new IllegalArgumentException("Неверный статус: " + fields.get("status").get(index));
         };
     }
 
