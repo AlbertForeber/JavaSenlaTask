@@ -110,7 +110,7 @@ public class StorageController extends BaseController {
         ioHandler.showMessage(Colors.BLUE + "Введите название книги:" + Colors.RESET);
 
         try {
-            storageQueryService.getBookDescription(Integer.parseInt(ioHandler.handleInput()));
+            ioHandler.showMessage(storageQueryService.getBookDescription(Integer.parseInt(ioHandler.handleInput())));
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
         }

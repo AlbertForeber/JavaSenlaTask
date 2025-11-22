@@ -2,11 +2,12 @@ package task.model.entity;
 
 import task.model.entity.status.BookStatus;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
-public class Book {
+public class Book implements Serializable {
     private final int id;
     private final String title;
     private final String description;

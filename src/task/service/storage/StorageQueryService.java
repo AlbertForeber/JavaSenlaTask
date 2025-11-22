@@ -1,10 +1,13 @@
 package task.service.storage;
 
+import task.model.entity.Order;
+import task.model.entity.sortby.OrderSortBy;
 import task.repository.StorageRepository;
 import task.model.entity.Book;
 import task.model.entity.sortby.BookSortBy;
 import task.model.entity.status.BookStatus;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -48,5 +51,27 @@ public class StorageQueryService {
 
     public String getBookDescription(int bookId) {
         return bookStorageRepository.getBook(bookId).getDescription();
+    }
+
+    public void saveState(String path) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path + "storage"))) {
+            for (Book book : bookStorageRepository.getSortedBooks(BookSortBy.NO_SORT)) {
+                oos.writeObject(book);
+            }
+        }
+    }
+
+    public void loadState(String path) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path + "storage"))) {
+            Book book;
+            while (true) {
+                try {
+                    book = (Book) ois.readObject();
+                    bookStorageRepository.addBook(book);
+                } catch (EOFException e) {
+                    break;
+                }
+            }
+        }
     }
 }
