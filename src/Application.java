@@ -9,10 +9,22 @@ import task.repository.inmemory.InMemoryRequestManagerRepository;
 import task.repository.inmemory.InMemoryStorageRepository;
 import task.service.order.OrderQueryService;
 import task.service.order.OrderService;
+import task.service.order.io.OrderExportService;
+import task.service.order.io.OrderImportService;
+import task.service.order.io.csv.CsvOrderExportService;
+import task.service.order.io.csv.CsvOrderImportService;
 import task.service.request.RequestQueryService;
 import task.service.request.RequestService;
+import task.service.request.io.RequestExportService;
+import task.service.request.io.RequestImportService;
+import task.service.request.io.csv.CsvRequestExportService;
+import task.service.request.io.csv.CsvRequestImportService;
 import task.service.storage.StorageQueryService;
 import task.service.storage.StorageService;
+import task.service.storage.io.StorageExportService;
+import task.service.storage.io.StorageImportService;
+import task.service.storage.io.csv.CsvStorageExportService;
+import task.service.storage.io.csv.CsvStorageImportService;
 import task.view.*;
 import task.view.console.*;
 import task.view.enums.ControllerKey;
@@ -54,11 +66,28 @@ public class Application {
         menuBuilder.setNavigator(navigator);
         menuBuilder.setControllerRegistry(controllerRegistry);
 
+        // Import/Export
+        OrderImportService orderImportService = new CsvOrderImportService(orderManagerRepository, storageRepository, orderService);
+        OrderExportService orderExportService = new CsvOrderExportService(orderManagerRepository);
+
+        RequestImportService requestImportService = new CsvRequestImportService(requestManagerRepository);
+        RequestExportService requestExportService = new CsvRequestExportService(requestManagerRepository);
+
+        StorageImportService storageImportService = new CsvStorageImportService(storageRepository);
+        StorageExportService storageExportService = new CsvStorageExportService(storageRepository);
 
         // Controllers
-        StorageController storageController = new StorageController(storageQueryService, storageService, ioHandler);
-        OrderController orderController = new OrderController(orderQueryService, orderService, ioHandler);
-        RequestController requestController = new RequestController(requestQueryService, requestService, ioHandler);
+        StorageController storageController = new StorageController(
+                storageQueryService, storageService, storageImportService, storageExportService, ioHandler
+        );
+
+        OrderController orderController = new OrderController(
+                orderQueryService, orderService, orderImportService, orderExportService, ioHandler
+        );
+
+        RequestController requestController = new RequestController(
+                requestQueryService, requestService, requestImportService, requestExportService, ioHandler
+        );
 
         controllerRegistry.registerController(ControllerKey.STORAGE, storageController);
         controllerRegistry.registerController(ControllerKey.ORDER, orderController);

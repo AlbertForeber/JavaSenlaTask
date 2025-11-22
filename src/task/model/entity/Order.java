@@ -8,16 +8,16 @@ import java.util.List;
 
 public class Order {
     private final int id;
-    private final List<String> orderedBookNames;
+    private final List<Integer> orderedBookIds;
     private final String customerName;
-    private final int totalSum;
+    private int totalSum;
     private Calendar completionDate = null;
     private OrderStatus status;
 
     
-    public Order(int id, List<String> bookNames, int totalSum, String customerName) {
+    public Order(int id, List<Integer> bookIds, int totalSum, String customerName) {
         this.id = id;
-        this.orderedBookNames = bookNames;
+        this.orderedBookIds = bookIds;
         this.customerName = customerName;
         this.totalSum = totalSum;
         status = OrderStatus.NEW;
@@ -28,8 +28,8 @@ public class Order {
         return id;
     }
 
-    public List<String> getOrderedBookNames() {
-        return orderedBookNames;
+    public List<Integer> getOrderedBookIds() {
+        return orderedBookIds;
     }
 
     public OrderStatus getStatus() {
@@ -50,13 +50,15 @@ public class Order {
     }
 
     public Calendar getCompletionDate() {
-        return completionDate != null ? completionDate : (new GregorianCalendar());
+        return completionDate;
     }
 
     public int getTotalSum() {
         return totalSum;
     }
-
+    public void setTotalSum(int totalSum) {
+        this.totalSum = totalSum;
+    }
 
     @Override
     public String toString() {
@@ -71,7 +73,7 @@ public class Order {
                     status: %s
                 """,
                 id,
-                orderedBookNames,
+                orderedBookIds,
                 customerName,
                 completionDate != null ? completionDate.get(Calendar.YEAR) : 0,
                 completionDate != null ? completionDate.get(Calendar.MONTH) + 1 : 0,

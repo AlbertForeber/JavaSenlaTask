@@ -1,24 +1,34 @@
 package task.controller;
 
-import task.model.entity.sortby.OrderSortBy;
 import task.model.entity.sortby.RequestSortBy;
 import task.service.request.RequestQueryService;
 import task.service.request.RequestService;
+import task.service.request.io.RequestExportService;
+import task.service.request.io.RequestImportService;
 import task.utils.Colors;
 import task.view.IOHandler;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class RequestController extends BaseController {
-    RequestService requestService;
-    RequestQueryService requestQueryService;
+    private final RequestService requestService;
+    private final RequestQueryService requestQueryService;
+    private final RequestImportService requestImportService;
+    private final RequestExportService requestExportService;
 
     public RequestController(
             RequestQueryService requestQueryService,
             RequestService requestService,
+            RequestImportService requestImportService,
+            RequestExportService requestExportService,
             IOHandler ioHandler
     ) {
         super(ioHandler);
         this.requestQueryService = requestQueryService;
         this.requestService = requestService;
+        this.requestImportService = requestImportService;
+        this.requestExportService = requestExportService;
     }
 
     public void createRequest() {
@@ -50,6 +60,43 @@ public class RequestController extends BaseController {
         requestQueryService.getSorted(requestSortBy).stream()
                 .map(Object::toString)
                 .forEach(System.out::println);
+    }
+
+    public void importRequest() {
+        ioHandler.showMessage(Colors.BLUE + "Введите путь к файлу" + Colors.RESET);
+        String fileName = ioHandler.handleInput();
+
+        try {
+            requestImportService.importRequest(fileName);
+            ioHandler.showMessage(Colors.YELLOW + "Запрос '" + fileName + "' успешно импортирован" + Colors.RESET);
+        } catch (FileNotFoundException e) {
+            ioHandler.showMessage(Colors.YELLOW + "ФАЙЛ '" + fileName + "' НЕ НАЙДЕН" + Colors.RESET);
+        } catch (IOException e) {
+            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ВО ВРЕМЯ ЧТЕНИЯ ДОКУМЕНТА" + Colors.RESET);
+        } catch (IllegalArgumentException e) {
+            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
+        }
+    }
+
+    public void exportRequest() {
+        ioHandler.showMessage(Colors.BLUE + "Введите ID запроса" + Colors.RESET);
+
+        try {
+            int requestId = Integer.parseInt(ioHandler.handleInput());
+
+            ioHandler.showMessage(Colors.BLUE + "Введите путь для файла (Без имени файла, с разделителем на конце)" + Colors.RESET);
+            ioHandler.showMessage(Colors.BLUE + "Пример: ./dir1/dir2/dir3/ (для Linux)" + Colors.RESET);
+
+            requestExportService.exportRequest(requestId, ioHandler.handleInput());
+            ioHandler.showMessage(Colors.YELLOW + "Запрос с ID: '" + requestId + "' успешно экспортирован" + Colors.RESET);
+
+        } catch (NumberFormatException e) {
+            ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
+        } catch (IOException e) {
+            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ВО ВРЕМЯ СОЗДАНИЯ ДОКУМЕНТА" + Colors.RESET);
+        } catch (IllegalArgumentException e) {
+            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
+        }
     }
 
 }

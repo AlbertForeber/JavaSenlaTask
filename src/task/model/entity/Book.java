@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 
 public class Book {
+    private final int id;
     private final String title;
     private final String description;
     private final Calendar publicationDate = new GregorianCalendar();
@@ -16,6 +17,7 @@ public class Book {
     private String reservist = null;
 
     public Book(
+            int id,
             String title,
             String description,
             int year,
@@ -23,9 +25,10 @@ public class Book {
             int date,
             BookStatus initStatus
     ) {
+        this.id = id;
         this.title = title;
         this.description = description;
-        this.admissionDate.set(year, month, date);
+        this.admissionDate.set(year, month - 1, date);
         this.status = initStatus;
 
         // Случайное заполнение даты публикации и цены
@@ -38,6 +41,10 @@ public class Book {
         );
 
         setPrice(random.nextInt(100, 1000));
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -94,6 +101,7 @@ public class Book {
     public String toString() {
         return String.format("""
                 BOOK:
+                    id: %d
                     title: %s
                     description: %s
                     publicationDate: %d %d %d
@@ -101,6 +109,7 @@ public class Book {
                     price: %d
                     bookStatus: %s
                 """,
+                id,
                 title,
                 description,
                 publicationDate.get(Calendar.YEAR),
