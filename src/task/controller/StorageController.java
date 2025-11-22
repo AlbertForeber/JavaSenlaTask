@@ -107,7 +107,7 @@ public class StorageController extends BaseController {
     }
 
     public void getBookDescription() {
-        ioHandler.showMessage(Colors.BLUE + "Введите название книги:" + Colors.RESET);
+        ioHandler.showMessage(Colors.BLUE + "Введите ID книги:" + Colors.RESET);
 
         try {
             ioHandler.showMessage(storageQueryService.getBookDescription(Integer.parseInt(ioHandler.handleInput())));
