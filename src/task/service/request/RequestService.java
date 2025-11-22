@@ -13,7 +13,6 @@ public class RequestService {
     }
 
     public void createRequest(String bookName) {
-        Request request = new Request(bookName);
-        requestManagerRepository.addRequest(request);
+        requestManagerRepository.addRequest(bookName);
     }
 }

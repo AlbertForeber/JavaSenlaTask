@@ -11,10 +11,13 @@ import java.util.List;
 
 public class StorageMenu implements Menu {
     private final List<MenuAction> menu;
+    private final Navigator navigator;
+
 
     public StorageMenu(Navigator navigator, ControllerRegistry controllerRegistry) {
         StorageController controller = (StorageController) controllerRegistry.getController(ControllerKey.STORAGE);
 
+        this.navigator = navigator;
         this.menu = List.of(
                 new MenuAction("1. Добавить книгу в хранилище", _ -> {
                     controller.addBookToStorage();
@@ -36,7 +39,15 @@ public class StorageMenu implements Menu {
                     controller.writeOffBook();
                     navigator.navigateTo(NavigateTo.STORAGE);
                 }),
-                new MenuAction("6. Назад",  _ -> navigator.navigateTo(NavigateTo.MAIN))
+                new MenuAction("6. Импорт книги",  _ -> {
+                    controller.importBook();
+                    navigator.navigateTo(NavigateTo.STORAGE);
+                }),
+                new MenuAction("7. Экспорт книги",  _ -> {
+                    controller.exportBook();
+                    navigator.navigateTo(NavigateTo.STORAGE);
+                }),
+                new MenuAction("8. Назад",  _ -> navigator.navigateTo(NavigateTo.MAIN))
 
         );
     }
@@ -51,6 +62,6 @@ public class StorageMenu implements Menu {
         actionId -= 1;
         if (!(actionId < 0 || actionId >= menu.size())) {
             menu.get(actionId).performAction();
-        }
+        } else navigator.navigateTo(NavigateTo.STORAGE);
     }
 }

@@ -1,5 +1,6 @@
 package task.view.console;
 
+import task.utils.Colors;
 import task.view.IOHandler;
 import task.view.menu.Menu;
 
@@ -11,7 +12,13 @@ public class ConsoleIOHandler implements IOHandler {
     @Override
     public void handleOptionInput(Menu currentMenu) {
         System.out.print(">> ");
-        currentMenu.executeAction(Integer.parseInt(scanner.nextLine()));
+
+        try {
+            currentMenu.executeAction(Integer.parseInt(scanner.nextLine()));
+        } catch (NumberFormatException e) {
+            showMessage(Colors.YELLOW + "ПУНКТ МЕНЮ ДОЛЖЕН БЫТЬ ЧИСЛОМ" + Colors.RESET);
+            currentMenu.executeAction(-1);
+        }
     }
 
     @Override

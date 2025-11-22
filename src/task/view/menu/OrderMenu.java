@@ -11,10 +11,12 @@ import java.util.List;
 
 public class OrderMenu implements Menu {
     private final List<MenuAction> menu;
+    private final Navigator navigator;
 
     public OrderMenu(Navigator navigator, ControllerRegistry controllerRegistry) {
         OrderController controller = (OrderController) controllerRegistry.getController(ControllerKey.ORDER);
 
+        this.navigator = navigator;
         this.menu = List.of(
                 new MenuAction("1. Создать заказ", _ -> {
                     controller.createOrder();
@@ -48,7 +50,15 @@ public class OrderMenu implements Menu {
                     controller.getIncomeInInterval();
                     navigator.navigateTo(NavigateTo.ORDER);
                 }),
-                new MenuAction("9. Назад",  _ -> navigator.navigateTo(NavigateTo.MAIN))
+                new MenuAction("9. Импорт заказа ",  _ -> {
+                    controller.importOrder();
+                    navigator.navigateTo(NavigateTo.ORDER);
+                }),
+                new MenuAction("10. Экспорт заказа ",  _ -> {
+                    controller.exportOrder();
+                    navigator.navigateTo(NavigateTo.ORDER);
+                }),
+                new MenuAction("11. Назад",  _ -> navigator.navigateTo(NavigateTo.MAIN))
 
         );
     }
@@ -64,5 +74,6 @@ public class OrderMenu implements Menu {
         if (!(actionId < 0 || actionId >= menu.size())) {
             menu.get(actionId).performAction();
         }
+        else navigator.navigateTo(NavigateTo.ORDER);
     }
 }

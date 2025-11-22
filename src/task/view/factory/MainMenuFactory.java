@@ -9,7 +9,7 @@ import task.view.menu.Menu;
 public class MainMenuFactory implements MenuFactory {
     @Override
     public Menu createMenu(Navigator navigator, ControllerRegistry controllerRegistry) {
-        return new MainMenu(navigator);
+        return new MainMenu(navigator, controllerRegistry);
     }
 
     @Override

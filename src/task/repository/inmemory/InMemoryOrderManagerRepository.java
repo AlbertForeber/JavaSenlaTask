@@ -1,5 +1,6 @@
 package task.repository.inmemory;
 
+import task.model.entity.status.OrderStatus;
 import task.repository.OrderManagerRepository;
 import task.model.comparators.order.OrderComplDateComparator;
 import task.model.comparators.order.OrderComplDatePriceComparator;
@@ -7,15 +8,20 @@ import task.model.comparators.order.OrderPriceComparator;
 import task.model.comparators.order.OrderStatusComparator;
 import task.model.entity.Order;
 import task.model.entity.sortby.OrderSortBy;
+import task.utils.DataConverter;
 
+import java.io.*;
+import java.security.InvalidParameterException;
+import java.security.KeyException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryOrderManagerRepository implements OrderManagerRepository {
     private final HashMap<Integer, Order> orders = new HashMap<>();
 
 
     @Override
-    public void addOrder(int orderId, Order order) {
+    public void addOrder(int orderId, Order order) throws IllegalArgumentException {
         orders.put(orderId, order);
     }
 
@@ -32,10 +38,6 @@ public class InMemoryOrderManagerRepository implements OrderManagerRepository {
         return orders.remove(orderId) != null;
     }
 
-    public HashMap<Integer, Order> getOrderMap() {
-        return orders;
-    }
-
     @Override
     public List<Order> getSortedOrders(OrderSortBy sortBy) {
         Comparator<Order> comparator = switch (sortBy) {
@@ -46,9 +48,15 @@ public class InMemoryOrderManagerRepository implements OrderManagerRepository {
             case NO_SORT -> null;
         };
 
-        List<Order> arr = new ArrayList<>(orders.values().stream().toList());
+        List<Order> arr = new ArrayList<>(orders.values());
+
+        if (sortBy == OrderSortBy.COMPLETION_DATE || sortBy == OrderSortBy.PRICE_DATE) {
+            arr = arr.stream().filter(x -> x.getCompletionDate() != null).collect(Collectors.toList());
+        }
 
         if (comparator != null) arr.sort(comparator);
         return arr;
     }
 }
+
+
