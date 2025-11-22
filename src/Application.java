@@ -25,13 +25,30 @@ import task.service.storage.io.StorageExportService;
 import task.service.storage.io.StorageImportService;
 import task.service.storage.io.csv.CsvStorageExportService;
 import task.service.storage.io.csv.CsvStorageImportService;
+import task.utils.PropertyConverter;
+import task.utils.PropertyLoader;
 import task.view.*;
 import task.view.console.*;
 import task.view.enums.ControllerKey;
 import task.view.enums.NavigateTo;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+
 public class Application {
+    private final static String PATH_TO_CONFIG = "C:\\Users\\Administrator\\Desktop\\JavaSenlaTask\\src\\task\\config";
+
     public static void main(String[] args) {
+        // Config
+        Properties properties;
+        try {
+            properties = PropertyLoader.loadProperties(PATH_TO_CONFIG);
+        } catch (IOException e) {
+            System.err.println(e);
+            properties = new Properties();
+        }
+
         // Repositories
         StorageRepository storageRepository = new InMemoryStorageRepository();
         OrderManagerRepository orderManagerRepository = new InMemoryOrderManagerRepository();
@@ -39,8 +56,16 @@ public class Application {
 
 
         // Services
-        StorageService storageService = new StorageService(storageRepository, requestManagerRepository);
-        StorageQueryService storageQueryService = new StorageQueryService(storageRepository);
+        StorageService storageService = new StorageService(
+                storageRepository,
+                requestManagerRepository,
+                PropertyConverter.getBoolean(properties, "cancelRequests", true)
+        );
+
+        StorageQueryService storageQueryService = new StorageQueryService(
+                storageRepository,
+                PropertyConverter.getInt(properties, "liquidMonths", 6)
+        );
 
         OrderService orderService = new OrderService(orderManagerRepository, storageRepository, requestManagerRepository);
         OrderQueryService orderQueryService = new OrderQueryService(orderManagerRepository);

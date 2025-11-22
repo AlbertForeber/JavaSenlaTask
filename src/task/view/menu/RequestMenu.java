@@ -11,10 +11,13 @@ import java.util.List;
 
 public class RequestMenu implements Menu {
     private final List<MenuAction> menu;
+    private final Navigator navigator;
+
 
     public RequestMenu(Navigator navigator, ControllerRegistry controllerRegistry) {
         RequestController controller = (RequestController) controllerRegistry.getController(ControllerKey.REQUEST);
 
+        this.navigator = navigator;
         this.menu = List.of(
                 new MenuAction("1. Добавить запрос", _ -> {
                     controller.createRequest();
@@ -46,6 +49,6 @@ public class RequestMenu implements Menu {
         actionId -= 1;
         if (!(actionId < 0 || actionId >= menu.size())) {
             menu.get(actionId).performAction();
-        }
+        } else navigator.navigateTo(NavigateTo.REQUEST);
     }
 }

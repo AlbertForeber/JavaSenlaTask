@@ -8,9 +8,11 @@ import java.util.List;
 public class MainMenu implements Menu {
 
     private final List<MenuAction> menu;
+    private final Navigator navigator;
 
     public MainMenu(Navigator navigator) {
-        menu = List.of(
+        this.navigator = navigator;
+        this.menu = List.of(
                 new MenuAction("1. Меню управления хранилищем", _ -> navigator.navigateTo(NavigateTo.STORAGE)),
                 new MenuAction("2. Меню управления заказами",   _ -> navigator.navigateTo(NavigateTo.ORDER)),
                 new MenuAction("3. Меню управления запросами",  _ -> navigator.navigateTo(NavigateTo.REQUEST))
@@ -27,6 +29,6 @@ public class MainMenu implements Menu {
         actionId -= 1;
         if (!(actionId < 0 || actionId >= menu.size())) {
             menu.get(actionId).performAction();
-        }
+        } navigator.navigateTo(NavigateTo.MAIN);
     }
 }

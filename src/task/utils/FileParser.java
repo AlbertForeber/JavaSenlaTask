@@ -7,7 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-public class FileParser {
+public final class FileParser {
     public static int parseNumericField(String toParse, String fieldName) {
         try {
             return Integer.parseInt(toParse);

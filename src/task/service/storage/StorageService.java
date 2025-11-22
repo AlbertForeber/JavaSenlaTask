@@ -8,13 +8,16 @@ import task.repository.StorageRepository;
 public class StorageService {
     private final StorageRepository bookStorageRepository;
     private final RequestManagerRepository requestManagerRepository;
+    private final boolean cancelRequests;
 
     public StorageService(
             StorageRepository storageRepository,
-            RequestManagerRepository requestManagerRepository
+            RequestManagerRepository requestManagerRepository,
+            boolean cancelRequests
     ) {
         this.bookStorageRepository = storageRepository;
         this.requestManagerRepository = requestManagerRepository;
+        this.cancelRequests = cancelRequests;
     }
 
     public void writeOffBook(int bookId) {
@@ -24,6 +27,8 @@ public class StorageService {
     public void addBookToStorage(int bookId) {
         Book book = bookStorageRepository.getBook(bookId);
         book.setStatus(BookStatus.FREE);
-        requestManagerRepository.cancelRequests(book.getTitle());
+
+        if (cancelRequests)
+            requestManagerRepository.cancelRequests(book.getTitle());
     }
 }

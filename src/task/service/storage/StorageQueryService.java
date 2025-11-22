@@ -12,11 +12,15 @@ import java.util.List;
 
 public class StorageQueryService {
     private final StorageRepository bookStorageRepository;
+    private final int liquidMonthAmount;
 
     public StorageQueryService(
-            StorageRepository storageRepository
+            StorageRepository storageRepository,
+            int liquidMonthAmount
     ) {
-        this.bookStorageRepository = storageRepository;}
+        this.bookStorageRepository = storageRepository;
+        this.liquidMonthAmount = liquidMonthAmount;
+    }
 
     public List<Book> getSorted(BookSortBy sortBy) {
         return bookStorageRepository.getSortedBooks(sortBy);
@@ -33,7 +37,7 @@ public class StorageQueryService {
         Calendar now = new GregorianCalendar(nowYear, nowMonth, nowDate);
 
         for (Book book : books) {
-            if (now.get(Calendar.MONTH) - book.getAdmissionDate().get(Calendar.MONTH) >= 6
+            if (now.get(Calendar.MONTH) - book.getAdmissionDate().get(Calendar.MONTH) >= liquidMonthAmount
                     && book.getStatus() == BookStatus.FREE) {
                 toReturn.add(book);
             }

@@ -5,7 +5,7 @@ import java.util.IllegalFormatException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DataConverter {
+public final class DataConverter {
     private DataConverter() {}
 
     static public int[] getDateInArray(String date) {
