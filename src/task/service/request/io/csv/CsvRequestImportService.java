@@ -2,9 +2,8 @@ package task.service.request.io.csv;
 
 import task.model.entity.Request;
 import task.repository.RequestManagerRepository;
-import task.service.order.io.OrderImportConstants;
-import task.service.request.io.RequestImportService;
 import task.service.request.io.RequestImportConstants;
+import task.service.request.io.RequestImportService;
 import task.utils.FileParser;
 
 import java.io.IOException;
@@ -33,7 +32,7 @@ public class CsvRequestImportService implements RequestImportService {
             Request duplicate = requestManagerRepository.getRequest(id);
 
             if (duplicate != null && !Objects.equals(duplicate.getBookName(), fields.get("bookName").get(i)))
-                throw new IllegalArgumentException("Запрос с таким ID уже существует и названия книг не совпадают");
+                requestManagerRepository.cancelRequests(duplicate.getBookName());
 
             requestManagerRepository.addRequest(
                     id,

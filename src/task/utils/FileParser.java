@@ -1,13 +1,11 @@
 package task.utils;
 
-import task.service.order.io.OrderImportConstants;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-public class FileParser {
+public final class FileParser {
     public static int parseNumericField(String toParse, String fieldName) {
         try {
             return Integer.parseInt(toParse);
@@ -28,7 +26,7 @@ public class FileParser {
             validateFields(fields, requiredFields, allowedFields);
 
             while ((curLine = br.readLine()) != null) {
-                processLine(curLine, fields);
+                processLine(curLine, fields, requiredFields);
             }
         }
         return fields;
@@ -48,11 +46,13 @@ public class FileParser {
 
     }
 
-    private static void processLine(String line, LinkedHashMap<String, ArrayList<String>> fields) throws IllegalArgumentException {
-        line = line + ";";
+    private static void processLine(String line, LinkedHashMap<String, ArrayList<String>> fields, Set<String> requiredFields) throws IllegalArgumentException {
+        line = line + (line.endsWith(";") ? " " : "; ");
         List<String> values = List.of(line.split(";"));
 
         int i = 0;
+
+        if (values.size() - 1 < requiredFields.size()) throw new IllegalArgumentException("Строка содержит недостаточно полей\n" + line);
 
         for (String value : fields.sequencedKeySet()) {
             if (i >= values.size()) throw new IllegalArgumentException("Строка содержит недостаточно полей\n" + line);
@@ -61,6 +61,8 @@ public class FileParser {
             i ++;
         }
 
-        if (i < values.size()) throw new IllegalArgumentException("Строка содержит лишние поля\n" + line);
+
+
+        if (i < values.size() - 1) throw new IllegalArgumentException("Строка содержит лишние поля\n" + line);
     }
 }
