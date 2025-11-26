@@ -1,4 +1,3 @@
-import task.controller.MainController;
 import task.controller.OrderController;
 import task.controller.RequestController;
 import task.controller.StorageController;
@@ -8,7 +7,6 @@ import task.repository.StorageRepository;
 import task.repository.inmemory.InMemoryOrderManagerRepository;
 import task.repository.inmemory.InMemoryRequestManagerRepository;
 import task.repository.inmemory.InMemoryStorageRepository;
-import task.service.StateLoadSaveFacade;
 import task.service.order.OrderQueryService;
 import task.service.order.OrderService;
 import task.service.order.io.OrderExportService;
@@ -28,20 +26,26 @@ import task.service.storage.io.StorageImportService;
 import task.service.storage.io.csv.CsvStorageExportService;
 import task.service.storage.io.csv.CsvStorageImportService;
 import task.utils.PropertyConverter;
+import task.utils.PropertyLoader;
 import task.view.*;
 import task.view.console.*;
 import task.view.enums.ControllerKey;
 import task.view.enums.NavigateTo;
 
+import java.io.IOException;
+import java.util.Properties;
+
 public class Application {
-    private final static String PATH_TO_CONFIG = "C:\\Users\\Administrator\\Desktop\\JavaSenlaTask\\src\\config.properties";
+    private final static String PATH_TO_CONFIG = "/Users/albert/IdeaProjects/JavaSenlaTask/src/task/config/config.properties";
 
     public static void main(String[] args) {
-        // IOHandler
-        IOHandler ioHandler = new ConsoleIOHandler();
-
-        // MainController - preparation
-        MainController mainController = new MainController(ioHandler, PATH_TO_CONFIG);
+        // Config
+        Properties properties;
+        try {
+            properties = PropertyLoader.loadProperties(PATH_TO_CONFIG);
+        } catch (IOException e) {
+            properties = new Properties();
+        }
 
         // Repositories
         StorageRepository storageRepository = new InMemoryStorageRepository();
@@ -53,12 +57,12 @@ public class Application {
         StorageService storageService = new StorageService(
                 storageRepository,
                 requestManagerRepository,
-                PropertyConverter.getBoolean(mainController.getProperties(), "cancelRequests", true)
+                PropertyConverter.getBoolean(properties, "cancelRequests", true)
         );
 
         StorageQueryService storageQueryService = new StorageQueryService(
                 storageRepository,
-                PropertyConverter.getInt(mainController.getProperties(), "liquidMonths", 6)
+                PropertyConverter.getInt(properties, "liquidMonths", 6)
         );
 
         OrderService orderService = new OrderService(orderManagerRepository, storageRepository, requestManagerRepository);
@@ -67,12 +71,13 @@ public class Application {
         RequestService requestService = new RequestService(requestManagerRepository);
         RequestQueryService requestQueryService = new RequestQueryService(requestManagerRepository);
 
-        // Facade
-        StateLoadSaveFacade stateLoadSaveFacade = new StateLoadSaveFacade(orderQueryService, requestQueryService, storageQueryService);
 
         // Menu
         MenuBuilder menuBuilder = new ConsoleMenuBuilder();
         MenuRenderer menuRenderer = new ConsoleMenuRenderer();
+
+        // IOHandler
+        IOHandler ioHandler = new ConsoleIOHandler();
 
         // Controller Registry
         ControllerRegistry controllerRegistry = new ConsoleControllerRegistry();
@@ -107,16 +112,12 @@ public class Application {
                 requestQueryService, requestService, requestImportService, requestExportService, ioHandler
         );
 
-        mainController.setStateLoadSaveFacade(stateLoadSaveFacade);
-
         controllerRegistry.registerController(ControllerKey.STORAGE, storageController);
         controllerRegistry.registerController(ControllerKey.ORDER, orderController);
         controllerRegistry.registerController(ControllerKey.REQUEST, requestController);
-        controllerRegistry.registerController(ControllerKey.MAIN, mainController);
 
 
         // START
-        mainController.loadState();
         navigator.navigateTo(NavigateTo.MAIN);
     }
 }

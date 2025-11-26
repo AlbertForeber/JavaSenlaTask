@@ -33,7 +33,7 @@ public class CsvRequestImportService implements RequestImportService {
             Request duplicate = requestManagerRepository.getRequest(id);
 
             if (duplicate != null && !Objects.equals(duplicate.getBookName(), fields.get("bookName").get(i)))
-                throw new IllegalArgumentException("Запрос с таким ID уже существует и названия книг не совпадают");
+                requestManagerRepository.cancelRequests(duplicate.getBookName());
 
             requestManagerRepository.addRequest(
                     id,
