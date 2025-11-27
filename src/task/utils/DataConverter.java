@@ -1,12 +1,15 @@
 package task.utils;
 
+import java.util.Calendar;
+import java.util.IllegalFormatException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DataConverter {
-    private DataConverter() {};
+    private DataConverter() {}
 
     static public int[] getDateInArray(String date) {
+
         Pattern dateFormat = Pattern.compile("^(3[0-1]|[1-2][0-9]|0?[1-9])\\.(1[0-2]|0?[1-9])\\.([1-2][0-9]{3})$");
         Matcher matcher = dateFormat.matcher(date);
 
@@ -17,6 +20,16 @@ public class DataConverter {
 
             return new int[]{fromDate, fromMonth, fromYear};
         }
+
         return null;
+    }
+
+    static public String calendarToString(Calendar date) {
+        return String.format(
+                "%d.%d.%d",
+                date.get(Calendar.DATE),
+                date.get(Calendar.MONTH) + 1,
+                date.get(Calendar.YEAR)
+        );
     }
 }

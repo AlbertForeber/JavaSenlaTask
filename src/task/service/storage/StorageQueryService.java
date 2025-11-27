@@ -42,7 +42,7 @@ public class StorageQueryService {
         return List.copyOf(toReturn);
     }
 
-    public String getBookDescription(String bookName) {
-        return bookStorageRepository.getBook(bookName).getDescription();
+    public String getBookDescription(int bookId) {
+        return bookStorageRepository.getBook(bookId).getDescription();
     }
 }

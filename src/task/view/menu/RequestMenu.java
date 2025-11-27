@@ -24,7 +24,15 @@ public class RequestMenu implements Menu {
                     controller.getSorted();
                     navigator.navigateTo(NavigateTo.REQUEST);
                 }),
-                new MenuAction("3. Назад",  _ -> navigator.navigateTo(NavigateTo.MAIN))
+                new MenuAction("3. Импорт запроса",   _ -> {
+                    controller.importRequest();
+                    navigator.navigateTo(NavigateTo.REQUEST);
+                }),
+                new MenuAction("4. Экспорт запроса",   _ -> {
+                    controller.exportRequest();
+                    navigator.navigateTo(NavigateTo.REQUEST);
+                }),
+                new MenuAction("5. Назад",  _ -> navigator.navigateTo(NavigateTo.MAIN))
         );
     }
 
