@@ -32,8 +32,16 @@ public class RequestController extends BaseController {
     }
 
     public void createRequest() {
-        ioHandler.showMessage(Colors.BLUE + "Введите название книги:" + Colors.RESET);
-        requestService.createRequest(ioHandler.handleInput());
+        ioHandler.showMessage(Colors.BLUE + "Введите ID книги на которую создается запрос:" + Colors.RESET);
+
+        try {
+            requestService.createRequest(Integer.parseInt(ioHandler.handleInput()));
+        } catch (NumberFormatException e) {
+            ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
+        }
+        catch (Exception e) {
+            ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET);
+        }
     }
 
     public void getSorted() {

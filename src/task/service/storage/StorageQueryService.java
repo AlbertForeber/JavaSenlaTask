@@ -37,10 +37,14 @@ public class StorageQueryService {
         List<Book> books = bookStorageRepository.getSortedBooks(BookSortBy.DATE_PRICE);
         ArrayList<Book> toReturn = new ArrayList<>();
 
-        Calendar now = new GregorianCalendar(nowYear, nowMonth, nowDate);
+        Calendar now = new GregorianCalendar(nowYear, nowMonth - 1, nowDate);
 
         for (Book book : books) {
-            if (now.get(Calendar.MONTH) - book.getAdmissionDate().get(Calendar.MONTH) >= liquidMonthAmount
+
+            int passedMonths = (now.get(Calendar.MONTH) - book.getAdmissionDate().get(Calendar.MONTH)) +
+                    (now.get(Calendar.YEAR) - book.getAdmissionDate().get(Calendar.YEAR)) * 12;
+
+            if (passedMonths >= liquidMonthAmount
                     && book.getStatus() == BookStatus.FREE) {
                 toReturn.add(book);
             }

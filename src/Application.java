@@ -32,16 +32,19 @@ import task.view.*;
 import task.view.console.*;
 import task.view.enums.ControllerKey;
 import task.view.enums.NavigateTo;
+import java.io.File;
 
 public class Application {
-    private final static String PATH_TO_CONFIG = "C:\\Users\\Administrator\\Desktop\\JavaSenlaTask\\src\\config.properties";
+    private final static String DELIMITER = File.separator;
+    private final static String PATH_TO_CONFIG = "." + DELIMITER + "config" + DELIMITER + "config.properties";
+    private final static String PATH_TO_STATE = "." + DELIMITER + "state" + DELIMITER;
 
     public static void main(String[] args) {
         // IOHandler
         IOHandler ioHandler = new ConsoleIOHandler();
 
         // MainController - preparation
-        MainController mainController = new MainController(ioHandler, PATH_TO_CONFIG);
+        MainController mainController = new MainController(ioHandler, PATH_TO_CONFIG, PATH_TO_STATE);
 
         // Repositories
         StorageRepository storageRepository = new InMemoryStorageRepository();
@@ -64,7 +67,7 @@ public class Application {
         OrderService orderService = new OrderService(orderManagerRepository, storageRepository, requestManagerRepository);
         OrderQueryService orderQueryService = new OrderQueryService(orderManagerRepository);
 
-        RequestService requestService = new RequestService(requestManagerRepository);
+        RequestService requestService = new RequestService(requestManagerRepository, storageRepository);
         RequestQueryService requestQueryService = new RequestQueryService(requestManagerRepository);
 
         // Facade
