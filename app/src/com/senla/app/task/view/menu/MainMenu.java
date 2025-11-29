@@ -1,29 +1,28 @@
-package task.view.menu;
+package com.senla.app.task.view.menu;
 
-import task.controller.MainController;
-import task.controller.OrderController;
-import task.view.ControllerRegistry;
-import task.view.Navigator;
-import task.view.enums.ControllerKey;
-import task.view.enums.NavigateTo;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.controller.MainController;
+import com.senla.app.task.view.Navigator;
+import com.senla.app.task.view.enums.NavigateTo;
 
 import java.util.List;
 
 public class MainMenu implements Menu {
 
-    private final List<MenuAction> menu;
-    private final Navigator navigator;
+    private List<MenuAction> menu;
 
-    public MainMenu(Navigator navigator, ControllerRegistry controllerRegistry) {
-        MainController controller = (MainController) controllerRegistry.getController(ControllerKey.MAIN);
+    @InjectTo
+    private Navigator navigator;
 
+    @InjectTo
+    MainController controller;
 
-        this.navigator = navigator;
+    public MainMenu() {
         this.menu = List.of(
                 new MenuAction("1. Меню управления хранилищем", _ -> navigator.navigateTo(NavigateTo.STORAGE)),
                 new MenuAction("2. Меню управления заказами",   _ -> navigator.navigateTo(NavigateTo.ORDER)),
                 new MenuAction("3. Меню управления запросами",  _ -> navigator.navigateTo(NavigateTo.REQUEST)),
-                new MenuAction("4. Выход",  _ -> controller.saveState())
+                new MenuAction("4. Выход",  _ ->  controller.saveState())
         );
     }
 

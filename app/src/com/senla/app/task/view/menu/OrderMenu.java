@@ -1,22 +1,22 @@
-package task.view.menu;
+package com.senla.app.task.view.menu;
 
-import task.controller.OrderController;
-import task.controller.StorageController;
-import task.view.ControllerRegistry;
-import task.view.Navigator;
-import task.view.enums.ControllerKey;
-import task.view.enums.NavigateTo;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.controller.OrderController;
+import com.senla.app.task.view.Navigator;
+import com.senla.app.task.view.enums.NavigateTo;
 
 import java.util.List;
 
 public class OrderMenu implements Menu {
     private final List<MenuAction> menu;
-    private final Navigator navigator;
 
-    public OrderMenu(Navigator navigator, ControllerRegistry controllerRegistry) {
-        OrderController controller = (OrderController) controllerRegistry.getController(ControllerKey.ORDER);
+    @InjectTo
+    private Navigator navigator;
 
-        this.navigator = navigator;
+    @InjectTo
+    OrderController controller;
+
+    public OrderMenu() {
         this.menu = List.of(
                 new MenuAction("1. Создать заказ", _ -> {
                     controller.createOrder();

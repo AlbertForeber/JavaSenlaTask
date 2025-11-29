@@ -1,8 +1,7 @@
-package task.service.storage.io;
+package com.senla.app.task.service.storage.io;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.SequencedSet;
 import java.util.Set;
 
 public class BookImportConstants {

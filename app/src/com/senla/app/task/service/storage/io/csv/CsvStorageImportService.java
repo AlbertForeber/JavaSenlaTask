@@ -1,24 +1,24 @@
-package task.service.storage.io.csv;
+package com.senla.app.task.service.storage.io.csv;
 
-import task.model.entity.Book;
-import task.model.entity.status.BookStatus;
-import task.repository.StorageRepository;
-import task.service.order.io.OrderImportConstants;
-import task.service.storage.io.StorageImportService;
-import task.service.storage.io.BookImportConstants;
-import task.utils.DataConverter;
-import task.utils.FileParser;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.model.entity.Book;
+import com.senla.app.task.model.entity.status.BookStatus;
+import com.senla.app.task.repository.StorageRepository;
+import com.senla.app.task.service.storage.io.StorageImportService;
+import com.senla.app.task.service.storage.io.BookImportConstants;
+import com.senla.app.task.utils.DataConverter;
+import com.senla.app.task.utils.FileParser;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class CsvStorageImportService implements StorageImportService {
-    private final StorageRepository storageRepository;
 
-    public CsvStorageImportService(StorageRepository storageRepository) {
-        this.storageRepository = storageRepository;
-    }
+    @InjectTo
+    private StorageRepository storageRepository;
+
+    public CsvStorageImportService() {}
 
     @Override
     public void importBook(String fileName) throws IllegalArgumentException, IOException {

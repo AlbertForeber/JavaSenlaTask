@@ -1,9 +1,9 @@
-package task.view.console;
+package com.senla.app.task.view.console;
 
-import task.view.MenuRenderer;
-import task.view.header.Header;
-import task.view.menu.Menu;
-import task.view.menu.MenuAction;
+import com.senla.app.task.view.MenuRenderer;
+import com.senla.app.task.view.header.Header;
+import com.senla.app.task.view.menu.Menu;
+import com.senla.app.task.view.menu.MenuAction;
 
 public class ConsoleMenuRenderer implements MenuRenderer {
     @Override

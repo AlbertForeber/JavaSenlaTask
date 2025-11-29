@@ -1,8 +1,8 @@
-package task.view.console;
+package com.senla.app.task.view.console;
 
-import task.utils.Colors;
-import task.view.IOHandler;
-import task.view.menu.Menu;
+import com.senla.app.task.utils.Colors;
+import com.senla.app.task.view.IOHandler;
+import com.senla.app.task.view.menu.Menu;
 
 import java.util.Scanner;
 

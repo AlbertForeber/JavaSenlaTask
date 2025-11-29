@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: task.view.Test
+com.senla.annotation.Main-Class: com.senla.app.task.view.Test
 

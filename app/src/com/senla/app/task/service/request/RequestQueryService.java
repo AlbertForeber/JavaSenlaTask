@@ -1,21 +1,20 @@
-package task.service.request;
+package com.senla.app.task.service.request;
 
-import task.model.entity.Order;
-import task.model.entity.sortby.OrderSortBy;
-import task.repository.RequestManagerRepository;
-import task.model.entity.Request;
-import task.model.entity.sortby.RequestSortBy;
+import com.senla.annotation.InjectTo;
+import com.senla.annotation_processor.InjectProcessor;
+import com.senla.app.task.repository.RequestManagerRepository;
+import com.senla.app.task.model.entity.Request;
+import com.senla.app.task.model.entity.sortby.RequestSortBy;
 
 import java.io.*;
 import java.util.List;
 
 public class RequestQueryService {
-    private final RequestManagerRepository requestManagerRepository;
+    @InjectTo
+    private RequestManagerRepository requestManagerRepository;
 
-    public RequestQueryService(
-            RequestManagerRepository requestManagerRepository
-    ) {
-        this.requestManagerRepository = requestManagerRepository;
+    public RequestQueryService() {
+        InjectProcessor.injectDependencies(this);
     }
 
     public List<Request> getSorted(RequestSortBy sortBy) {

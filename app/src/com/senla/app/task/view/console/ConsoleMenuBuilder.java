@@ -1,31 +1,22 @@
-package task.view.console;
+package com.senla.app.task.view.console;
 
-import task.view.ControllerRegistry;
-import task.view.MenuBuilder;
-import task.view.Navigator;
-import task.view.factory.MenuFactory;
-import task.view.header.Header;
-import task.view.menu.Menu;
+import com.senla.annotation_processor.InjectProcessor;
+import com.senla.app.task.view.MenuBuilder;
+import com.senla.app.task.view.factory.MenuFactory;
+import com.senla.app.task.view.header.Header;
+import com.senla.app.task.view.menu.Menu;
 
 public class ConsoleMenuBuilder implements MenuBuilder {
     private Menu currentMenu;
     private Header header;
-    private Navigator navigator;
-    private ControllerRegistry controllerRegistry;
+
 
     @Override
-    public void setNavigator(Navigator navigator) {
-        this.navigator = navigator;
-    }
+    public void buildMenu(MenuFactory factory) throws IllegalArgumentException {
+        Menu newMenu = factory.createMenu();
+        InjectProcessor.injectDependencies(newMenu);
 
-    @Override
-    public void setControllerRegistry(ControllerRegistry controllerRegistry) {
-        this.controllerRegistry = controllerRegistry;
-    }
-
-    @Override
-    public void buildMenu(MenuFactory factory) {
-        currentMenu = factory.createMenu(navigator, controllerRegistry);
+        currentMenu = newMenu;
         header = factory.createHeader();
     }
 

@@ -1,6 +1,6 @@
-package task.view;
+package com.senla.app.task.view;
 
-import task.view.menu.Menu;
+import com.senla.app.task.view.menu.Menu;
 
 public interface IOHandler {
     void handleOptionInput(Menu currentMenu);

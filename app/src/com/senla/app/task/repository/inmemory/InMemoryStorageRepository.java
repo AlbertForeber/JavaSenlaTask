@@ -1,11 +1,11 @@
-package task.repository.inmemory;
+package com.senla.app.task.repository.inmemory;
 
 
-import task.repository.StorageRepository;
-import task.model.comparators.book.*;
-import task.model.entity.Book;
-import task.model.entity.sortby.BookSortBy;
-import task.model.entity.status.BookStatus;
+import com.senla.app.task.repository.StorageRepository;
+import com.senla.app.task.model.comparators.book.*;
+import com.senla.app.task.model.entity.Book;
+import com.senla.app.task.model.entity.sortby.BookSortBy;
+import com.senla.app.task.model.entity.status.BookStatus;
 
 import java.util.*;
 

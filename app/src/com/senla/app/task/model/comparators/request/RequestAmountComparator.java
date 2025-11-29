@@ -1,6 +1,6 @@
-package task.model.comparators.request;
+package com.senla.app.task.model.comparators.request;
 
-import task.model.entity.Request;
+import com.senla.app.task.model.entity.Request;
 
 import java.util.Comparator;
 

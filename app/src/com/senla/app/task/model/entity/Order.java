@@ -1,6 +1,6 @@
-package task.model.entity;
+package com.senla.app.task.model.entity;
 
-import task.model.entity.status.OrderStatus;
+import com.senla.app.task.model.entity.status.OrderStatus;
 
 import java.io.Serializable;
 import java.util.Calendar;

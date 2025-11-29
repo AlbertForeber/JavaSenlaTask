@@ -6,6 +6,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
+    <orderEntry type="module" module-name="annotation" />
+    <orderEntry type="module" module-name="annotation_processor" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

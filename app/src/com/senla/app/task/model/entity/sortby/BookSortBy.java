@@ -1,4 +1,4 @@
-package task.model.entity.sortby;
+package com.senla.app.task.model.entity.sortby;
 
 public enum BookSortBy {
     TITLE,

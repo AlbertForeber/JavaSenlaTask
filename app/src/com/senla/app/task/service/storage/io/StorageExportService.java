@@ -1,4 +1,4 @@
-package task.service.storage.io;
+package com.senla.app.task.service.storage.io;
 
 import java.io.IOException;
 

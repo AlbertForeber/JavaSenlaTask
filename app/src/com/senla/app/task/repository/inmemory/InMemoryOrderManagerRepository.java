@@ -1,18 +1,13 @@
-package task.repository.inmemory;
+package com.senla.app.task.repository.inmemory;
 
-import task.model.entity.status.OrderStatus;
-import task.repository.OrderManagerRepository;
-import task.model.comparators.order.OrderComplDateComparator;
-import task.model.comparators.order.OrderComplDatePriceComparator;
-import task.model.comparators.order.OrderPriceComparator;
-import task.model.comparators.order.OrderStatusComparator;
-import task.model.entity.Order;
-import task.model.entity.sortby.OrderSortBy;
-import task.utils.DataConverter;
+import com.senla.app.task.repository.OrderManagerRepository;
+import com.senla.app.task.model.comparators.order.OrderComplDateComparator;
+import com.senla.app.task.model.comparators.order.OrderComplDatePriceComparator;
+import com.senla.app.task.model.comparators.order.OrderPriceComparator;
+import com.senla.app.task.model.comparators.order.OrderStatusComparator;
+import com.senla.app.task.model.entity.Order;
+import com.senla.app.task.model.entity.sortby.OrderSortBy;
 
-import java.io.*;
-import java.security.InvalidParameterException;
-import java.security.KeyException;
 import java.util.*;
 import java.util.stream.Collectors;
 

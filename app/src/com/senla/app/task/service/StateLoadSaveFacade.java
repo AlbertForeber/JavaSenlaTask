@@ -1,27 +1,24 @@
-package task.service;
+package com.senla.app.task.service;
 
-import task.model.entity.Request;
-import task.service.order.OrderQueryService;
-import task.service.order.OrderService;
-import task.service.request.RequestQueryService;
-import task.service.storage.StorageQueryService;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.service.order.OrderQueryService;
+import com.senla.app.task.service.request.RequestQueryService;
+import com.senla.app.task.service.storage.StorageQueryService;
 
 import java.io.IOException;
 
 public class StateLoadSaveFacade {
-    private final OrderQueryService orderQueryService;
-    private final RequestQueryService requestQueryService;
-    private final StorageQueryService storageQueryService;
 
-    public StateLoadSaveFacade(
-            OrderQueryService orderQueryService,
-            RequestQueryService requestQueryService,
-            StorageQueryService storageQueryService
-    ) {
-        this.orderQueryService = orderQueryService;
-        this.requestQueryService = requestQueryService;
-        this.storageQueryService = storageQueryService;
-    }
+    @InjectTo
+    private OrderQueryService orderQueryService;
+
+    @InjectTo
+    private RequestQueryService requestQueryService;
+
+    @InjectTo
+    private StorageQueryService storageQueryService;
+
+    public StateLoadSaveFacade() {}
 
     public void loadState(String path) throws IOException, ClassNotFoundException, IllegalArgumentException {
         checkPath(path);

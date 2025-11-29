@@ -1,125 +1,146 @@
-import task.controller.MainController;
-import task.controller.OrderController;
-import task.controller.RequestController;
-import task.controller.StorageController;
-import task.repository.OrderManagerRepository;
-import task.repository.RequestManagerRepository;
-import task.repository.StorageRepository;
-import task.repository.inmemory.InMemoryOrderManagerRepository;
-import task.repository.inmemory.InMemoryRequestManagerRepository;
-import task.repository.inmemory.InMemoryStorageRepository;
-import task.service.StateLoadSaveFacade;
-import task.service.order.OrderQueryService;
-import task.service.order.OrderService;
-import task.service.order.io.OrderExportService;
-import task.service.order.io.OrderImportService;
-import task.service.order.io.csv.CsvOrderExportService;
-import task.service.order.io.csv.CsvOrderImportService;
-import task.service.request.RequestQueryService;
-import task.service.request.RequestService;
-import task.service.request.io.RequestExportService;
-import task.service.request.io.RequestImportService;
-import task.service.request.io.csv.CsvRequestExportService;
-import task.service.request.io.csv.CsvRequestImportService;
-import task.service.storage.StorageQueryService;
-import task.service.storage.StorageService;
-import task.service.storage.io.StorageExportService;
-import task.service.storage.io.StorageImportService;
-import task.service.storage.io.csv.CsvStorageExportService;
-import task.service.storage.io.csv.CsvStorageImportService;
-import task.utils.PropertyConverter;
-import task.view.*;
-import task.view.console.*;
-import task.view.enums.ControllerKey;
-import task.view.enums.NavigateTo;
+package com.senla.app;
+
+import com.senla.annotation_processor.ConfigProcessor;
+import com.senla.annotation_processor.InjectProcessor;
+import com.senla.app.task.controller.MainController;
+import com.senla.app.task.controller.OrderController;
+import com.senla.app.task.controller.RequestController;
+import com.senla.app.task.controller.StorageController;
+import com.senla.app.task.repository.OrderManagerRepository;
+import com.senla.app.task.repository.RequestManagerRepository;
+import com.senla.app.task.repository.StorageRepository;
+import com.senla.app.task.repository.inmemory.InMemoryOrderManagerRepository;
+import com.senla.app.task.repository.inmemory.InMemoryRequestManagerRepository;
+import com.senla.app.task.repository.inmemory.InMemoryStorageRepository;
+import com.senla.app.task.service.StateLoadSaveFacade;
+import com.senla.app.task.service.order.OrderQueryService;
+import com.senla.app.task.service.order.OrderService;
+import com.senla.app.task.service.order.io.OrderExportService;
+import com.senla.app.task.service.order.io.OrderImportService;
+import com.senla.app.task.service.order.io.csv.CsvOrderExportService;
+import com.senla.app.task.service.order.io.csv.CsvOrderImportService;
+import com.senla.app.task.service.request.RequestQueryService;
+import com.senla.app.task.service.request.RequestService;
+import com.senla.app.task.service.request.io.RequestExportService;
+import com.senla.app.task.service.request.io.RequestImportService;
+import com.senla.app.task.service.request.io.csv.CsvRequestExportService;
+import com.senla.app.task.service.request.io.csv.CsvRequestImportService;
+import com.senla.app.task.service.storage.StorageQueryService;
+import com.senla.app.task.service.storage.StorageService;
+import com.senla.app.task.service.storage.io.StorageExportService;
+import com.senla.app.task.service.storage.io.StorageImportService;
+import com.senla.app.task.service.storage.io.csv.CsvStorageExportService;
+import com.senla.app.task.service.storage.io.csv.CsvStorageImportService;
+import com.senla.app.task.view.*;
+import com.senla.app.task.view.console.*;
+import com.senla.app.task.view.enums.ControllerKey;
+import com.senla.app.task.view.enums.NavigateTo;
 import java.io.File;
 
 
 public class Application {
     private final static String DELIMITER = File.separator;
-    private final static String PATH_TO_CONFIG = "." + DELIMITER + "config" + DELIMITER + "config.properties";
     private final static String PATH_TO_STATE = "." + DELIMITER + "state" + DELIMITER;
 
     public static void main(String[] args) {
         // IOHandler
         IOHandler ioHandler = new ConsoleIOHandler();
+        InjectProcessor.addDependency(IOHandler.class, ioHandler);
+
 
         // MainController - preparation
-        MainController mainController = new MainController(ioHandler, PATH_TO_CONFIG, PATH_TO_STATE);
+        MainController mainController = new MainController(ioHandler, PATH_TO_STATE);
+        InjectProcessor.addDependency(MainController.class, mainController);
+
 
         // Repositories
         StorageRepository storageRepository = new InMemoryStorageRepository();
+        InjectProcessor.addDependency(StorageRepository.class, storageRepository);
+
         OrderManagerRepository orderManagerRepository = new InMemoryOrderManagerRepository();
+        InjectProcessor.addDependency(OrderManagerRepository.class, orderManagerRepository);
+
         RequestManagerRepository requestManagerRepository = new InMemoryRequestManagerRepository();
+        InjectProcessor.addDependency(RequestManagerRepository.class, requestManagerRepository);
 
 
         // Services
-        StorageService storageService = new StorageService(
-                storageRepository,
-                requestManagerRepository,
-                PropertyConverter.getBoolean(mainController.getProperties(), "cancelRequests", true)
-        );
+        StorageService storageService = mainController.addToNeedDi(new StorageService());
+        InjectProcessor.addDependency(StorageService.class, storageService);
+        mainController.addToConfigurable(storageService);
 
-        StorageQueryService storageQueryService = new StorageQueryService(
-                storageRepository,
-                PropertyConverter.getInt(mainController.getProperties(), "liquidMonths", 6)
-        );
+        StorageQueryService storageQueryService = mainController.addToNeedDi(new StorageQueryService());
+        InjectProcessor.addDependency(StorageQueryService.class, storageQueryService);
+        mainController.addToConfigurable(storageQueryService);
 
-        OrderService orderService = new OrderService(orderManagerRepository, storageRepository, requestManagerRepository);
-        OrderQueryService orderQueryService = new OrderQueryService(orderManagerRepository);
+        OrderService orderService = mainController.addToNeedDi(new OrderService());
+        InjectProcessor.addDependency(OrderService.class, orderService);
 
-        RequestService requestService = new RequestService(requestManagerRepository, storageRepository);
-        RequestQueryService requestQueryService = new RequestQueryService(requestManagerRepository);
+        OrderQueryService orderQueryService = mainController.addToNeedDi(new OrderQueryService());
+        InjectProcessor.addDependency(OrderQueryService.class, orderQueryService);
+
+        RequestService requestService = mainController.addToNeedDi(new RequestService());
+        InjectProcessor.addDependency(RequestService.class, requestService);
+
+        RequestQueryService requestQueryService = new RequestQueryService();
+        InjectProcessor.addDependency(RequestQueryService.class, requestQueryService);
 
         // Facade
-        StateLoadSaveFacade stateLoadSaveFacade = new StateLoadSaveFacade(orderQueryService, requestQueryService, storageQueryService);
+        StateLoadSaveFacade stateLoadSaveFacade = mainController.addToNeedDi(new StateLoadSaveFacade());
+        InjectProcessor.addDependency(StateLoadSaveFacade.class ,stateLoadSaveFacade);
 
         // Menu
-        MenuBuilder menuBuilder = new ConsoleMenuBuilder();
-        MenuRenderer menuRenderer = new ConsoleMenuRenderer();
+        MenuBuilder menuBuilder = mainController.addToNeedDi(new ConsoleMenuBuilder());
+        InjectProcessor.addDependency(MenuBuilder.class, menuBuilder);
 
-        // Controller Registry
-        ControllerRegistry controllerRegistry = new ConsoleControllerRegistry();
+        MenuRenderer menuRenderer = new ConsoleMenuRenderer();
+        InjectProcessor.addDependency(MenuRenderer.class, menuRenderer);
+
+
+
 
         // Navigator
-        Navigator navigator = new ConsoleNavigator(menuBuilder, menuRenderer, ioHandler);
+        Navigator navigator = mainController.addToNeedDi(new ConsoleNavigator());
+        InjectProcessor.addDependency(Navigator.class, navigator);
 
-        // Menu Builder Setup
-        menuBuilder.setNavigator(navigator);
-        menuBuilder.setControllerRegistry(controllerRegistry);
 
         // Import/Export
-        OrderImportService orderImportService = new CsvOrderImportService(orderManagerRepository, storageRepository, orderService);
-        OrderExportService orderExportService = new CsvOrderExportService(orderManagerRepository);
+        OrderImportService orderImportService = mainController.addToNeedDi(new CsvOrderImportService());
+        InjectProcessor.addDependency(OrderImportService.class, orderImportService);
 
-        RequestImportService requestImportService = new CsvRequestImportService(requestManagerRepository);
-        RequestExportService requestExportService = new CsvRequestExportService(requestManagerRepository);
+        OrderExportService orderExportService = mainController.addToNeedDi(new CsvOrderExportService());
+        InjectProcessor.addDependency(OrderExportService.class, orderExportService);
 
-        StorageImportService storageImportService = new CsvStorageImportService(storageRepository);
-        StorageExportService storageExportService = new CsvStorageExportService(storageRepository);
+        RequestImportService requestImportService = mainController.addToNeedDi(new CsvRequestImportService());
+        InjectProcessor.addDependency(RequestImportService.class, requestImportService);
+
+        RequestExportService requestExportService = mainController.addToNeedDi(new CsvRequestExportService());
+        InjectProcessor.addDependency(RequestExportService.class, requestExportService);
+
+        StorageImportService storageImportService = mainController.addToNeedDi(new CsvStorageImportService());
+        InjectProcessor.addDependency(StorageImportService.class, storageImportService);
+
+        StorageExportService storageExportService = mainController.addToNeedDi(new CsvStorageExportService());
+        InjectProcessor.addDependency(StorageExportService.class, storageExportService);
+
 
         // Controllers
-        StorageController storageController = new StorageController(
-                storageQueryService, storageService, storageImportService, storageExportService, ioHandler
-        );
+        StorageController storageController = mainController.addToNeedDi(new StorageController());
+        InjectProcessor.addDependency(StorageController.class, storageController);
 
-        OrderController orderController = new OrderController(
-                orderQueryService, orderService, orderImportService, orderExportService, ioHandler
-        );
+        OrderController orderController = mainController.addToNeedDi(new OrderController());
+        InjectProcessor.addDependency(OrderController.class, orderController);
 
-        RequestController requestController = new RequestController(
-                requestQueryService, requestService, requestImportService, requestExportService, ioHandler
-        );
+        RequestController requestController = mainController.addToNeedDi(new RequestController());
+        InjectProcessor.addDependency(RequestController.class, requestController);
+
 
         mainController.setStateLoadSaveFacade(stateLoadSaveFacade);
 
-        controllerRegistry.registerController(ControllerKey.STORAGE, storageController);
-        controllerRegistry.registerController(ControllerKey.ORDER, orderController);
-        controllerRegistry.registerController(ControllerKey.REQUEST, requestController);
-        controllerRegistry.registerController(ControllerKey.MAIN, mainController);
-
 
         // START
+        mainController.injectDependencies();
+        mainController.applyConfig();
         mainController.loadState();
         navigator.navigateTo(NavigateTo.MAIN);
     }

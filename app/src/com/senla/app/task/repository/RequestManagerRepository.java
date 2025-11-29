@@ -1,7 +1,7 @@
-package task.repository;
+package com.senla.app.task.repository;
 
-import task.model.entity.Request;
-import task.model.entity.sortby.RequestSortBy;
+import com.senla.app.task.model.entity.Request;
+import com.senla.app.task.model.entity.sortby.RequestSortBy;
 
 
 import java.util.List;

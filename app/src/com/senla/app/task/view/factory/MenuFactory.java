@@ -1,11 +1,9 @@
-package task.view.factory;
+package com.senla.app.task.view.factory;
 
-import task.view.ControllerRegistry;
-import task.view.Navigator;
-import task.view.header.Header;
-import task.view.menu.Menu;
+import com.senla.app.task.view.header.Header;
+import com.senla.app.task.view.menu.Menu;
 
 public interface MenuFactory {
-    Menu createMenu(Navigator navigator, ControllerRegistry controllerRegistry);
+    Menu createMenu();
     Header createHeader();
 }

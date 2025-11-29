@@ -1,13 +1,11 @@
-package task.view;
+package com.senla.app.task.view;
 
-import task.view.factory.MenuFactory;
-import task.view.header.Header;
-import task.view.menu.Menu;
+import com.senla.app.task.view.factory.MenuFactory;
+import com.senla.app.task.view.header.Header;
+import com.senla.app.task.view.menu.Menu;
 
 public interface MenuBuilder {
-    void setNavigator(Navigator navigator);
-    void setControllerRegistry(ControllerRegistry controllerRegistry);
-    void buildMenu(MenuFactory factory);
+    void buildMenu(MenuFactory factory) throws IllegalArgumentException;
     Menu getCurrentMenu();
     Header getCurrentMenuHeader();
 }

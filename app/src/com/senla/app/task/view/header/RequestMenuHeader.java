@@ -1,4 +1,4 @@
-package task.view.header;
+package com.senla.app.task.view.header;
 
 public class RequestMenuHeader implements Header {
     @Override

@@ -1,8 +1,9 @@
-package task.service.request.io.csv;
+package com.senla.app.task.service.request.io.csv;
 
-import task.model.entity.Request;
-import task.repository.RequestManagerRepository;
-import task.service.request.io.RequestExportService;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.model.entity.Request;
+import com.senla.app.task.repository.RequestManagerRepository;
+import com.senla.app.task.service.request.io.RequestExportService;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -10,11 +11,10 @@ import java.io.IOException;
 
 public class CsvRequestExportService implements RequestExportService {
 
-    private final RequestManagerRepository requestManagerRepository;
+    @InjectTo
+    private RequestManagerRepository requestManagerRepository;
 
-    public CsvRequestExportService(RequestManagerRepository requestManagerRepository) {
-        this.requestManagerRepository = requestManagerRepository;
-    }
+    public CsvRequestExportService() {}
 
     @Override
     public void exportRequest(int requestId, String path) throws IllegalArgumentException, IOException {

@@ -1,4 +1,4 @@
-package task.model.entity.status;
+package com.senla.app.task.model.entity.status;
 
 public enum OrderStatus {
     NEW,

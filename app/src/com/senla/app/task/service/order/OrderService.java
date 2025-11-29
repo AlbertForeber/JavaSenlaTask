@@ -1,13 +1,13 @@
-package task.service.order;
+package com.senla.app.task.service.order;
 
-import task.repository.OrderManagerRepository;
-import task.repository.RequestManagerRepository;
-import task.repository.StorageRepository;
-import task.model.entity.Book;
-import task.model.entity.Order;
-import task.model.entity.Request;
-import task.model.entity.status.BookStatus;
-import task.model.entity.status.OrderStatus;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.repository.OrderManagerRepository;
+import com.senla.app.task.repository.RequestManagerRepository;
+import com.senla.app.task.repository.StorageRepository;
+import com.senla.app.task.model.entity.Book;
+import com.senla.app.task.model.entity.Order;
+import com.senla.app.task.model.entity.status.BookStatus;
+import com.senla.app.task.model.entity.status.OrderStatus;
 
 import java.util.*;
 
@@ -17,19 +17,16 @@ import java.util.*;
 
 public class OrderService {
 
-    private final OrderManagerRepository orderManagerRepository;
-    private final StorageRepository bookStorageRepository;
-    private final RequestManagerRepository requestManagerRepository;
+    @InjectTo
+    private OrderManagerRepository orderManagerRepository;
 
-    public OrderService(
-            OrderManagerRepository orderManagerRepository,
-            StorageRepository storageRepository,
-            RequestManagerRepository requestManagerRepository
-    ) {
-        this.bookStorageRepository = storageRepository;
-        this.orderManagerRepository = orderManagerRepository;
-        this.requestManagerRepository = requestManagerRepository;
-    }
+    @InjectTo
+    private StorageRepository bookStorageRepository;
+
+    @InjectTo
+    private RequestManagerRepository requestManagerRepository;
+
+    public OrderService() {}
 
     public boolean createOrder(int orderId, List<Integer> bookIds, String customerName) {
         int totalSum = 0;

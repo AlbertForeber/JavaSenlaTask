@@ -1,4 +1,4 @@
-package task.model.entity;
+package com.senla.app.task.model.entity;
 
 import java.io.Serializable;
 

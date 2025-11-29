@@ -1,14 +1,15 @@
-package task.service.order.io.csv;
+package com.senla.app.task.service.order.io.csv;
 
-import task.model.entity.Order;
-import task.model.entity.status.OrderStatus;
-import task.repository.OrderManagerRepository;
-import task.repository.StorageRepository;
-import task.service.order.io.OrderImportConstants;
-import task.service.order.OrderService;
-import task.service.order.io.OrderImportService;
-import task.utils.DataConverter;
-import task.utils.FileParser;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.model.entity.Order;
+import com.senla.app.task.model.entity.status.OrderStatus;
+import com.senla.app.task.repository.OrderManagerRepository;
+import com.senla.app.task.repository.StorageRepository;
+import com.senla.app.task.service.order.io.OrderImportConstants;
+import com.senla.app.task.service.order.OrderService;
+import com.senla.app.task.service.order.io.OrderImportService;
+import com.senla.app.task.utils.DataConverter;
+import com.senla.app.task.utils.FileParser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,15 +18,17 @@ import java.util.List;
 import java.util.Map;
 
 public class CsvOrderImportService implements OrderImportService {
-    private final OrderManagerRepository orderManagerRepository;
-    private final StorageRepository bookStorageRepository;
-    private final OrderService orderService;
 
-    public CsvOrderImportService(OrderManagerRepository orderManagerRepository, StorageRepository storageRepository, OrderService orderService) {
-        this.orderManagerRepository = orderManagerRepository;
-        this.bookStorageRepository = storageRepository;
-        this.orderService = orderService;
-    }
+    @InjectTo
+    private OrderManagerRepository orderManagerRepository;
+
+    @InjectTo
+    private StorageRepository bookStorageRepository;
+
+    @InjectTo
+    private OrderService orderService;
+
+    public CsvOrderImportService() {}
 
     public void importOrder(String fileName) throws IllegalArgumentException, IOException {
         Map<String, ArrayList<String>> fields = FileParser.parseFile(

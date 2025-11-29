@@ -1,6 +1,6 @@
-package task.model.comparators.order;
+package com.senla.app.task.model.comparators.order;
 
-import task.model.entity.Order;
+import com.senla.app.task.model.entity.Order;
 
 import java.util.Comparator;
 

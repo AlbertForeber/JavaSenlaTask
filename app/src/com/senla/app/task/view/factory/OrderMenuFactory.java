@@ -1,16 +1,14 @@
-package task.view.factory;
+package com.senla.app.task.view.factory;
 
-import task.view.ControllerRegistry;
-import task.view.Navigator;
-import task.view.header.Header;
-import task.view.header.OrderMenuHeader;
-import task.view.menu.Menu;
-import task.view.menu.OrderMenu;
+import com.senla.app.task.view.header.Header;
+import com.senla.app.task.view.header.OrderMenuHeader;
+import com.senla.app.task.view.menu.Menu;
+import com.senla.app.task.view.menu.OrderMenu;
 
 public class OrderMenuFactory implements MenuFactory {
     @Override
-    public Menu createMenu(Navigator navigator, ControllerRegistry controllerRegistry) {
-        return new OrderMenu(navigator, controllerRegistry);
+    public Menu createMenu() {
+        return new OrderMenu();
     }
 
     @Override

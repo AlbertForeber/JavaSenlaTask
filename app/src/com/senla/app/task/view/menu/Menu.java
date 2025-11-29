@@ -1,4 +1,4 @@
-package task.view.menu;
+package com.senla.app.task.view.menu;
 
 import java.util.List;
 

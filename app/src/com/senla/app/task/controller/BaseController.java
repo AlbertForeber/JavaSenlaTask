@@ -1,11 +1,7 @@
-package task.controller;
+package com.senla.app.task.controller;
 
-import task.view.IOHandler;
+import com.senla.app.task.view.IOHandler;
 
 public abstract class BaseController {
-    protected final IOHandler ioHandler;
-
-    public BaseController(IOHandler ioHandler) {
-        this.ioHandler = ioHandler;
-    }
+    public BaseController() {}
 }

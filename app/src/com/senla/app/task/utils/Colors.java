@@ -1,4 +1,4 @@
-package task.utils;
+package com.senla.app.task.utils;
 
 public final class Colors {
     public static final String RESET = "\u001B[0m";

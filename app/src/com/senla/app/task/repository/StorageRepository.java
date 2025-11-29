@@ -1,7 +1,7 @@
-package task.repository;
+package com.senla.app.task.repository;
 
-import task.model.entity.Book;
-import task.model.entity.sortby.BookSortBy;
+import com.senla.app.task.model.entity.Book;
+import com.senla.app.task.model.entity.sortby.BookSortBy;
 
 import java.util.List;
 

@@ -1,11 +1,11 @@
-package task.service.storage;
+package com.senla.app.task.service.storage;
 
-import task.model.entity.Order;
-import task.model.entity.sortby.OrderSortBy;
-import task.repository.StorageRepository;
-import task.model.entity.Book;
-import task.model.entity.sortby.BookSortBy;
-import task.model.entity.status.BookStatus;
+import com.senla.annotation.ConfigProperty;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.repository.StorageRepository;
+import com.senla.app.task.model.entity.Book;
+import com.senla.app.task.model.entity.sortby.BookSortBy;
+import com.senla.app.task.model.entity.status.BookStatus;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,16 +14,13 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class StorageQueryService {
-    private final StorageRepository bookStorageRepository;
-    private final int liquidMonthAmount;
+    @InjectTo
+    private StorageRepository bookStorageRepository;
 
-    public StorageQueryService(
-            StorageRepository storageRepository,
-            int liquidMonthAmount
-    ) {
-        this.bookStorageRepository = storageRepository;
-        this.liquidMonthAmount = liquidMonthAmount;
-    }
+    @ConfigProperty(propertyName="liquidMonths", type=int.class)
+    private int liquidMonthAmount = 6;
+
+    public StorageQueryService() {}
 
     public List<Book> getSorted(BookSortBy sortBy) {
         return bookStorageRepository.getSortedBooks(sortBy);

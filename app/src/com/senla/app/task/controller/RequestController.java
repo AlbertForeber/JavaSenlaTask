@@ -1,34 +1,35 @@
-package task.controller;
+package com.senla.app.task.controller;
 
-import task.model.entity.sortby.RequestSortBy;
-import task.service.request.RequestQueryService;
-import task.service.request.RequestService;
-import task.service.request.io.RequestExportService;
-import task.service.request.io.RequestImportService;
-import task.utils.Colors;
-import task.view.IOHandler;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.model.entity.sortby.RequestSortBy;
+import com.senla.app.task.service.request.RequestQueryService;
+import com.senla.app.task.service.request.RequestService;
+import com.senla.app.task.service.request.io.RequestExportService;
+import com.senla.app.task.service.request.io.RequestImportService;
+import com.senla.app.task.utils.Colors;
+import com.senla.app.task.view.IOHandler;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class RequestController extends BaseController {
-    private final RequestService requestService;
-    private final RequestQueryService requestQueryService;
-    private final RequestImportService requestImportService;
-    private final RequestExportService requestExportService;
+    @InjectTo
+    private RequestService requestService;
 
-    public RequestController(
-            RequestQueryService requestQueryService,
-            RequestService requestService,
-            RequestImportService requestImportService,
-            RequestExportService requestExportService,
-            IOHandler ioHandler
-    ) {
-        super(ioHandler);
-        this.requestQueryService = requestQueryService;
-        this.requestService = requestService;
-        this.requestImportService = requestImportService;
-        this.requestExportService = requestExportService;
+    @InjectTo
+    private RequestQueryService requestQueryService;
+
+    @InjectTo
+    private RequestImportService requestImportService;
+
+    @InjectTo
+    private RequestExportService requestExportService;
+
+    @InjectTo
+    private IOHandler ioHandler;
+
+    public RequestController() {
+        super();
     }
 
     public void createRequest() {

@@ -1,11 +1,11 @@
-package task.service.request.io.csv;
+package com.senla.app.task.service.request.io.csv;
 
-import task.model.entity.Request;
-import task.repository.RequestManagerRepository;
-import task.service.order.io.OrderImportConstants;
-import task.service.request.io.RequestImportService;
-import task.service.request.io.RequestImportConstants;
-import task.utils.FileParser;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.model.entity.Request;
+import com.senla.app.task.repository.RequestManagerRepository;
+import com.senla.app.task.service.request.io.RequestImportService;
+import com.senla.app.task.service.request.io.RequestImportConstants;
+import com.senla.app.task.utils.FileParser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.Objects;
 
 public class CsvRequestImportService implements RequestImportService {
-    private final RequestManagerRepository requestManagerRepository;
 
-    public CsvRequestImportService(RequestManagerRepository requestManagerRepository) {
-        this.requestManagerRepository = requestManagerRepository;
-    }
+    @InjectTo
+    private RequestManagerRepository requestManagerRepository;
+
+    public CsvRequestImportService() {}
 
     @Override
     public void importRequest(String fileName) throws IllegalArgumentException, IOException {

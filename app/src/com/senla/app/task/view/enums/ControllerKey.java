@@ -1,4 +1,4 @@
-package task.view.enums;
+package com.senla.app.task.view.enums;
 
 public enum ControllerKey {
     STORAGE,

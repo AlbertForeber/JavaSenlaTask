@@ -1,20 +1,21 @@
-package task.service.storage.io.csv;
+package com.senla.app.task.service.storage.io.csv;
 
-import task.model.entity.Book;
-import task.repository.StorageRepository;
-import task.service.storage.io.StorageExportService;
-import task.utils.DataConverter;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.model.entity.Book;
+import com.senla.app.task.repository.StorageRepository;
+import com.senla.app.task.service.storage.io.StorageExportService;
+import com.senla.app.task.utils.DataConverter;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class CsvStorageExportService implements StorageExportService {
-    private final StorageRepository storageRepository;
 
-    public CsvStorageExportService(StorageRepository storageRepository) {
-        this.storageRepository = storageRepository;
-    }
+    @InjectTo
+    private StorageRepository storageRepository;
+
+    public CsvStorageExportService() {}
 
     @Override
     public void exportBook(int bookId, String path) throws IllegalArgumentException, IOException {

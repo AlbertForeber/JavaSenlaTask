@@ -1,9 +1,10 @@
-package task.service.order;
+package com.senla.app.task.service.order;
 
-import task.repository.OrderManagerRepository;
-import task.model.entity.Order;
-import task.model.entity.sortby.OrderSortBy;
-import task.model.entity.status.OrderStatus;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.repository.OrderManagerRepository;
+import com.senla.app.task.model.entity.Order;
+import com.senla.app.task.model.entity.sortby.OrderSortBy;
+import com.senla.app.task.model.entity.status.OrderStatus;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,13 +17,10 @@ import java.util.List;
 
 public class OrderQueryService {
 
-    private final OrderManagerRepository orderManagerRepository;
+    @InjectTo
+    private OrderManagerRepository orderManagerRepository;
 
-    public OrderQueryService(
-            OrderManagerRepository orderManagerRepository
-    ) {
-        this.orderManagerRepository = orderManagerRepository;
-    }
+    public OrderQueryService() {}
 
     public List<Order> getSorted(OrderSortBy sortBy) {
         return orderManagerRepository.getSortedOrders(sortBy);

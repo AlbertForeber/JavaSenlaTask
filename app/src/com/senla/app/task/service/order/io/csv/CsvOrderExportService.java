@@ -1,9 +1,10 @@
-package task.service.order.io.csv;
+package com.senla.app.task.service.order.io.csv;
 
-import task.model.entity.Order;
-import task.repository.OrderManagerRepository;
-import task.service.order.io.OrderExportService;
-import task.utils.DataConverter;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.model.entity.Order;
+import com.senla.app.task.repository.OrderManagerRepository;
+import com.senla.app.task.service.order.io.OrderExportService;
+import com.senla.app.task.utils.DataConverter;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -12,12 +13,13 @@ import java.util.Calendar;
 import java.util.stream.Collectors;
 
 public class CsvOrderExportService implements OrderExportService {
-    private final OrderManagerRepository orderManagerRepository;
+
+    @InjectTo
+    private OrderManagerRepository orderManagerRepository;
+
     private Order order;
 
-    public CsvOrderExportService(OrderManagerRepository orderManagerRepository) {
-        this.orderManagerRepository = orderManagerRepository;
-    }
+    public CsvOrderExportService() {}
 
     @Override
     public void exportOrder(int orderId, String path) throws IllegalArgumentException, IOException {

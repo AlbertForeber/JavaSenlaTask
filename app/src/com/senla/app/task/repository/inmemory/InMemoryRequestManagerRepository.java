@@ -1,10 +1,10 @@
-package task.repository.inmemory;
+package com.senla.app.task.repository.inmemory;
 
-import task.repository.RequestManagerRepository;
-import task.model.comparators.request.RequestAmountComparator;
-import task.model.comparators.request.RequestBookNameComparator;
-import task.model.entity.Request;
-import task.model.entity.sortby.RequestSortBy;
+import com.senla.app.task.repository.RequestManagerRepository;
+import com.senla.app.task.model.comparators.request.RequestAmountComparator;
+import com.senla.app.task.model.comparators.request.RequestBookNameComparator;
+import com.senla.app.task.model.entity.Request;
+import com.senla.app.task.model.entity.sortby.RequestSortBy;
 
 import java.util.*;
 

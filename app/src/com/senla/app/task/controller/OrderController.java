@@ -1,39 +1,40 @@
-package task.controller;
+package com.senla.app.task.controller;
 
-import task.model.entity.sortby.OrderSortBy;
-import task.model.entity.status.OrderStatus;
-import task.service.order.OrderQueryService;
-import task.service.order.OrderService;
-import task.service.order.io.OrderExportService;
-import task.service.order.io.OrderImportService;
-import task.utils.Colors;
-import task.utils.DataConverter;
-import task.view.IOHandler;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.model.entity.sortby.OrderSortBy;
+import com.senla.app.task.model.entity.status.OrderStatus;
+import com.senla.app.task.service.order.OrderQueryService;
+import com.senla.app.task.service.order.OrderService;
+import com.senla.app.task.service.order.io.OrderExportService;
+import com.senla.app.task.service.order.io.OrderImportService;
+import com.senla.app.task.utils.Colors;
+import com.senla.app.task.utils.DataConverter;
+import com.senla.app.task.view.IOHandler;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class OrderController extends BaseController {
-    private final OrderService orderService;
-    private final OrderQueryService orderQueryService;
-    private final OrderImportService orderImportService;
-    private final OrderExportService orderExportService;
 
-    public OrderController(
-            OrderQueryService orderQueryService,
-            OrderService orderService,
-            OrderImportService orderImportService,
-            OrderExportService orderExportService,
-            IOHandler ioHandler
-            ) {
-        super(ioHandler);
-        this.orderQueryService = orderQueryService;
-        this.orderService = orderService;
-        this.orderImportService = orderImportService;
-        this.orderExportService = orderExportService;
+    @InjectTo
+    private OrderService orderService;
+
+    @InjectTo
+    private OrderQueryService orderQueryService;
+
+    @InjectTo
+    private OrderImportService orderImportService;
+
+    @InjectTo
+    private OrderExportService orderExportService;
+
+    @InjectTo
+    private IOHandler ioHandler;
+
+    public OrderController() {
+        super();
     }
 
     public void createOrder() {

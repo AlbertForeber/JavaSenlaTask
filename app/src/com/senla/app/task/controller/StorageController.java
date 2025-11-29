@@ -1,38 +1,37 @@
-package task.controller;
+package com.senla.app.task.controller;
 
-import task.model.entity.sortby.BookSortBy;
-import task.service.storage.StorageQueryService;
-import task.service.storage.StorageService;
-import task.service.storage.io.StorageExportService;
-import task.service.storage.io.StorageImportService;
-import task.utils.Colors;
-import task.utils.DataConverter;
-import task.view.IOHandler;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.model.entity.sortby.BookSortBy;
+import com.senla.app.task.service.storage.StorageQueryService;
+import com.senla.app.task.service.storage.StorageService;
+import com.senla.app.task.service.storage.io.StorageExportService;
+import com.senla.app.task.service.storage.io.StorageImportService;
+import com.senla.app.task.utils.Colors;
+import com.senla.app.task.utils.DataConverter;
+import com.senla.app.task.view.IOHandler;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class StorageController extends BaseController {
-    private final StorageService storageService;
-    private final StorageQueryService storageQueryService;
-    private final StorageImportService storageImportService;
-    private final StorageExportService storageExportService;
 
+    @InjectTo
+    private StorageService storageService;
 
-    public StorageController(
-            StorageQueryService storageQueryService,
-            StorageService storageService,
-            StorageImportService storageImportService,
-            StorageExportService storageExportService,
-            IOHandler ioHandler
-    ) {
-        super(ioHandler);
-        this.storageQueryService = storageQueryService;
-        this.storageService = storageService;
-        this.storageImportService = storageImportService;
-        this.storageExportService = storageExportService;
+    @InjectTo
+    private StorageQueryService storageQueryService;
+
+    @InjectTo
+    private StorageImportService storageImportService;
+
+    @InjectTo
+    private StorageExportService storageExportService;
+
+    @InjectTo
+    private IOHandler ioHandler;
+
+    public StorageController() {
+        super();
     }
 
     public void writeOffBook() {

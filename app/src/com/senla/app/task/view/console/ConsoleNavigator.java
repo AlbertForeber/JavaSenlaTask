@@ -1,38 +1,42 @@
-package task.view.console;
+package com.senla.app.task.view.console;
 
-import task.view.IOHandler;
-import task.view.MenuBuilder;
-import task.view.MenuRenderer;
-import task.view.Navigator;
-import task.view.enums.NavigateTo;
-import task.view.factory.*;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.utils.Colors;
+import com.senla.app.task.view.IOHandler;
+import com.senla.app.task.view.MenuBuilder;
+import com.senla.app.task.view.MenuRenderer;
+import com.senla.app.task.view.Navigator;
+import com.senla.app.task.view.enums.NavigateTo;
+import com.senla.app.task.view.factory.*;
 
 public class ConsoleNavigator implements Navigator {
-    private final MenuBuilder menuBuilder;
-    private final MenuRenderer menuRenderer;
-    private final IOHandler ioHandler;
+
+    @InjectTo
+    private MenuBuilder menuBuilder;
+
+    @InjectTo
+    private MenuRenderer menuRenderer;
+
+    @InjectTo
+    private IOHandler ioHandler;
+
     private NavigateTo currentNavPoint;
 
-    public ConsoleNavigator(
-            MenuBuilder menuBuilder,
-            MenuRenderer menuRenderer,
-            IOHandler ioHandler
-    ) {
-        this.menuBuilder = menuBuilder;
-        this.menuRenderer = menuRenderer;
-        this.ioHandler = ioHandler;
-    }
 
     @Override
     public void navigateTo(NavigateTo navigateTo) {
         if (navigateTo != currentNavPoint) {
-            currentNavPoint = navigateTo;
+            try {
+                currentNavPoint = navigateTo;
 
-            switch (navigateTo) {
-                case MAIN -> menuBuilder.buildMenu(new MainMenuFactory());
-                case STORAGE -> menuBuilder.buildMenu(new StorageMenuFactory());
-                case ORDER -> menuBuilder.buildMenu(new OrderMenuFactory());
-                case REQUEST -> menuBuilder.buildMenu(new RequestMenuFactory());
+                switch (navigateTo) {
+                    case MAIN -> menuBuilder.buildMenu(new MainMenuFactory());
+                    case STORAGE -> menuBuilder.buildMenu(new StorageMenuFactory());
+                    case ORDER -> menuBuilder.buildMenu(new OrderMenuFactory());
+                    case REQUEST -> menuBuilder.buildMenu(new RequestMenuFactory());
+                }
+            } catch (IllegalArgumentException e) {
+                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ОТОБРАЖЕНИЯ: " + e.getMessage() + Colors.RESET);
             }
         }
 

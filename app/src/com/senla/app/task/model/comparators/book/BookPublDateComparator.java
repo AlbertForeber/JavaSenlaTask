@@ -1,6 +1,6 @@
-package task.model.comparators.book;
+package com.senla.app.task.model.comparators.book;
 
-import task.model.entity.Book;
+import com.senla.app.task.model.entity.Book;
 
 import java.util.Comparator;
 

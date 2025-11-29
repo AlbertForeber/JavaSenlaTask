@@ -1,4 +1,4 @@
-package task.utils;
+package com.senla.app.task.utils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

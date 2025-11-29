@@ -1,7 +1,6 @@
-package task.view.menu;
+package com.senla.app.task.view.menu;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class MenuAction {
     private final String description;

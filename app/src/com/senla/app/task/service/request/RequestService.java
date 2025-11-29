@@ -1,20 +1,18 @@
-package task.service.request;
+package com.senla.app.task.service.request;
 
-import task.model.entity.Request;
-import task.repository.RequestManagerRepository;
-import task.repository.StorageRepository;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.repository.RequestManagerRepository;
+import com.senla.app.task.repository.StorageRepository;
 
 public class RequestService {
-    private final RequestManagerRepository requestManagerRepository;
-    private final StorageRepository storageRepository;
 
-    public RequestService(
-            RequestManagerRepository requestManagerRepository,
-            StorageRepository storageRepository
-    ) {
-        this.requestManagerRepository = requestManagerRepository;
-        this.storageRepository = storageRepository;
-    }
+    @InjectTo
+    private RequestManagerRepository requestManagerRepository;
+
+    @InjectTo
+    private StorageRepository storageRepository;
+
+    public RequestService() {}
 
     public void createRequest(int bookId) {
         requestManagerRepository.addRequest(storageRepository.getBook(bookId).getTitle());

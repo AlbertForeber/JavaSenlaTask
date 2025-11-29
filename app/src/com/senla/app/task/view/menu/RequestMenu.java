@@ -1,23 +1,22 @@
-package task.view.menu;
+package com.senla.app.task.view.menu;
 
-import task.controller.RequestController;
-import task.controller.StorageController;
-import task.view.ControllerRegistry;
-import task.view.Navigator;
-import task.view.enums.ControllerKey;
-import task.view.enums.NavigateTo;
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.controller.RequestController;
+import com.senla.app.task.view.Navigator;
+import com.senla.app.task.view.enums.NavigateTo;
 
 import java.util.List;
 
 public class RequestMenu implements Menu {
     private final List<MenuAction> menu;
-    private final Navigator navigator;
 
+    @InjectTo
+    private Navigator navigator;
 
-    public RequestMenu(Navigator navigator, ControllerRegistry controllerRegistry) {
-        RequestController controller = (RequestController) controllerRegistry.getController(ControllerKey.REQUEST);
+    @InjectTo
+    RequestController controller;
 
-        this.navigator = navigator;
+    public RequestMenu() {
         this.menu = List.of(
                 new MenuAction("1. Добавить запрос", _ -> {
                     controller.createRequest();
