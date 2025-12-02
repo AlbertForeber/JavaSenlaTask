@@ -24,6 +24,7 @@ public class MainController extends BaseController {
         super(ioHandler);
         this.CONFIG_PATH = pathToConfig;
         this.STATE_PATH = pathToState;
+        loadConfig();
     }
 
     private void loadConfig() {
