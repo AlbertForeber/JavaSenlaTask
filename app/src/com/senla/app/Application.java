@@ -1,8 +1,6 @@
 package com.senla.app;
 
-import com.senla.annotation_processor.InjectProcessor;
 import com.senla.app.task.controller.MainController;
-import com.senla.app.task.service.StateLoadSaveFacade;
 import com.senla.app.task.view.*;
 import com.senla.app.task.view.console.*;
 import com.senla.app.task.view.enums.NavigateTo;
