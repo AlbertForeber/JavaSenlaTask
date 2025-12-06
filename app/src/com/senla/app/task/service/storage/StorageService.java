@@ -6,12 +6,14 @@ import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.repository.StorageRepository;
+import com.senla.app.task.repository.inmemory.InMemoryRequestManagerRepository;
+import com.senla.app.task.repository.inmemory.InMemoryStorageRepository;
 
 public class StorageService {
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryStorageRepository.class)
     private StorageRepository bookStorageRepository;
 
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
     @ConfigProperty(propertyName="cancelRequests", type=boolean.class)

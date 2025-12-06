@@ -3,6 +3,7 @@ package com.senla.app.task.service.request.io.csv;
 import com.senla.annotation.InjectTo;
 import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.repository.RequestManagerRepository;
+import com.senla.app.task.repository.inmemory.InMemoryRequestManagerRepository;
 import com.senla.app.task.service.request.io.RequestImportService;
 import com.senla.app.task.service.request.io.RequestImportConstants;
 import com.senla.app.task.utils.FileParser;
@@ -14,7 +15,7 @@ import java.util.Objects;
 
 public class CsvRequestImportService implements RequestImportService {
 
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
     public CsvRequestImportService() {}

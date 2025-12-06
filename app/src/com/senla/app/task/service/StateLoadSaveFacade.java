@@ -15,7 +15,7 @@ public class StateLoadSaveFacade {
     @InjectTo
     private RequestQueryService requestQueryService;
 
-    @InjectTo
+    @InjectTo(configurable = true)
     private StorageQueryService storageQueryService;
 
     public StateLoadSaveFacade() {}

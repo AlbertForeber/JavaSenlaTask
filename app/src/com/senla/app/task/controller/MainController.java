@@ -1,10 +1,13 @@
 package com.senla.app.task.controller;
 
+import com.senla.annotation.InjectTo;
 import com.senla.annotation_processor.ConfigProcessor;
 import com.senla.annotation_processor.InjectProcessor;
 import com.senla.app.task.service.StateLoadSaveFacade;
 import com.senla.app.task.utils.Colors;
+import com.senla.app.task.utils.Routes;
 import com.senla.app.task.view.IOHandler;
+import com.senla.app.task.view.console.ConsoleIOHandler;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,25 +15,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainController extends BaseController {
-    private final String STATE_PATH;
+    private final String STATE_PATH = Routes.PATH_TO_STATE;
+
+    @InjectTo(useImplementation = ConsoleIOHandler.class)
+    private IOHandler ioHandler;
+
+    @InjectTo
     private StateLoadSaveFacade stateLoadSaveFacade;
-    private final IOHandler ioHandler;
-    private final List<Object> applyConfigFor = new ArrayList<>();
+
     private final List<Object> needDI = new ArrayList<>();
 
 
-    public MainController(
-            IOHandler ioHandler,
-            String pathToState
-    ) {
+    public MainController() {
         super();
-        this.ioHandler = ioHandler;
-        this.STATE_PATH = pathToState;
+        this.needDI.add(this);
     }
 
-    public <T> T addToNeedDi(T object) {
+    public <T> void addToNeedDi(T object) {
         needDI.add(object);
-        return object;
     }
 
     public void injectDependencies() {
@@ -38,16 +40,18 @@ public class MainController extends BaseController {
             try {
                 InjectProcessor.injectDependencies(o);
             } catch (IllegalArgumentException e) {
-                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
+                if (ioHandler != null) {
+                    ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
+                } else {
+                    System.err.println("Для корректной обработки ошибок IOHandler должен быть первой зависимостью класса");
+                    System.exit(1);
+                }
             }
         }
     }
 
-    public void addToConfigurable(Object o) {
-        applyConfigFor.add(o);
-    }
 
-    public void applyConfig() {
+    public void applyConfig(List<Object> applyConfigFor) {
         for (Object o : applyConfigFor) {
             try {
                 ConfigProcessor.applyConfig(o);

@@ -6,8 +6,11 @@ import com.senla.app.task.service.request.RequestQueryService;
 import com.senla.app.task.service.request.RequestService;
 import com.senla.app.task.service.request.io.RequestExportService;
 import com.senla.app.task.service.request.io.RequestImportService;
+import com.senla.app.task.service.request.io.csv.CsvRequestExportService;
+import com.senla.app.task.service.request.io.csv.CsvRequestImportService;
 import com.senla.app.task.utils.Colors;
 import com.senla.app.task.view.IOHandler;
+import com.senla.app.task.view.console.ConsoleIOHandler;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,13 +22,13 @@ public class RequestController extends BaseController {
     @InjectTo
     private RequestQueryService requestQueryService;
 
-    @InjectTo
+    @InjectTo(useImplementation = CsvRequestImportService.class)
     private RequestImportService requestImportService;
 
-    @InjectTo
+    @InjectTo(useImplementation = CsvRequestExportService.class)
     private RequestExportService requestExportService;
 
-    @InjectTo
+    @InjectTo(useImplementation = ConsoleIOHandler.class)
     private IOHandler ioHandler;
 
     public RequestController() {

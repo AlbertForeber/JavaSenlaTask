@@ -3,6 +3,7 @@ package com.senla.app.task.service.storage.io.csv;
 import com.senla.annotation.InjectTo;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.repository.StorageRepository;
+import com.senla.app.task.repository.inmemory.InMemoryStorageRepository;
 import com.senla.app.task.service.storage.io.StorageExportService;
 import com.senla.app.task.utils.DataConverter;
 
@@ -12,7 +13,7 @@ import java.io.IOException;
 
 public class CsvStorageExportService implements StorageExportService {
 
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryStorageRepository.class)
     private StorageRepository storageRepository;
 
     public CsvStorageExportService() {}

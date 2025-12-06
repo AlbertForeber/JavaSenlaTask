@@ -5,17 +5,15 @@ import com.senla.annotation_processor.InjectProcessor;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
+import com.senla.app.task.repository.inmemory.InMemoryRequestManagerRepository;
+import com.senla.app.task.service.request.io.csv.CsvRequestImportService;
 
 import java.io.*;
 import java.util.List;
 
 public class RequestQueryService {
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
-
-    public RequestQueryService() {
-        InjectProcessor.injectDependencies(this);
-    }
 
     public List<Request> getSorted(RequestSortBy sortBy) {
         return requestManagerRepository.getSortedRequests(sortBy);

@@ -6,28 +6,31 @@ import com.senla.app.task.service.storage.StorageQueryService;
 import com.senla.app.task.service.storage.StorageService;
 import com.senla.app.task.service.storage.io.StorageExportService;
 import com.senla.app.task.service.storage.io.StorageImportService;
+import com.senla.app.task.service.storage.io.csv.CsvStorageExportService;
+import com.senla.app.task.service.storage.io.csv.CsvStorageImportService;
 import com.senla.app.task.utils.Colors;
 import com.senla.app.task.utils.DataConverter;
 import com.senla.app.task.view.IOHandler;
+import com.senla.app.task.view.console.ConsoleIOHandler;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class StorageController extends BaseController {
 
-    @InjectTo
+    @InjectTo(configurable = true)
     private StorageService storageService;
 
-    @InjectTo
+    @InjectTo(configurable = true)
     private StorageQueryService storageQueryService;
 
-    @InjectTo
+    @InjectTo(useImplementation = CsvStorageImportService.class)
     private StorageImportService storageImportService;
 
-    @InjectTo
+    @InjectTo(useImplementation = CsvStorageExportService.class)
     private StorageExportService storageExportService;
 
-    @InjectTo
+    @InjectTo(useImplementation = ConsoleIOHandler.class)
     private IOHandler ioHandler;
 
     public StorageController() {

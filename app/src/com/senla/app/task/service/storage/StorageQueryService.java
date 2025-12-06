@@ -6,6 +6,7 @@ import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.model.entity.status.BookStatus;
+import com.senla.app.task.repository.inmemory.InMemoryStorageRepository;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class StorageQueryService {
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryStorageRepository.class)
     private StorageRepository bookStorageRepository;
 
     @ConfigProperty(propertyName="liquidMonths", type=int.class)

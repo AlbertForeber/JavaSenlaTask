@@ -3,6 +3,7 @@ package com.senla.app.task.service.request.io.csv;
 import com.senla.annotation.InjectTo;
 import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.repository.RequestManagerRepository;
+import com.senla.app.task.repository.inmemory.InMemoryRequestManagerRepository;
 import com.senla.app.task.service.request.io.RequestExportService;
 
 import java.io.BufferedWriter;
@@ -11,7 +12,7 @@ import java.io.IOException;
 
 public class CsvRequestExportService implements RequestExportService {
 
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
     public CsvRequestExportService() {}

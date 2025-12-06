@@ -4,6 +4,7 @@ import com.senla.annotation.InjectTo;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.repository.StorageRepository;
+import com.senla.app.task.repository.inmemory.InMemoryStorageRepository;
 import com.senla.app.task.service.storage.io.StorageImportService;
 import com.senla.app.task.service.storage.io.BookImportConstants;
 import com.senla.app.task.utils.DataConverter;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 public class CsvStorageImportService implements StorageImportService {
 
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryStorageRepository.class)
     private StorageRepository storageRepository;
 
     public CsvStorageImportService() {}
@@ -49,7 +50,7 @@ public class CsvStorageImportService implements StorageImportService {
 
             book.setPublicationDate(publicationDate[2], publicationDate[1], publicationDate[0]);
 
-            if (fields.get("reservist") != null) book.setStatus(BookStatus.RESERVED, fields.get("reservist").get(i));
+            if (fields.get("reservist") != null && !fields.get("reservist").get(i).trim().isEmpty()) book.setStatus(BookStatus.RESERVED, fields.get("reservist").get(i));
 
             storageRepository.addBook(book);
         }

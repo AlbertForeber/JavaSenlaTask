@@ -11,13 +11,13 @@ import com.senla.app.task.view.factory.*;
 
 public class ConsoleNavigator implements Navigator {
 
-    @InjectTo
+    @InjectTo(useImplementation = ConsoleMenuBuilder.class)
     private MenuBuilder menuBuilder;
 
-    @InjectTo
+    @InjectTo(useImplementation = ConsoleMenuRenderer.class)
     private MenuRenderer menuRenderer;
 
-    @InjectTo
+    @InjectTo(useImplementation = ConsoleIOHandler.class)
     private IOHandler ioHandler;
 
     private NavigateTo currentNavPoint;
@@ -30,17 +30,22 @@ public class ConsoleNavigator implements Navigator {
                 currentNavPoint = navigateTo;
 
                 switch (navigateTo) {
-                    case MAIN -> menuBuilder.buildMenu(new MainMenuFactory());
-                    case STORAGE -> menuBuilder.buildMenu(new StorageMenuFactory());
-                    case ORDER -> menuBuilder.buildMenu(new OrderMenuFactory());
-                    case REQUEST -> menuBuilder.buildMenu(new RequestMenuFactory());
+                    case MAIN -> menuBuilder.buildMenu(new MainMenuFactory(), this);
+                    case STORAGE -> menuBuilder.buildMenu(new StorageMenuFactory(), this);
+                    case ORDER -> menuBuilder.buildMenu(new OrderMenuFactory(), this);
+                    case REQUEST -> menuBuilder.buildMenu(new RequestMenuFactory(), this);
                 }
+
             } catch (IllegalArgumentException e) {
-                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ОТОБРАЖЕНИЯ: " + e.getMessage() + Colors.RESET);
+                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
             }
         }
 
         menuRenderer.renderMenu(menuBuilder.getCurrentMenu(), menuBuilder.getCurrentMenuHeader());
         ioHandler.handleOptionInput(menuBuilder.getCurrentMenu());
+    }
+
+    private void startNavigation() {
+        navigateTo(NavigateTo.MAIN);
     }
 }

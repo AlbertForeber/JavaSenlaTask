@@ -8,6 +8,9 @@ import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.model.entity.status.OrderStatus;
+import com.senla.app.task.repository.inmemory.InMemoryOrderManagerRepository;
+import com.senla.app.task.repository.inmemory.InMemoryRequestManagerRepository;
+import com.senla.app.task.repository.inmemory.InMemoryStorageRepository;
 
 import java.util.*;
 
@@ -17,13 +20,13 @@ import java.util.*;
 
 public class OrderService {
 
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryOrderManagerRepository.class)
     private OrderManagerRepository orderManagerRepository;
 
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryStorageRepository.class)
     private StorageRepository bookStorageRepository;
 
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
     public OrderService() {}

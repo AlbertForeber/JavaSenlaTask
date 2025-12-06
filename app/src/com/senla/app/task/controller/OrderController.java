@@ -7,9 +7,12 @@ import com.senla.app.task.service.order.OrderQueryService;
 import com.senla.app.task.service.order.OrderService;
 import com.senla.app.task.service.order.io.OrderExportService;
 import com.senla.app.task.service.order.io.OrderImportService;
+import com.senla.app.task.service.order.io.csv.CsvOrderExportService;
+import com.senla.app.task.service.order.io.csv.CsvOrderImportService;
 import com.senla.app.task.utils.Colors;
 import com.senla.app.task.utils.DataConverter;
 import com.senla.app.task.view.IOHandler;
+import com.senla.app.task.view.console.ConsoleIOHandler;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,19 +21,19 @@ import java.util.List;
 
 public class OrderController extends BaseController {
 
-    @InjectTo
+    @InjectTo()
     private OrderService orderService;
 
     @InjectTo
     private OrderQueryService orderQueryService;
 
-    @InjectTo
+    @InjectTo(useImplementation = CsvOrderImportService.class)
     private OrderImportService orderImportService;
 
-    @InjectTo
+    @InjectTo(useImplementation = CsvOrderExportService.class)
     private OrderExportService orderExportService;
 
-    @InjectTo
+    @InjectTo(useImplementation = ConsoleIOHandler.class)
     private IOHandler ioHandler;
 
     public OrderController() {

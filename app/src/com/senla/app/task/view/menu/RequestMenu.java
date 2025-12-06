@@ -3,20 +3,20 @@ package com.senla.app.task.view.menu;
 import com.senla.annotation.InjectTo;
 import com.senla.app.task.controller.RequestController;
 import com.senla.app.task.view.Navigator;
+import com.senla.app.task.view.console.ConsoleNavigator;
 import com.senla.app.task.view.enums.NavigateTo;
 
 import java.util.List;
 
 public class RequestMenu implements Menu {
     private final List<MenuAction> menu;
-
-    @InjectTo
-    private Navigator navigator;
+    private final Navigator navigator;
 
     @InjectTo
     RequestController controller;
 
-    public RequestMenu() {
+    public RequestMenu(Navigator navigator) {
+        this.navigator = navigator;
         this.menu = List.of(
                 new MenuAction("1. Добавить запрос", _ -> {
                     controller.createRequest();

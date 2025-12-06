@@ -3,21 +3,21 @@ package com.senla.app.task.view.menu;
 import com.senla.annotation.InjectTo;
 import com.senla.app.task.controller.StorageController;
 import com.senla.app.task.view.Navigator;
+import com.senla.app.task.view.console.ConsoleNavigator;
 import com.senla.app.task.view.enums.NavigateTo;
 
 import java.util.List;
 
 public class StorageMenu implements Menu {
     private final List<MenuAction> menu;
-
-    @InjectTo
-    private Navigator navigator;
+    private final Navigator navigator;
 
     @InjectTo
     private StorageController controller;
 
 
-    public StorageMenu() {
+    public StorageMenu(Navigator navigator) {
+        this.navigator = navigator;
         this.menu = List.of(
                 new MenuAction("1. Добавить книгу в хранилище", _ -> {
                     controller.addBookToStorage();

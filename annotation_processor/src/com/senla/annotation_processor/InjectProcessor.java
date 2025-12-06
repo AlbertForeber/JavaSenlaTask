@@ -1,9 +1,10 @@
 package com.senla.annotation_processor;
 
 import com.senla.annotation.InjectTo;
-
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 
 public class InjectProcessor {
@@ -15,21 +16,70 @@ public class InjectProcessor {
     public static void injectDependencies(Object object) throws IllegalArgumentException {
         Class<?> clazz = object.getClass();
 
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.getAnnotation(InjectTo.class) != null) {
-                Object dependency = DEPENDENCIES.get(field.getType());
 
-                if (dependency != null) {
-                    field.trySetAccessible();
+        for (Field field : clazz.getDeclaredFields()) {
+            InjectTo annotation = field.getAnnotation(InjectTo.class);
+            Class<?> fieldType = field.getType();
+
+
+            if (annotation != null) {
+
+
+
+                Class<?> useImplementation = annotation.useImplementation();
+                boolean configurable = annotation.configurable();
+
+
+                String implementationErrorAddition = "";
+                Object dependency = DEPENDENCIES.get(fieldType);
+
+                field.trySetAccessible();
+
+                if (dependency == null) {
+                    // Создаем новый объект
 
                     try {
-                        field.set(object, dependency);
+                        Constructor<?> constructor;
+
+                        if (useImplementation != Object.class) {
+                            if (Arrays.stream(useImplementation.getInterfaces()).noneMatch(x -> x == fieldType))
+                                throw new IllegalArgumentException("Указанная реализация '" + useImplementation.getSimpleName() +
+                                        "' не наследует заданный тип поля '" + fieldType.getSimpleName() + "'");
+                            constructor = useImplementation.getConstructor();
+                            implementationErrorAddition = ". При указанной реализации '" + useImplementation.getSimpleName() + "'";
+                        } else constructor = fieldType.getConstructor();
+
+
+                        constructor.trySetAccessible();
+                        dependency = constructor.newInstance();
+                        addDependency(fieldType, dependency);
+
+                    } catch (NoSuchMethodException e) {
+                        throw new IllegalArgumentException("Для объекта типа '" + fieldType.getSimpleName() +
+                                "' нет конструктора без параметров" + implementationErrorAddition);
+                    } catch (InvocationTargetException e) {
+                        throw new IllegalArgumentException("Ошибка создания объекта типа '" + fieldType.getSimpleName() +
+                                implementationErrorAddition + ": " + e.getMessage());
+                    } catch (InstantiationException e) {
+                        throw new IllegalArgumentException("Класс '" + fieldType.getSimpleName() +
+                                "' абстрактный, невозможно создать объект" + implementationErrorAddition);
                     } catch (IllegalAccessException e) {
-                        throw new IllegalArgumentException("Ошибка изменения приватного поля '" + field.getName() + "'. Нет доступа");
+                        throw new IllegalArgumentException("Ошибка вызова конструкта для типа '" + fieldType.getSimpleName()
+                                + "'. Нет доступа" + implementationErrorAddition);
                     }
 
-                } else {
-                    throw new IllegalArgumentException("Зависимости для поля типа '" + field.getType().getSimpleName() + "' не найдено");
+                    // Рекурсивный вызов метода
+                    injectDependencies(dependency);
+                }
+
+                try {
+                    field.set(object, dependency);
+                } catch (IllegalAccessException e) {
+                    throw new IllegalArgumentException("Ошибка изменения приватного поля '" + field.getName() + "'. Нет доступа");
+                }
+
+                if (configurable) {
+                    ConfigProcessor.applyConfig(dependency);
                 }
             }
         }

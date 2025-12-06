@@ -5,6 +5,7 @@ import com.senla.app.task.repository.OrderManagerRepository;
 import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
 import com.senla.app.task.model.entity.status.OrderStatus;
+import com.senla.app.task.repository.inmemory.InMemoryOrderManagerRepository;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
 
 public class OrderQueryService {
 
-    @InjectTo
+    @InjectTo(useImplementation = InMemoryOrderManagerRepository.class)
     private OrderManagerRepository orderManagerRepository;
 
     public OrderQueryService() {}

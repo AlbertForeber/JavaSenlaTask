@@ -3,21 +3,21 @@ package com.senla.app.task.view.menu;
 import com.senla.annotation.InjectTo;
 import com.senla.app.task.controller.MainController;
 import com.senla.app.task.view.Navigator;
+import com.senla.app.task.view.console.ConsoleNavigator;
 import com.senla.app.task.view.enums.NavigateTo;
 
 import java.util.List;
 
 public class MainMenu implements Menu {
 
-    private List<MenuAction> menu;
-
-    @InjectTo
-    private Navigator navigator;
+    private final List<MenuAction> menu;
+    private final Navigator navigator;
 
     @InjectTo
     MainController controller;
 
-    public MainMenu() {
+    public MainMenu(Navigator navigator) {
+        this.navigator = navigator;
         this.menu = List.of(
                 new MenuAction("1. Меню управления хранилищем", _ -> navigator.navigateTo(NavigateTo.STORAGE)),
                 new MenuAction("2. Меню управления заказами",   _ -> navigator.navigateTo(NavigateTo.ORDER)),

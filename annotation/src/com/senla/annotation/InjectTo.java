@@ -7,4 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface InjectTo {}
+public @interface InjectTo {
+    Class<?> useImplementation() default Object.class;
+    boolean configurable() default false;
+}
