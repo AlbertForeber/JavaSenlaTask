@@ -1,6 +1,8 @@
 package task.model.entity;
 
-public class Request {
+import java.io.Serializable;
+
+public class Request implements Serializable {
     private final int id;
     private final String bookName;
     private int amount = 1;

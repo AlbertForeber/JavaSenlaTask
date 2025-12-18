@@ -5,6 +5,7 @@ import task.model.entity.Order;
 import task.model.entity.sortby.OrderSortBy;
 import task.model.entity.status.OrderStatus;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -81,5 +82,27 @@ public class OrderQueryService {
 
     public String getOrderDetails(int orderId) {
         return orderManagerRepository.getOrder(orderId).toString();
+    }
+
+    public void saveState(String path) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path + "order"))) {
+            for (Order order : orderManagerRepository.getSortedOrders(OrderSortBy.NO_SORT)) {
+                oos.writeObject(order);
+            }
+        }
+    }
+
+    public void loadState(String path) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path + "order"))) {
+            Order order;
+            while (true) {
+                try {
+                    order = (Order) ois.readObject();
+                    orderManagerRepository.addOrder(order.getId(), order);
+                } catch (EOFException e) {
+                    break;
+                }
+            }
+        }
     }
 }

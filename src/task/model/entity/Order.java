@@ -2,11 +2,12 @@ package task.model.entity;
 
 import task.model.entity.status.OrderStatus;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class Order {
+public class Order implements Serializable {
     private final int id;
     private final List<Integer> orderedBookIds;
     private final String customerName;
