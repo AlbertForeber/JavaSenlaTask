@@ -1,6 +1,11 @@
 package com.senla.app.task.utils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,5 +35,20 @@ public final class DataConverter {
                 date.get(Calendar.MONTH) + 1,
                 date.get(Calendar.YEAR)
         );
+    }
+
+    static public Calendar localDateToCalendar(LocalDate localDate) {
+        return new GregorianCalendar(
+                localDate.getYear(),
+                localDate.getMonth().getValue()-1,
+                localDate.getDayOfMonth()
+        );
+    }
+
+    static public LocalDate calendarToLocalDate(Calendar calendar) {
+        TimeZone tz = calendar.getTimeZone();
+        ZoneId zid = tz == null ? ZoneId.systemDefault() : tz.toZoneId();
+
+        return LocalDateTime.ofInstant(calendar.toInstant(), zid).toLocalDate();
     }
 }

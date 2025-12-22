@@ -11,8 +11,8 @@ public class Book implements Serializable {
     private final int id;
     private final String title;
     private final String description;
-    private final Calendar publicationDate = new GregorianCalendar();
-    private final Calendar admissionDate = new GregorianCalendar();
+    private Calendar publicationDate = new GregorianCalendar();
+    private Calendar admissionDate = new GregorianCalendar();
     private int price;
     private BookStatus status;
     private String reservist = null;
@@ -42,6 +42,26 @@ public class Book implements Serializable {
         );
 
         setPrice(random.nextInt(100, 1000));
+    }
+
+    public Book(
+            int id,
+            String title,
+            String description,
+            Calendar publicationDate,
+            Calendar admissionDate,
+            int price,
+            BookStatus initStatus,
+            String reservist
+    ) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.publicationDate = publicationDate;
+        this.admissionDate = admissionDate;
+        this.price = price;
+        this.status = initStatus;
+        this.reservist = reservist;
     }
 
     public int getId() {
