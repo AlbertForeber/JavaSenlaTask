@@ -6,7 +6,7 @@ import com.senla.app.task.model.comparators.book.*;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.model.entity.status.BookStatus;
-import com.senla.app.task.repository.dto.BookDto;
+import com.senla.app.task.model.dto.BookDto;
 
 import java.util.*;
 
@@ -41,9 +41,7 @@ public class InMemoryStorageRepository implements StorageRepository {
     }
 
     @Override
-    public void updateBook(BookDto bookDto) {
-        addBook(bookDto);
-    }
+    public void updateBook(BookDto bookDto) {} // InMemory вариант не должен выполнять доп. операцию обновления
 
     @Override
     public Book getBook(int bookId) {

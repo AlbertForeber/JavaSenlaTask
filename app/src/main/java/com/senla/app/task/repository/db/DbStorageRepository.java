@@ -7,12 +7,13 @@ import com.senla.app.task.model.comparators.book.*;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.repository.StorageRepository;
-import com.senla.app.task.repository.dto.BookDto;
+import com.senla.app.task.model.dto.BookDto;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class DbStorageRepository implements StorageRepository {
 
@@ -23,7 +24,7 @@ public class DbStorageRepository implements StorageRepository {
     public void addBook(BookDto bookDto) throws IllegalArgumentException {
         try {
             bookDao.save(bookDto);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
@@ -32,7 +33,7 @@ public class DbStorageRepository implements StorageRepository {
     public void updateBook(BookDto bookDto) {
         try {
             bookDao.update(bookDto);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
@@ -40,8 +41,11 @@ public class DbStorageRepository implements StorageRepository {
     @Override
     public Book getBook(int bookId) {
         try {
-            return bookDao.findById(bookId).toBusinessObject();
-        } catch (SQLException e) {
+            BookDto bookDto = bookDao.findById(bookId);
+
+            if (bookDto == null) return null;
+            return bookDto.toBusinessObject();
+        } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
@@ -59,11 +63,12 @@ public class DbStorageRepository implements StorageRepository {
         };
 
         try {
-            List<Book> arr = new ArrayList<>(bookDao.findAll().stream().map(BookDto::toBusinessObject).toList());
+            Stream<Book> books = bookDao.findAll().stream().map(BookDto::toBusinessObject);
 
-            if (comparator != null) arr.sort(comparator);
-            return arr;
-        } catch (SQLException e) {
+            if (comparator != null) return books.sorted(comparator).toList();
+            return books.toList();
+
+        } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
@@ -72,7 +77,7 @@ public class DbStorageRepository implements StorageRepository {
     public boolean removeBook(int bookId) {
         try {
             bookDao.delete(bookId);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
 

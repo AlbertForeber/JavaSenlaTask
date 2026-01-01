@@ -4,13 +4,13 @@ import com.senla.annotation.InjectTo;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
-import com.senla.app.task.repository.inmemory.InMemoryRequestManagerRepository;
+import com.senla.app.task.repository.db.DbRequestManagerRepository;
 
 import java.io.*;
 import java.util.List;
 
 public class RequestQueryService {
-    @InjectTo(useImplementation = InMemoryRequestManagerRepository.class)
+    @InjectTo(useImplementation = DbRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
     public List<Request> getSorted(RequestSortBy sortBy) {

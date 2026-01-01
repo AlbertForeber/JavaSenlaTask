@@ -21,6 +21,9 @@ public class InMemoryOrderManagerRepository implements OrderManagerRepository {
     }
 
     @Override
+    public void updateOrder(Order order) {} // InMemory вариант не должен выполнять доп. операцию обновления
+
+    @Override
     public Order getOrder(int orderId) {
         if (orders.containsKey(orderId)) {
             return orders.get(orderId);

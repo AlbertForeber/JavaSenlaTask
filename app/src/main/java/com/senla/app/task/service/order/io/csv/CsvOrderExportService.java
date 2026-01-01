@@ -3,7 +3,7 @@ package com.senla.app.task.service.order.io.csv;
 import com.senla.annotation.InjectTo;
 import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.repository.OrderManagerRepository;
-import com.senla.app.task.repository.inmemory.InMemoryOrderManagerRepository;
+import com.senla.app.task.repository.db.DbOrderManagerRepository;
 import com.senla.app.task.service.order.io.OrderExportService;
 import com.senla.app.task.utils.DataConverter;
 
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class CsvOrderExportService implements OrderExportService {
 
-    @InjectTo(useImplementation = InMemoryOrderManagerRepository.class)
+    @InjectTo(useImplementation = DbOrderManagerRepository.class)
     private OrderManagerRepository orderManagerRepository;
 
     private Order order;

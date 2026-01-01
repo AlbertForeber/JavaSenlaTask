@@ -1,7 +1,7 @@
 package com.senla.app.task.db.dao.implementations;
 
 import com.senla.app.task.db.dao.AbstractGenericDao;
-import com.senla.app.task.repository.dto.BookDto;
+import com.senla.app.task.model.dto.BookDto;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -16,7 +16,7 @@ public class BookDao extends AbstractGenericDao<BookDto, Integer> {
 
     @Override
     protected String getTableName() {
-        return "book";
+        return "books";
     }
 
     @Override
@@ -29,45 +29,32 @@ public class BookDao extends AbstractGenericDao<BookDto, Integer> {
                 resultSet.getDate("admission_date").toLocalDate(),
                 resultSet.getInt("price"),
                 resultSet.getString("status"),
-                resultSet.getString("reservist"),
+                resultSet.getString("customer_name"),
                 resultSet.getInt("order_id")
         );
     }
 
     @Override
     protected String getInsertFields(BookDto entity) {
-        StringBuilder stringBuilder = new StringBuilder("id, title, description, publication_date, admission_date, price, status");
-        if (entity.getReservist() != null) stringBuilder.append(", ").append(", reservist");
-        if (entity.getOrderId() != null) stringBuilder.append(", ").append(", order_id");
-
-        return stringBuilder.toString();
+        return "id, title, description, publication_date, admission_date, price, status, order_id";
     }
 
     @Override
     protected int getFieldsCount(BookDto entity) {
-        int basicNumber = 7;
-
-        if (entity.getReservist() != null) basicNumber ++;
-        if (entity.getOrderId() != null) basicNumber ++;
-
-        return basicNumber;
+        return 8;
     }
 
     @Override
     protected String generateUpdatePlaceholders(BookDto entity) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("id = ?").append(", ");
-        stringBuilder.append("title = ?").append(", ");
-        stringBuilder.append("description = ?").append(", ");
-        stringBuilder.append("publication_date = ?").append(", ");
-        stringBuilder.append("admission_date = ?").append(", ");
-        stringBuilder.append("price = ?").append(", ");
-        stringBuilder.append("status = ?").append(", ");
 
-        if (entity.getReservist() != null) stringBuilder.append("reservist").append(", ");
-        if (entity.getOrderId() != null) stringBuilder.append("status").append(", ");
-
-        return stringBuilder.toString();
+        return "id = ?" + ", " +
+                "title = ?" + ", " +
+                "description = ?" + ", " +
+                "publication_date = ?" + ", " +
+                "admission_date = ?" + ", " +
+                "price = ?" + ", " +
+                "status = ?" + ", " +
+                "order_id = ?";
     }
 
     @Override
@@ -79,11 +66,20 @@ public class BookDao extends AbstractGenericDao<BookDto, Integer> {
         preparedStatement.setDate(5, Date.valueOf(entity.getAdmissionDate()));
         preparedStatement.setInt(6, entity.getPrice());
         preparedStatement.setString(7, entity.getStatus());
+        if (entity.getOrderId() != null)
+            preparedStatement.setInt(8, entity.getOrderId());
+        else
+            preparedStatement.setObject(8, null);
     }
 
     @Override
     protected Integer getIdOf(BookDto entity) {
         return entity.getId();
+    }
+
+    @Override
+    protected String additionalJoinQuery() {
+        return "LEFT JOIN orders ON books.order_id=orders.id";
     }
 
 }

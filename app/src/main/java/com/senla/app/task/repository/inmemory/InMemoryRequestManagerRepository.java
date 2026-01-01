@@ -1,5 +1,6 @@
 package com.senla.app.task.repository.inmemory;
 
+import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.model.comparators.request.RequestAmountComparator;
 import com.senla.app.task.model.comparators.request.RequestBookNameComparator;
@@ -18,18 +19,18 @@ public class InMemoryRequestManagerRepository implements RequestManagerRepositor
     }
 
     @Override
-    public void addRequest(String bookName) {
+    public void addRequest(Book book) {
 
         int lastId = 0;
 
         for (Request request : requests.values()) {
-            if (Objects.equals(request.getBookName(), bookName)) {
+            if (Objects.equals(request.getBookName(), book.getTitle())) {
                 request.incrementAmount();
                 return;
             }
             lastId = request.getId();
         }
-        requests.put(lastId + 1, new Request(lastId + 1, bookName));
+        requests.put(lastId + 1, new Request(lastId + 1, book.getTitle()));
 
     }
 
@@ -48,12 +49,6 @@ public class InMemoryRequestManagerRepository implements RequestManagerRepositor
     }
 
     @Override
-    public List<Request> getRequests() {
-        // Возвращаем копию для безопасности
-        return new ArrayList<>(requests.values());
-    }
-
-    @Override
     public List<Request> getSortedRequests(RequestSortBy sortBy) {
         Comparator<Request> comparator = switch (sortBy) {
             case AMOUNT -> new RequestAmountComparator();
@@ -61,6 +56,8 @@ public class InMemoryRequestManagerRepository implements RequestManagerRepositor
             case NO_SORT -> null;
         };
 
+
+        // Возвращаем копию для безопасности
         List<Request> arr = new ArrayList<>(requests.values());
 
         if (comparator != null) arr.sort(comparator);

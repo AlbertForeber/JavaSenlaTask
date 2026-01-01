@@ -1,11 +1,9 @@
 package com.senla.app.task.db.dao;
 
 import com.senla.app.task.db.DbConnection;
-import com.senla.app.task.model.entity.Book;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,11 +24,13 @@ public abstract class AbstractGenericDao<T, ID> implements GenericDao<T, ID> {
 
     protected abstract ID getIdOf(T entity);
 
+    protected abstract String additionalJoinQuery();
+
     @Override
     public T findById(ID id) throws SQLException {
         try (
                 PreparedStatement preparedStatement = connection
-                        .prepareStatement("SELECT * FROM " + getTableName() + " WHERE id = ?")
+                        .prepareStatement("SELECT * FROM " + getTableName() + " " + additionalJoinQuery() + " WHERE " + getTableName() + ".id = ?")
         ) {
             // PreparedStatement умеет подставлять в плейсхолдеры только внутри WHERE, INSERT, UPDATE, DELETE
             // Имя таблицы им не выбрать
@@ -53,10 +53,12 @@ public abstract class AbstractGenericDao<T, ID> implements GenericDao<T, ID> {
     @Override
     public List<T> findAll() throws SQLException {
         try (
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + getTableName())
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + getTableName() + " " + additionalJoinQuery())
         ) {
             // Аналогичная проблема
 //            preparedStatement.setString(1, getTableName());
+
+//            System.out.println("SELECT * FROM " + getTableName() + " " + additionalJoinQuery());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<T> entities = new ArrayList<>();
@@ -90,7 +92,7 @@ public abstract class AbstractGenericDao<T, ID> implements GenericDao<T, ID> {
                 PreparedStatement preparedStatement = connection.prepareStatement(query)
         ) {
             setInsertValues(entity, preparedStatement);
-            preparedStatement.setObject(1, getIdOf(entity));
+            preparedStatement.setObject(getFieldsCount(entity) + 1, getIdOf(entity));
             int affected = preparedStatement.executeUpdate();
 
             if (affected == 0) {

@@ -1,4 +1,4 @@
-package com.senla.app.task.repository.dto;
+package com.senla.app.task.model.dto;
 
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.status.BookStatus;
@@ -6,7 +6,7 @@ import com.senla.app.task.utils.DataConverter;
 
 import java.time.LocalDate;
 
-public class BookDto implements Dto<Book> {
+public class BookDto {
     private final int id;
     private final String title;
     private final String description;
@@ -59,7 +59,6 @@ public class BookDto implements Dto<Book> {
         };
     }
 
-    @Override
     public Book toBusinessObject() {
         return new Book(
                 this.id,

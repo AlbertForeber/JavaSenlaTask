@@ -22,7 +22,15 @@ public class Order implements Serializable {
         this.customerName = customerName;
         this.totalSum = totalSum;
         status = OrderStatus.NEW;
+    }
 
+    public Order(int id, List<Integer> orderedBookIds, String customerName, int totalSum, Calendar completionDate, OrderStatus status) {
+        this.id = id;
+        this.orderedBookIds = orderedBookIds;
+        this.customerName = customerName;
+        this.totalSum = totalSum;
+        this.completionDate = completionDate;
+        this.status = status;
     }
 
     public int getId() {

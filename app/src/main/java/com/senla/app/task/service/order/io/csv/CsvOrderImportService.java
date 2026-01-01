@@ -5,8 +5,8 @@ import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.status.OrderStatus;
 import com.senla.app.task.repository.OrderManagerRepository;
 import com.senla.app.task.repository.StorageRepository;
-import com.senla.app.task.repository.inmemory.InMemoryOrderManagerRepository;
-import com.senla.app.task.repository.inmemory.InMemoryStorageRepository;
+import com.senla.app.task.repository.db.DbOrderManagerRepository;
+import com.senla.app.task.repository.db.DbStorageRepository;
 import com.senla.app.task.service.order.io.OrderImportConstants;
 import com.senla.app.task.service.order.OrderService;
 import com.senla.app.task.service.order.io.OrderImportService;
@@ -21,10 +21,10 @@ import java.util.Map;
 
 public class CsvOrderImportService implements OrderImportService {
 
-    @InjectTo(useImplementation = InMemoryOrderManagerRepository.class)
+    @InjectTo(useImplementation = DbOrderManagerRepository.class)
     private OrderManagerRepository orderManagerRepository;
 
-    @InjectTo(useImplementation = InMemoryStorageRepository.class)
+    @InjectTo(useImplementation = DbStorageRepository.class)
     private StorageRepository bookStorageRepository;
 
     @InjectTo

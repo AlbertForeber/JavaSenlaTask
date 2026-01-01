@@ -6,15 +6,15 @@ import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.repository.StorageRepository;
-import com.senla.app.task.repository.inmemory.InMemoryStorageRepository;
-import com.senla.app.task.repository.dto.BookDto;
-import com.senla.app.task.repository.inmemory.InMemoryRequestManagerRepository;
+import com.senla.app.task.repository.db.DbStorageRepository;
+import com.senla.app.task.model.dto.BookDto;
+import com.senla.app.task.repository.db.DbRequestManagerRepository;
 
 public class StorageService {
-    @InjectTo(useImplementation = InMemoryStorageRepository.class)
+    @InjectTo(useImplementation = DbStorageRepository.class)
     private StorageRepository bookStorageRepository;
 
-    @InjectTo(useImplementation = InMemoryRequestManagerRepository.class)
+    @InjectTo(useImplementation = DbRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
     @ConfigProperty(propertyName="cancelRequests", type=boolean.class)
@@ -23,15 +23,17 @@ public class StorageService {
     public StorageService() {}
 
     public void writeOffBook(int bookId) {
-        Book bookBefore = bookStorageRepository.getBook(bookId);
-        bookBefore.setStatus(BookStatus.SOLD_OUT, null);
+        Book book = bookStorageRepository.getBook(bookId);
+        book.setStatus(BookStatus.SOLD_OUT, null);
 
-        bookStorageRepository.updateBook(new BookDto(bookBefore, null));
+        bookStorageRepository.updateBook(new BookDto(book, null));
     }
 
     public void addBookToStorage(int bookId) {
         Book book = bookStorageRepository.getBook(bookId);
         book.setStatus(BookStatus.FREE);
+
+        bookStorageRepository.updateBook(new BookDto(book, null));
 
         if (cancelRequests)
             requestManagerRepository.cancelRequests(book.getTitle());

@@ -12,6 +12,12 @@ public class Request implements Serializable {
         this.bookName = bookName;
     }
 
+    public Request(int id, String bookName, int amount) {
+        this.id = id;
+        this.bookName = bookName;
+        this.amount = amount;
+    }
+
     public int getId() {
         return id;
     }

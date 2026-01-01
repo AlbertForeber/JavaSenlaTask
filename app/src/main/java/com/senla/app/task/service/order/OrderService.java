@@ -1,6 +1,7 @@
 package com.senla.app.task.service.order;
 
 import com.senla.annotation.InjectTo;
+import com.senla.app.task.model.dto.BookDto;
 import com.senla.app.task.repository.OrderManagerRepository;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.repository.StorageRepository;
@@ -8,9 +9,9 @@ import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.model.entity.status.OrderStatus;
-import com.senla.app.task.repository.inmemory.InMemoryOrderManagerRepository;
-import com.senla.app.task.repository.inmemory.InMemoryRequestManagerRepository;
-import com.senla.app.task.repository.inmemory.InMemoryStorageRepository;
+import com.senla.app.task.repository.db.DbOrderManagerRepository;
+import com.senla.app.task.repository.db.DbRequestManagerRepository;
+import com.senla.app.task.repository.db.DbStorageRepository;
 
 import java.util.*;
 
@@ -20,45 +21,51 @@ import java.util.*;
 
 public class OrderService {
 
-    @InjectTo(useImplementation = InMemoryOrderManagerRepository.class)
+    @InjectTo(useImplementation = DbOrderManagerRepository.class)
     private OrderManagerRepository orderManagerRepository;
 
-    @InjectTo(useImplementation = InMemoryStorageRepository.class)
+    @InjectTo(useImplementation = DbStorageRepository.class)
     private StorageRepository bookStorageRepository;
 
-    @InjectTo(useImplementation = InMemoryRequestManagerRepository.class)
+    @InjectTo(useImplementation = DbRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
     public OrderService() {}
 
     public boolean createOrder(int orderId, List<Integer> bookIds, String customerName) {
         int totalSum = 0;
-        List<Integer> presentBookIds = new ArrayList<>();
+        List<Book> presentBooks = new ArrayList<>();
 
         for (int id : bookIds) {
             Book book = bookStorageRepository.getBook(id);
 
             // Проверка наличия книги
             if (book != null) {
-                presentBookIds.add(id);
+                presentBooks.add(book);
             } else continue;
 
             if (book.getStatus() != BookStatus.FREE) {;
-                requestManagerRepository.addRequest(book.getTitle());
+                requestManagerRepository.addRequest(book);
 
-            } else book.setStatus(BookStatus.RESERVED, customerName);
+            } else {
+                book.setStatus(BookStatus.RESERVED, customerName);
+            }
 
             totalSum += book.getPrice();
         }
 
-        if (!presentBookIds.isEmpty()) {
-            Order order = new Order(orderId, presentBookIds, totalSum, customerName);
+        if (!presentBooks.isEmpty()) {
+            Order order = new Order(orderId, presentBooks.stream().map(Book::getId).toList(), totalSum, customerName);
 
             if (orderManagerRepository.getOrder(orderId) != null) {
                 cancelOrder(orderId);
             }
 
             orderManagerRepository.addOrder(orderId, order);
+
+            for (Book book : presentBooks) {
+                bookStorageRepository.updateBook(new BookDto(book, orderId));
+            }
             return true;
         } else return false;
 
@@ -68,8 +75,13 @@ public class OrderService {
         Order order = orderManagerRepository.getOrder(orderId);
         order.setStatus(OrderStatus.CANCELED);
 
+        orderManagerRepository.updateOrder(order);
+
         for (int bookId : order.getOrderedBookIds()) {
-            bookStorageRepository.getBook(bookId).setStatus(BookStatus.FREE);
+            Book book = bookStorageRepository.getBook(bookId);
+            book.setStatus(BookStatus.FREE);
+
+            bookStorageRepository.updateBook(new BookDto(book, null));
         }
     }
 
@@ -91,8 +103,10 @@ public class OrderService {
                     currentDate.get(Calendar.MONTH) + 1,
                     currentDate.get(Calendar.DATE)
             );
+
         }
         order.setStatus(newStatus);
+        orderManagerRepository.updateOrder(order);
 
         BookStatus requiredBookStatus = BookStatus.RESERVED;
 
@@ -102,7 +116,12 @@ public class OrderService {
         }
 
         for (int bookId : order.getOrderedBookIds()) {
-            bookStorageRepository.getBook(bookId).setStatus(requiredBookStatus);
+
+            Book book = bookStorageRepository.getBook(bookId);
+            book.setStatus(requiredBookStatus);
+
+            bookStorageRepository
+                    .updateBook(new BookDto(book, requiredBookStatus == BookStatus.RESERVED ? orderId : null));
         }
 
         return true;
