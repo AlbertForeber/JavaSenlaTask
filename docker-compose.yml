@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres
+    container_name: postgre_db
+    # Если docker daemon перезагружается или при ошибке
+    # автоматически перезапускает сервис
+    # Еще бывают:
+    # no - без перезапуска
+    # on-failure - когда контейнер завершается с ненулевым кодом
+    # unless-stopped - как always но не перезапускается вместе с daemon
+    restart: always
+    environment:
+      - POSTGRES_USER=senla
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=senladb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U senla -d senladb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init_scripts:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/postgres_data
+
+volumes:
+  postgres_data:
