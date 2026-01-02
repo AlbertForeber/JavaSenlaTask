@@ -2,12 +2,6 @@ services:
   db:
     image: postgres
     container_name: postgre_db
-    # Если docker daemon перезагружается или при ошибке
-    # автоматически перезапускает сервис
-    # Еще бывают:
-    # no - без перезапуска
-    # on-failure - когда контейнер завершается с ненулевым кодом
-    # unless-stopped - как always но не перезапускается вместе с daemon
     restart: always
     environment:
       - POSTGRES_USER=senla
