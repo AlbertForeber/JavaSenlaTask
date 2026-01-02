@@ -8,6 +8,7 @@ import com.senla.app.task.service.request.io.RequestExportService;
 import com.senla.app.task.service.request.io.RequestImportService;
 import com.senla.app.task.service.request.io.csv.CsvRequestExportService;
 import com.senla.app.task.service.request.io.csv.CsvRequestImportService;
+import com.senla.app.task.service.unit_of_work.TransactionException;
 import com.senla.app.task.utils.Colors;
 import com.senla.app.task.view.IOHandler;
 import com.senla.app.task.view.console.ConsoleIOHandler;
@@ -43,6 +44,9 @@ public class RequestController extends BaseController {
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
         }
+        catch (TransactionException e) {
+            ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
+        }
         catch (Exception e) {
             ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET);
         }
@@ -69,9 +73,13 @@ public class RequestController extends BaseController {
             return;
         }
 
-        requestQueryService.getSorted(requestSortBy).stream()
-                .map(Object::toString)
-                .forEach(System.out::println);
+        try {
+            requestQueryService.getSorted(requestSortBy).stream()
+                    .map(Object::toString)
+                    .forEach(ioHandler::showMessage);
+        } catch (Exception e) {
+            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+        }
     }
 
     public void importRequest() {

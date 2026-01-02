@@ -12,6 +12,8 @@ import com.senla.app.task.model.entity.status.OrderStatus;
 import com.senla.app.task.repository.db.DbOrderManagerRepository;
 import com.senla.app.task.repository.db.DbRequestManagerRepository;
 import com.senla.app.task.repository.db.DbStorageRepository;
+import com.senla.app.task.service.unit_of_work.UnitOfWork;
+import com.senla.app.task.service.unit_of_work.db.DbUnitOfWork;
 
 import java.util.*;
 
@@ -30,100 +32,109 @@ public class OrderService {
     @InjectTo(useImplementation = DbRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
+    @InjectTo(useImplementation = DbUnitOfWork.class)
+    private UnitOfWork unitOfWork;
+
     public OrderService() {}
 
     public boolean createOrder(int orderId, List<Integer> bookIds, String customerName) {
-        int totalSum = 0;
-        List<Book> presentBooks = new ArrayList<>();
+        return unitOfWork.execute(() -> {
+            int totalSum = 0;
+            List<Book> presentBooks = new ArrayList<>();
 
-        for (int id : bookIds) {
-            Book book = bookStorageRepository.getBook(id);
+            for (int id : bookIds) {
+                Book book = bookStorageRepository.getBook(id);
 
-            // Проверка наличия книги
-            if (book != null) {
-                presentBooks.add(book);
-            } else continue;
+                // Проверка наличия книги
+                if (book != null) {
+                    presentBooks.add(book);
+                } else continue;
 
-            if (book.getStatus() != BookStatus.FREE) {;
-                requestManagerRepository.addRequest(book);
+                if (book.getStatus() != BookStatus.FREE) {;
+                    requestManagerRepository.addRequest(book);
 
-            } else {
-                book.setStatus(BookStatus.RESERVED, customerName);
+                } else {
+                    book.setStatus(BookStatus.RESERVED, customerName);
+                }
+
+                totalSum += book.getPrice();
             }
 
-            totalSum += book.getPrice();
-        }
+            if (!presentBooks.isEmpty()) {
+                Order order = new Order(orderId, presentBooks.stream().map(Book::getId).toList(), totalSum, customerName);
 
-        if (!presentBooks.isEmpty()) {
-            Order order = new Order(orderId, presentBooks.stream().map(Book::getId).toList(), totalSum, customerName);
+                if (orderManagerRepository.getOrder(orderId) != null) {
+                    cancelOrder(orderId);
+                }
 
-            if (orderManagerRepository.getOrder(orderId) != null) {
-                cancelOrder(orderId);
+                orderManagerRepository.addOrder(orderId, order);
+
+                for (Book book : presentBooks) {
+                    bookStorageRepository.updateBook(new BookDto(book, orderId));
+                }
+                return true;
             }
-
-            orderManagerRepository.addOrder(orderId, order);
-
-            for (Book book : presentBooks) {
-                bookStorageRepository.updateBook(new BookDto(book, orderId));
-            }
-            return true;
-        } else return false;
-
+            return false;
+        });
     }
 
     public void cancelOrder(int orderId) {
-        Order order = orderManagerRepository.getOrder(orderId);
-        order.setStatus(OrderStatus.CANCELED);
+        unitOfWork.executeVoid(() -> {
+            Order order = orderManagerRepository.getOrder(orderId);
+            order.setStatus(OrderStatus.CANCELED);
 
-        orderManagerRepository.updateOrder(order);
+            orderManagerRepository.updateOrder(order);
 
-        for (int bookId : order.getOrderedBookIds()) {
-            Book book = bookStorageRepository.getBook(bookId);
-            book.setStatus(BookStatus.FREE);
+            for (int bookId : order.getOrderedBookIds()) {
+                Book book = bookStorageRepository.getBook(bookId);
+                book.setStatus(BookStatus.FREE);
 
-            bookStorageRepository.updateBook(new BookDto(book, null));
-        }
+                bookStorageRepository.updateBook(new BookDto(book, null));
+            }
+        });
     }
 
     public boolean changeOrderStatus(int orderId, OrderStatus newStatus) {
-        Order order = orderManagerRepository.getOrder(orderId);
+        return unitOfWork.execute(() -> {
+            Order order = orderManagerRepository.getOrder(orderId);
 
-        if (newStatus == OrderStatus.COMPLETED) {
-            for (int bookId : order.getOrderedBookIds()) {
-                Book book = bookStorageRepository.getBook(bookId);
-                if (book.getStatus() != BookStatus.FREE && !Objects.equals(book.getReservist(), order.getCustomerName())) {
-                    return false;
+            if (newStatus == OrderStatus.COMPLETED) {
+                for (int bookId : order.getOrderedBookIds()) {
+                    Book book = bookStorageRepository.getBook(bookId);
+                    if (book.getStatus() != BookStatus.FREE && !Objects.equals(book.getReservist(), order.getCustomerName())) {
+                        return false;
+                    }
                 }
+
+                // Обновление даты
+                Calendar currentDate = Calendar.getInstance();
+                order.setCompletionDate(
+                        currentDate.get(Calendar.YEAR),
+                        currentDate.get(Calendar.MONTH) + 1,
+                        currentDate.get(Calendar.DATE)
+                );
+
+            }
+            order.setStatus(newStatus);
+            orderManagerRepository.updateOrder(order);
+
+            BookStatus requiredBookStatus = BookStatus.RESERVED;
+
+            switch (newStatus) {
+                case CANCELED -> requiredBookStatus = BookStatus.FREE;
+                case COMPLETED -> requiredBookStatus = BookStatus.SOLD_OUT;
             }
 
-            // Обновление даты
-            Calendar currentDate = Calendar.getInstance();
-            order.setCompletionDate(
-                    currentDate.get(Calendar.YEAR),
-                    currentDate.get(Calendar.MONTH) + 1,
-                    currentDate.get(Calendar.DATE)
-            );
+            for (int bookId : order.getOrderedBookIds()) {
 
-        }
-        order.setStatus(newStatus);
-        orderManagerRepository.updateOrder(order);
+                Book book = bookStorageRepository.getBook(bookId);
+                book.setStatus(requiredBookStatus);
 
-        BookStatus requiredBookStatus = BookStatus.RESERVED;
+                bookStorageRepository
+                        .updateBook(new BookDto(book, requiredBookStatus == BookStatus.RESERVED ? orderId : null));
+            }
 
-        switch (newStatus) {
-            case CANCELED -> requiredBookStatus = BookStatus.FREE;
-            case COMPLETED -> requiredBookStatus = BookStatus.SOLD_OUT;
-        }
-
-        for (int bookId : order.getOrderedBookIds()) {
-
-            Book book = bookStorageRepository.getBook(bookId);
-            book.setStatus(requiredBookStatus);
-
-            bookStorageRepository
-                    .updateBook(new BookDto(book, requiredBookStatus == BookStatus.RESERVED ? orderId : null));
-        }
-
-        return true;
+            return true;
+        });
     }
 }

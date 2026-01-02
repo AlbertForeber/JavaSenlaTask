@@ -27,10 +27,7 @@ public class OrderDao extends AbstractGenericDao<OrderDto, Integer> {
 
     @Override
     protected String getInsertFields(OrderDto entity) {
-        StringBuilder stringBuilder = new StringBuilder("id, customer_name, total_sum, status");
-        if (entity.getCompletionDate() != null) stringBuilder.append(" ,").append("completion_date");
-
-        return stringBuilder.toString();
+        return "id, customer_name, total_sum, status, completion_date";
     }
 
     @Override

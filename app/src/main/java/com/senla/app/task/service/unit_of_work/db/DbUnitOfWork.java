@@ -8,55 +8,37 @@ import com.senla.app.task.service.unit_of_work.UnitOfWork;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class DbUnitOfWork implements UnitOfWork {
-    Connection connection = DbConnection.getInstance().initOrGetConnection();
+public class DbUnitOfWork extends AbstractUnitOfWork {
+    private final Connection connection = DbConnection.getInstance().initOrGetConnection();
+
+    public DbUnitOfWork() {}
 
     @Override
-    public void begin() {
+    protected void doBegin() {
         try {
             connection.setAutoCommit(false);
         } catch (Exception e) {
-            throw new RuntimeException("Ошибка начала транзакции");
+            throw new RuntimeException(e.getMessage());
         }
     }
 
     @Override
-    public void commit() {
+    protected void doCommit() {
         try {
             connection.commit();
+            connection.setAutoCommit(true);
         } catch (Exception e) {
-            throw new RuntimeException("Ошибка подтверждения транзакции");
+            throw new RuntimeException(e.getMessage());
         }
     }
 
     @Override
-    public void rollback() {
+    protected void doRollback() {
         try {
             connection.rollback();
+            connection.setAutoCommit(true);
         } catch (Exception e) {
-            throw new RuntimeException("Ошибка отката транзакции");
+            throw new RuntimeException(e.getMessage());
         }
-    }
-
-    @Override
-    public <T, E extends Exception> T execute(ThrowingSupplier<T, E> operation) throws E {
-        begin();
-        try {
-            T result = operation.get();
-            commit();
-        } catch (Exception e) {
-            rollback();
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public <E extends Exception> void executeVoid(ThrowingRunnable<E> operation) throws E {
-
-    }
-
-    @Override
-    public void close() throws Exception {
-
     }
 }

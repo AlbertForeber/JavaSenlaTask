@@ -13,6 +13,7 @@ public class InjectProcessor {
     public static void addDependency(Class<?> clazz, Object object) {
         DEPENDENCIES.put(clazz, object);
     }
+
     public static void injectDependencies(Object object) throws IllegalArgumentException {
         Class<?> clazz = object.getClass();
 
@@ -23,7 +24,6 @@ public class InjectProcessor {
 
 
             if (annotation != null) {
-
 
 
                 Class<?> useImplementation = annotation.useImplementation();
@@ -42,7 +42,7 @@ public class InjectProcessor {
                         Constructor<?> constructor;
 
                         if (useImplementation != Object.class) {
-                            if (Arrays.stream(useImplementation.getInterfaces()).noneMatch(x -> x == fieldType))
+                            if (!checkFieldType(useImplementation, fieldType))
                                 throw new IllegalArgumentException("Указанная реализация '" + useImplementation.getSimpleName() +
                                         "' не наследует заданный тип поля '" + fieldType.getSimpleName() + "'");
                             constructor = useImplementation.getConstructor();
@@ -83,5 +83,21 @@ public class InjectProcessor {
                 }
             }
         }
+    }
+
+    private static boolean checkFieldType(Class<?> checkingType, Class<?> fieldType) {
+        if (checkingType == fieldType) return true;
+        if (checkingType.getSuperclass() == fieldType) return true;
+        if (Arrays.stream(checkingType.getInterfaces()).anyMatch(o -> o == fieldType)) return true;
+
+        if (checkingType.getSuperclass() != null && checkFieldType(checkingType.getSuperclass(), fieldType)) {
+            return true;
+        }
+
+        for (Class<?> i : checkingType.getInterfaces()) {
+            if (checkFieldType(i, fieldType)) return true;
+        }
+
+        return false;
     }
 }

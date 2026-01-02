@@ -8,6 +8,7 @@ import com.senla.app.task.service.storage.io.StorageExportService;
 import com.senla.app.task.service.storage.io.StorageImportService;
 import com.senla.app.task.service.storage.io.csv.CsvStorageExportService;
 import com.senla.app.task.service.storage.io.csv.CsvStorageImportService;
+import com.senla.app.task.service.unit_of_work.TransactionException;
 import com.senla.app.task.utils.Colors;
 import com.senla.app.task.utils.DataConverter;
 import com.senla.app.task.view.IOHandler;
@@ -45,6 +46,9 @@ public class StorageController extends BaseController {
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
         }
+        catch (TransactionException e) {
+            ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
+        }
         catch (Exception e) {
             ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET + e.getMessage());
         }
@@ -58,6 +62,9 @@ public class StorageController extends BaseController {
             storageService.addBookToStorage(Integer.parseInt(ioHandler.handleInput()));
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
+        }
+        catch (TransactionException e) {
+            ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
         }
         catch (Exception e) {
             ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET);
@@ -87,13 +94,17 @@ public class StorageController extends BaseController {
         };
 
         if (bookSortBy == null) {
-            ioHandler.showMessage(Colors.YELLOW + "Выбран неверный пункт меню" + Colors.RESET);
+            ioHandler.showMessage(Colors.YELLOW + "ВЫБРАН НЕВЕРНЫЙ ПУНКТ МЕНЮ" + Colors.RESET);
             return;
         }
 
-        storageQueryService.getSorted(bookSortBy).stream()
-                .map(Object::toString)
-                .forEach(ioHandler::showMessage);
+        try {
+            storageQueryService.getSorted(bookSortBy).stream()
+                    .map(Object::toString)
+                    .forEach(ioHandler::showMessage);
+        } catch (Exception e) {
+            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+        }
     }
 
     public void getHardToSell() {
@@ -103,7 +114,11 @@ public class StorageController extends BaseController {
         int[] date = DataConverter.getDateInArray(input);
 
         if (date != null) {
-            storageQueryService.getHardToSell(date[2], date[1], date[0]).forEach(System.out::println);
+            try {
+                storageQueryService.getHardToSell(date[2], date[1], date[0]).forEach(System.out::println);
+            } catch (Exception e) {
+                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+            }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
 
     }
@@ -117,7 +132,7 @@ public class StorageController extends BaseController {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
         }
         catch (Exception e) {
-            ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET);
+            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
         }
     }
 

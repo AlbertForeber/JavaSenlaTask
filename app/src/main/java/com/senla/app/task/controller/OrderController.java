@@ -9,6 +9,7 @@ import com.senla.app.task.service.order.io.OrderExportService;
 import com.senla.app.task.service.order.io.OrderImportService;
 import com.senla.app.task.service.order.io.csv.CsvOrderExportService;
 import com.senla.app.task.service.order.io.csv.CsvOrderImportService;
+import com.senla.app.task.service.unit_of_work.TransactionException;
 import com.senla.app.task.utils.Colors;
 import com.senla.app.task.utils.DataConverter;
 import com.senla.app.task.view.IOHandler;
@@ -61,9 +62,13 @@ public class OrderController extends BaseController {
             }
         }
 
-        if (orderService.createOrder(orderId, bookIds, customerName)) {
-            ioHandler.showMessage(Colors.YELLOW + "Заказ #" + orderId + " создан" + Colors.RESET);
-        } else ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ПРИ СОЗДАНИИ ЗАКАЗА #" + orderId + Colors.RESET);
+        try {
+            if (orderService.createOrder(orderId, bookIds, customerName)) {
+                ioHandler.showMessage(Colors.YELLOW + "Заказ #" + orderId + " создан" + Colors.RESET);
+            } else ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ПРИ СОЗДАНИИ ЗАКАЗА #" + orderId + Colors.RESET);
+        } catch (TransactionException e) {
+            ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
+        }
 
 
     }
@@ -72,7 +77,11 @@ public class OrderController extends BaseController {
         ioHandler.showMessage(Colors.BLUE + "Введите ID заказа" + Colors.RESET);
         int orderId = Integer.parseInt(ioHandler.handleInput());
 
-        orderService.cancelOrder(orderId);
+        try {
+            orderService.cancelOrder(orderId);
+        } catch (TransactionException e) {
+            ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
+        }
 
         ioHandler.showMessage(Colors.YELLOW + "Заказ #" + orderId + " отменен" + Colors.RESET);
     }
@@ -96,9 +105,13 @@ public class OrderController extends BaseController {
             return;
         }
 
-        if (orderService.changeOrderStatus(orderId, newStatus)) {
-            ioHandler.showMessage(Colors.YELLOW + "Статус заказа #" + orderId + " успешно изменен" + Colors.RESET);
-        } else ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ИЗМЕНЕНИЯ СТАТУСА ЗАКАЗА #" + orderId + Colors.RESET);
+        try {
+            if (orderService.changeOrderStatus(orderId, newStatus)) {
+                ioHandler.showMessage(Colors.YELLOW + "Статус заказа #" + orderId + " успешно изменен" + Colors.RESET);
+            } else ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ИЗМЕНЕНИЯ СТАТУСА ЗАКАЗА #" + orderId + Colors.RESET);
+        } catch (TransactionException e) {
+            ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
+        }
     }
 
     public void getSorted() {
@@ -124,9 +137,13 @@ public class OrderController extends BaseController {
             return;
         }
 
-        orderQueryService.getSorted(orderSortBy).stream()
-                .map(Object::toString)
-                .forEach(ioHandler::showMessage);
+        try {
+            orderQueryService.getSorted(orderSortBy).stream()
+                    .map(Object::toString)
+                    .forEach(ioHandler::showMessage);
+        } catch (Exception e) {
+            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+        }
     }
 
     public void getCompletedOrdersInInterval() {
@@ -139,7 +156,11 @@ public class OrderController extends BaseController {
         int[] dateTo = DataConverter.getDateInArray(input);
 
         if (dateFrom != null && dateTo != null) {
-            ioHandler.showMessage(orderQueryService.getCompletedOrdersInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]).toString());
+            try {
+                ioHandler.showMessage(orderQueryService.getCompletedOrdersInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]).toString());
+            } catch (Exception e) {
+                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+            }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
 
     }
@@ -154,7 +175,11 @@ public class OrderController extends BaseController {
         int[] dateTo = DataConverter.getDateInArray(input);
 
         if (dateFrom != null && dateTo != null) {
-            ioHandler.showMessage(Long.toString(orderQueryService.getIncomeInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0])));
+            try {
+                ioHandler.showMessage(Long.toString(orderQueryService.getIncomeInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0])));
+            } catch (Exception e) {
+                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+            }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
     }
 
@@ -168,7 +193,11 @@ public class OrderController extends BaseController {
         int[] dateTo = DataConverter.getDateInArray(input);
 
         if (dateFrom != null && dateTo != null) {
-            ioHandler.showMessage(Integer.toString(orderQueryService.getOrderAmountInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0])));
+            try {
+                ioHandler.showMessage(Integer.toString(orderQueryService.getOrderAmountInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0])));
+            } catch (Exception e) {
+                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+            }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
     }
 
@@ -180,6 +209,8 @@ public class OrderController extends BaseController {
             ioHandler.showMessage(orderQueryService.getOrderDetails(orderId));
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
+        } catch (Exception e) {
+            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
         }
     }
 
