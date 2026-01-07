@@ -4,6 +4,8 @@ import com.senla.app.task.controller.MainController;
 import com.senla.app.task.view.Navigator;
 import com.senla.app.task.view.console.ConsoleNavigator;
 import com.senla.app.task.view.enums.NavigateTo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public class Application {
@@ -19,6 +21,7 @@ public class Application {
 
         mainController.injectDependencies();
         // mainController.loadState();
+
         navigator.navigateTo(NavigateTo.MAIN);
     }
 }

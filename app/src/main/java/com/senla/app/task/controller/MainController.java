@@ -51,15 +51,15 @@ public class MainController extends BaseController {
     }
 
 
-    public void applyConfig(List<Object> applyConfigFor) {
-        for (Object o : applyConfigFor) {
-            try {
-                ConfigProcessor.applyConfig(o);
-            } catch (IllegalArgumentException e) {
-                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
-            }
-        }
-    }
+//    public void applyConfig(List<Object> applyConfigFor) {
+//        for (Object o : applyConfigFor) {
+//            try {
+//                ConfigProcessor.applyConfig(o);
+//            } catch (IllegalArgumentException e) {
+//                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
+//            }
+//        }
+//    }
 
     public void loadState() {
         try {

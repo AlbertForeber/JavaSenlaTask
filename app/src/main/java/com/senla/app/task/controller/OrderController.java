@@ -1,6 +1,7 @@
 package com.senla.app.task.controller;
 
 import com.senla.annotation.InjectTo;
+import com.senla.app.Application;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
 import com.senla.app.task.model.entity.status.OrderStatus;
 import com.senla.app.task.service.order.OrderQueryService;
@@ -14,6 +15,8 @@ import com.senla.app.task.utils.Colors;
 import com.senla.app.task.utils.DataConverter;
 import com.senla.app.task.view.IOHandler;
 import com.senla.app.task.view.console.ConsoleIOHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,7 +25,7 @@ import java.util.List;
 
 public class OrderController extends BaseController {
 
-    @InjectTo()
+    @InjectTo
     private OrderService orderService;
 
     @InjectTo
@@ -36,6 +39,8 @@ public class OrderController extends BaseController {
 
     @InjectTo(useImplementation = ConsoleIOHandler.class)
     private IOHandler ioHandler;
+
+    private static final Logger logger = LogManager.getLogger(OrderController.class);
 
     public OrderController() {
         super();
@@ -62,11 +67,17 @@ public class OrderController extends BaseController {
             }
         }
 
+        logger.info("Начало обработки добавления заказа");
+
         try {
             if (orderService.createOrder(orderId, bookIds, customerName)) {
                 ioHandler.showMessage(Colors.YELLOW + "Заказ #" + orderId + " создан" + Colors.RESET);
-            } else ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ПРИ СОЗДАНИИ ЗАКАЗА #" + orderId + Colors.RESET);
+            } else {
+                logger.error("Ошибка при создании заказа #{}", orderId);
+                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ПРИ СОЗДАНИИ ЗАКАЗА #" + orderId + Colors.RESET);
+            }
         } catch (TransactionException e) {
+            logger.error(e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
         }
 
@@ -77,9 +88,12 @@ public class OrderController extends BaseController {
         ioHandler.showMessage(Colors.BLUE + "Введите ID заказа" + Colors.RESET);
         int orderId = Integer.parseInt(ioHandler.handleInput());
 
+        logger.info("Начало обработки отмены заказа");
+        
         try {
             orderService.cancelOrder(orderId);
         } catch (TransactionException e) {
+            logger.error(e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
         }
 
@@ -93,6 +107,8 @@ public class OrderController extends BaseController {
         ioHandler.showMessage(Colors.BLUE + "Введите новый статус заказа (NEW/CANCELED/COMPLETED)" + Colors.RESET);
         String newStatusString = ioHandler.handleInput();
 
+        logger.info("Начало обработки смены статуса заказа");
+        
         OrderStatus newStatus = switch (newStatusString) {
             case "NEW" -> OrderStatus.NEW;
             case "CANCELED" -> OrderStatus.CANCELED;
@@ -108,8 +124,12 @@ public class OrderController extends BaseController {
         try {
             if (orderService.changeOrderStatus(orderId, newStatus)) {
                 ioHandler.showMessage(Colors.YELLOW + "Статус заказа #" + orderId + " успешно изменен" + Colors.RESET);
-            } else ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ИЗМЕНЕНИЯ СТАТУСА ЗАКАЗА #" + orderId + Colors.RESET);
+            } else {
+                logger.error("Ошибка изменения статуса заказа #{}", orderId);
+                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ИЗМЕНЕНИЯ СТАТУСА ЗАКАЗА #" + orderId + Colors.RESET);
+            }
         } catch (TransactionException e) {
+            logger.error(e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
         }
     }
@@ -137,11 +157,14 @@ public class OrderController extends BaseController {
             return;
         }
 
+        logger.info("Начало обработки вывода отсортированных заказов");
+
         try {
             orderQueryService.getSorted(orderSortBy).stream()
                     .map(Object::toString)
                     .forEach(ioHandler::showMessage);
         } catch (Exception e) {
+            logger.error("Ошибка доступа к базе при получении отсортированных заказов: {}", e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
         }
     }
@@ -155,11 +178,14 @@ public class OrderController extends BaseController {
         input = ioHandler.handleInput();
         int[] dateTo = DataConverter.getDateInArray(input);
 
+        logger.info("Начало обработки вывода выполненых в интервал заказов");
+
         if (dateFrom != null && dateTo != null) {
             try {
                 ioHandler.showMessage(orderQueryService.getCompletedOrdersInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]).toString());
             } catch (Exception e) {
-                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+                logger.error("Ошибка доступа к базе: {}", e.getMessage());
+ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
             }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
 
@@ -174,10 +200,13 @@ public class OrderController extends BaseController {
         input = ioHandler.handleInput();
         int[] dateTo = DataConverter.getDateInArray(input);
 
+        logger.info("Начало обработки вывода прибыли за интервал");
+
         if (dateFrom != null && dateTo != null) {
             try {
                 ioHandler.showMessage(Long.toString(orderQueryService.getIncomeInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0])));
             } catch (Exception e) {
+                logger.error("Ошибка доступа к базе при выводе прибыли: {}", e.getMessage());
                 ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
             }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
@@ -192,10 +221,13 @@ public class OrderController extends BaseController {
         input = ioHandler.handleInput();
         int[] dateTo = DataConverter.getDateInArray(input);
 
+        logger.info("Начало обработки вывода количества выполненых в интервал заказов");
+        
         if (dateFrom != null && dateTo != null) {
             try {
                 ioHandler.showMessage(Integer.toString(orderQueryService.getOrderAmountInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0])));
             } catch (Exception e) {
+                logger.error("Ошибка доступа к базе при выводе количества заказов: {}", e.getMessage());
                 ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
             }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
@@ -204,12 +236,15 @@ public class OrderController extends BaseController {
     public void getOrderDetails() {
         ioHandler.showMessage(Colors.BLUE + "Введите ID заказа" + Colors.RESET);
 
+        logger.info("Начало обработки вывода деталей заказов");
+        
         try {
             int orderId = Integer.parseInt(ioHandler.handleInput());
             ioHandler.showMessage(orderQueryService.getOrderDetails(orderId));
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
         } catch (Exception e) {
+            logger.error("Ошибка доступа к базе при выводе деталей: {}", e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
         }
     }

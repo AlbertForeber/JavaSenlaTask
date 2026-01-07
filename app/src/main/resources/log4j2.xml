@@ -1,0 +1,13 @@
+<Configuration status="WARN">
+    <Appenders>
+        <File name="FileAppender" fileName="logs/last_log.log" append="false">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{20} - %msg%n" />
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="FileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>
