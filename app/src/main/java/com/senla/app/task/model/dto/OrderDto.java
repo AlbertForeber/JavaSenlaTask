@@ -1,7 +1,6 @@
 package com.senla.app.task.model.dto;
 
 import com.senla.app.task.model.entity.Order;
-import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.model.entity.status.OrderStatus;
 import com.senla.app.task.utils.DataConverter;
 
@@ -9,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class OrderDto {
+
     private final int id;
     private final String customerName;
     private final int totalSum;

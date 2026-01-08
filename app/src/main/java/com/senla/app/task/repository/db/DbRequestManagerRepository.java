@@ -12,13 +12,13 @@ import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.RequestManagerRepository;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 public class DbRequestManagerRepository implements RequestManagerRepository {
+
 
     @InjectTo
     RequestDao requestDao;
@@ -43,10 +43,9 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
 
             if (!alreadyIn.isEmpty()) {
                 RequestDto toUpdate = alreadyIn.getFirst();
-                requestDao.update(new RequestDto(toUpdate.getId(), toUpdate.getBookId(), book.getTitle(),toUpdate.getAmount() + 1));
+                requestDao.update(new RequestDto(toUpdate.getId(), toUpdate.getBookId(), book.getTitle(), toUpdate.getAmount() + 1));
             } else
                 requestDao.save(new RequestDto(book.getId(), book.getTitle(), 1));
-
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
@@ -75,7 +74,6 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
-
     }
 
     @Override
@@ -91,7 +89,6 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
 
             if (comparator != null) return requests.sorted(comparator).toList();
             return requests.toList();
-
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }

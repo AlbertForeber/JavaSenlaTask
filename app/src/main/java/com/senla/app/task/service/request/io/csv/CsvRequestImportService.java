@@ -18,7 +18,7 @@ public class CsvRequestImportService implements RequestImportService {
     @InjectTo(useImplementation = DbRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
-    public CsvRequestImportService() {}
+    public CsvRequestImportService() { }
 
     @Override
     public void importRequest(String fileName) throws IllegalArgumentException, IOException {

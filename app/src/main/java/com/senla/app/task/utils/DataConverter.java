@@ -10,7 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class DataConverter {
-    private DataConverter() {}
+
+    private DataConverter() { }
 
     static public int[] getDateInArray(String date) {
 
@@ -40,7 +41,7 @@ public final class DataConverter {
     static public Calendar localDateToCalendar(LocalDate localDate) {
         return new GregorianCalendar(
                 localDate.getYear(),
-                localDate.getMonth().getValue()-1,
+                localDate.getMonth().getValue() - 1,
                 localDate.getDayOfMonth()
         );
     }

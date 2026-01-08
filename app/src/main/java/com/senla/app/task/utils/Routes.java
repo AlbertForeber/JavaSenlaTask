@@ -3,6 +3,7 @@ package com.senla.app.task.utils;
 import java.io.File;
 
 public final class Routes {
+
     private final static String DELIMITER = File.separator;
     public final static String PATH_TO_STATE = "." + DELIMITER + "state" + DELIMITER;
 

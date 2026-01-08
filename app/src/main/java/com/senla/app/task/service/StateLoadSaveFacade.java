@@ -18,7 +18,7 @@ public class StateLoadSaveFacade {
     @InjectTo(configurable = true)
     private StorageQueryService storageQueryService;
 
-    public StateLoadSaveFacade() {}
+    public StateLoadSaveFacade() { }
 
     public void loadState(String path) throws IOException, ClassNotFoundException, IllegalArgumentException {
         checkPath(path);

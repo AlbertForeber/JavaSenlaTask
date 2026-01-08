@@ -35,7 +35,7 @@ public class OrderService {
     @InjectTo(useImplementation = DbUnitOfWork.class)
     private UnitOfWork unitOfWork;
 
-    public OrderService() {}
+    public OrderService() { }
 
     public boolean createOrder(int orderId, List<Integer> bookIds, String customerName) {
         return unitOfWork.execute(() -> {
@@ -50,9 +50,8 @@ public class OrderService {
                     presentBooks.add(book);
                 } else continue;
 
-                if (book.getStatus() != BookStatus.FREE) {;
+                if (book.getStatus() != BookStatus.FREE) {
                     requestManagerRepository.addRequest(book);
-
                 } else {
                     book.setStatus(BookStatus.RESERVED, customerName);
                 }
@@ -113,7 +112,6 @@ public class OrderService {
                         currentDate.get(Calendar.MONTH) + 1,
                         currentDate.get(Calendar.DATE)
                 );
-
             }
             order.setStatus(newStatus);
             orderManagerRepository.updateOrder(order);

@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class RequestController extends BaseController {
+
     @InjectTo
     private RequestService requestService;
 
@@ -55,12 +56,10 @@ public class RequestController extends BaseController {
 
         try {
             requestService.createRequest(bookId);
-        }
-        catch (TransactionException e) {
+        } catch (TransactionException e) {
             logger.error(e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Книга недоступна");
             ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET);
         }
@@ -126,7 +125,6 @@ public class RequestController extends BaseController {
 
             requestExportService.exportRequest(requestId, ioHandler.handleInput());
             ioHandler.showMessage(Colors.YELLOW + "Запрос с ID: '" + requestId + "' успешно экспортирован" + Colors.RESET);
-
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
         } catch (IOException e) {
@@ -135,5 +133,4 @@ public class RequestController extends BaseController {
             ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
         }
     }
-
 }

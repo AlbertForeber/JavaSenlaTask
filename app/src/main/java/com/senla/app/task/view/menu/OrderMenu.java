@@ -8,6 +8,7 @@ import com.senla.app.task.view.enums.NavigateTo;
 import java.util.List;
 
 public class OrderMenu implements Menu {
+
     private final List<MenuAction> menu;
     private final Navigator navigator;
 
@@ -72,7 +73,6 @@ public class OrderMenu implements Menu {
         actionId -= 1;
         if (!(actionId < 0 || actionId >= menu.size())) {
             menu.get(actionId).performAction();
-        }
-        else navigator.navigateTo(NavigateTo.ORDER);
+        } else navigator.navigateTo(NavigateTo.ORDER);
     }
 }

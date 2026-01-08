@@ -8,6 +8,7 @@ import com.senla.app.task.view.enums.NavigateTo;
 import java.util.List;
 
 public class RequestMenu implements Menu {
+
     private final List<MenuAction> menu;
     private final Navigator navigator;
 

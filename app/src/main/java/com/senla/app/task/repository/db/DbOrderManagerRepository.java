@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DbOrderManagerRepository implements OrderManagerRepository {
+
     @InjectTo
     OrderDao orderDao;
 
@@ -57,7 +58,6 @@ public class DbOrderManagerRepository implements OrderManagerRepository {
 
             if (orderDto == null) return null;
             return orderDto.toBusinessObject(orderedBookIds);
-
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
@@ -74,7 +74,7 @@ public class DbOrderManagerRepository implements OrderManagerRepository {
         };
 
         try {
-            List<Order> arr = convertOrderDtosToOrders (orderDao.findAll());
+            List<Order> arr = convertOrderDtosToOrders(orderDao.findAll());
 
             if (sortBy == OrderSortBy.COMPLETION_DATE || sortBy == OrderSortBy.PRICE_DATE) {
                 arr = arr.stream().filter(x -> x.getCompletionDate() != null).collect(Collectors.toList());

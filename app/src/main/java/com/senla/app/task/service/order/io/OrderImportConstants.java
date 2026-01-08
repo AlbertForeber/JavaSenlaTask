@@ -6,6 +6,7 @@ import java.util.Set;
 
 // Добавили константы для обозначения доступных в order полей для лучшей гибкости кода
 public class OrderImportConstants {
+
     public static final Set<String> REQUIRED_FIELDS = new LinkedHashSet<>(List.of(
             "id", "bookIds", "customerName", "status"
     ));

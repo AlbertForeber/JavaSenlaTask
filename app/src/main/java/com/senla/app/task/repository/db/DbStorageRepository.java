@@ -9,8 +9,6 @@ import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.model.dto.BookDto;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -67,7 +65,6 @@ public class DbStorageRepository implements StorageRepository {
 
             if (comparator != null) return books.sorted(comparator).toList();
             return books.toList();
-
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }

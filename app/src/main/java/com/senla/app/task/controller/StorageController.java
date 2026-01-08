@@ -57,16 +57,13 @@ public class StorageController extends BaseController {
 
         try {
             storageService.writeOffBook(bookId);
-        }
-        catch (TransactionException e) {
+        } catch (TransactionException e) {
             logger.error(e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Книга недоступна: {}", e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET + e.getMessage());
         }
-
     }
 
     public void addBookToStorage() {
@@ -84,12 +81,10 @@ public class StorageController extends BaseController {
 
         try {
             storageService.addBookToStorage(bookId);
-        }
-        catch (TransactionException e) {
+        } catch (TransactionException e) {
             logger.error(e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Книга недоступна");
             ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET);
         }
@@ -149,7 +144,6 @@ public class StorageController extends BaseController {
                 ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
             }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
-
     }
 
     public void getBookDescription() {
@@ -167,8 +161,7 @@ public class StorageController extends BaseController {
 
         try {
             ioHandler.showMessage(storageQueryService.getBookDescription(bookId));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Ошибка доступа к базе: {}", e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
         }
@@ -201,7 +194,6 @@ public class StorageController extends BaseController {
 
             storageExportService.exportBook(requestId, ioHandler.handleInput());
             ioHandler.showMessage(Colors.YELLOW + "Книга с ID: '" + requestId + "' успешно экспортирована" + Colors.RESET);
-
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
         } catch (IOException e) {

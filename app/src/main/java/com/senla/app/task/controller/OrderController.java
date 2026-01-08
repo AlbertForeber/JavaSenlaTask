@@ -1,7 +1,6 @@
 package com.senla.app.task.controller;
 
 import com.senla.annotation.InjectTo;
-import com.senla.app.Application;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
 import com.senla.app.task.model.entity.status.OrderStatus;
 import com.senla.app.task.service.order.OrderQueryService;
@@ -58,7 +57,7 @@ public class OrderController extends BaseController {
 
         List<Integer> bookIds = new ArrayList<>();
 
-        for (int i = 0; i < bookAmount; i ++) {
+        for (int i = 0; i < bookAmount; i++) {
             ioHandler.showMessage(Colors.BLUE + "Введите ID книги #" + (i + 1) + ":" + Colors.RESET);
             try {
                 bookIds.add(Integer.parseInt(ioHandler.handleInput()));
@@ -80,8 +79,6 @@ public class OrderController extends BaseController {
             logger.error(e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
         }
-
-
     }
 
     public void cancelOrder() {
@@ -89,7 +86,7 @@ public class OrderController extends BaseController {
         int orderId = Integer.parseInt(ioHandler.handleInput());
 
         logger.info("Начало обработки отмены заказа");
-        
+
         try {
             orderService.cancelOrder(orderId);
         } catch (TransactionException e) {
@@ -108,7 +105,7 @@ public class OrderController extends BaseController {
         String newStatusString = ioHandler.handleInput();
 
         logger.info("Начало обработки смены статуса заказа");
-        
+
         OrderStatus newStatus = switch (newStatusString) {
             case "NEW" -> OrderStatus.NEW;
             case "CANCELED" -> OrderStatus.CANCELED;
@@ -188,7 +185,6 @@ public class OrderController extends BaseController {
 ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
             }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
-
     }
 
     public void getIncomeInInterval() {
@@ -222,7 +218,7 @@ ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: 
         int[] dateTo = DataConverter.getDateInArray(input);
 
         logger.info("Начало обработки вывода количества выполненых в интервал заказов");
-        
+
         if (dateFrom != null && dateTo != null) {
             try {
                 ioHandler.showMessage(Integer.toString(orderQueryService.getOrderAmountInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0])));
@@ -237,7 +233,7 @@ ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: 
         ioHandler.showMessage(Colors.BLUE + "Введите ID заказа" + Colors.RESET);
 
         logger.info("Начало обработки вывода деталей заказов");
-        
+
         try {
             int orderId = Integer.parseInt(ioHandler.handleInput());
             ioHandler.showMessage(orderQueryService.getOrderDetails(orderId));
@@ -276,7 +272,6 @@ ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: 
 
             orderExportService.exportOrder(orderId, ioHandler.handleInput());
             ioHandler.showMessage(Colors.YELLOW + "Заказ с ID: '" + orderId + "' успешно экспортирован" + Colors.RESET);
-
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
         } catch (IOException e) {

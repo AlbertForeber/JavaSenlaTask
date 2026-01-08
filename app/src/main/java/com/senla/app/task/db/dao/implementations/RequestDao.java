@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class RequestDao extends AbstractGenericDao<RequestDto, Integer> {
+
     @Override
     protected String getTableName() {
         return "requests";

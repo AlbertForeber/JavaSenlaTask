@@ -8,6 +8,7 @@ import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import java.util.List;
 
 public interface RequestManagerRepository {
+
     void addRequest(int requestId, String bookName);
     void addRequest(Book book);
     Request getRequest(int requestId);

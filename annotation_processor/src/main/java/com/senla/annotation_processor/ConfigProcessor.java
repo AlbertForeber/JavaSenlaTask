@@ -8,7 +8,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 
-public class ConfigProcessor {
+public final class ConfigProcessor {
+
     private final static Map<Class<?>, Function<String, Object>> TYPE_PARSERS = Map.ofEntries(
             // Integer types
             Map.entry(Integer.class, Integer::valueOf),
@@ -44,7 +45,7 @@ public class ConfigProcessor {
             Map.entry(char.class, (String s) -> s.charAt(0))
     );
 
-    private ConfigProcessor() {}
+    private ConfigProcessor() { }
 
     public static void applyConfig(Object object) throws IllegalArgumentException {
         Class<?> clazz = object.getClass();

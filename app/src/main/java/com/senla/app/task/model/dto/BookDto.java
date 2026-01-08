@@ -7,6 +7,7 @@ import com.senla.app.task.utils.DataConverter;
 import java.time.LocalDate;
 
 public class BookDto {
+
     private final int id;
     private final String title;
     private final String description;
@@ -107,5 +108,4 @@ public class BookDto {
     public int getId() {
         return id;
     }
-
 }

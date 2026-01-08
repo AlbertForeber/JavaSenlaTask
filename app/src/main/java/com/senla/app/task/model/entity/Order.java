@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class Order implements Serializable {
+
     private final int id;
     private final List<Integer> orderedBookIds;
     private final String customerName;
@@ -15,7 +16,6 @@ public class Order implements Serializable {
     private Calendar completionDate = null;
     private OrderStatus status;
 
-    
     public Order(int id, List<Integer> bookIds, int totalSum, String customerName) {
         this.id = id;
         this.orderedBookIds = bookIds;

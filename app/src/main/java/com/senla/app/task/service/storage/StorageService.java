@@ -9,11 +9,11 @@ import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.repository.db.DbStorageRepository;
 import com.senla.app.task.model.dto.BookDto;
 import com.senla.app.task.repository.db.DbRequestManagerRepository;
-import com.senla.app.task.service.unit_of_work.TransactionException;
 import com.senla.app.task.service.unit_of_work.UnitOfWork;
 import com.senla.app.task.service.unit_of_work.db.DbUnitOfWork;
 
 public class StorageService {
+
     @InjectTo(useImplementation = DbStorageRepository.class)
     private StorageRepository bookStorageRepository;
 
@@ -23,10 +23,10 @@ public class StorageService {
     @InjectTo(useImplementation = DbUnitOfWork.class)
     private UnitOfWork unitOfWork;
 
-    @ConfigProperty(propertyName="cancelRequests", type=boolean.class)
+    @ConfigProperty(propertyName = "cancelRequests", type = boolean.class)
     private boolean cancelRequests = true;
 
-    public StorageService() {}
+    public StorageService() { }
 
     public void writeOffBook(int bookId) {
         unitOfWork.executeVoid(() -> {

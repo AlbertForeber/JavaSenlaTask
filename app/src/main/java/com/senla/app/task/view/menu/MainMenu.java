@@ -21,7 +21,7 @@ public class MainMenu implements Menu {
                 new MenuAction("1. Меню управления хранилищем", o -> navigator.navigateTo(NavigateTo.STORAGE)),
                 new MenuAction("2. Меню управления заказами",   o -> navigator.navigateTo(NavigateTo.ORDER)),
                 new MenuAction("3. Меню управления запросами",  o -> navigator.navigateTo(NavigateTo.REQUEST)),
-                new MenuAction("4. Выход",  o -> {} /* controller.saveState() */)
+                new MenuAction("4. Выход",  o -> { } /* controller.saveState() */)
         );
     }
 

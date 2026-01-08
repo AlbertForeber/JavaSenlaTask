@@ -11,6 +11,7 @@ import com.senla.app.task.model.dto.BookDto;
 import java.util.*;
 
 public class InMemoryStorageRepository implements StorageRepository {
+
     private final HashMap<Integer, Book> storage = new HashMap<>();
 
     public InMemoryStorageRepository() {
@@ -41,7 +42,7 @@ public class InMemoryStorageRepository implements StorageRepository {
     }
 
     @Override
-    public void updateBook(BookDto bookDto) {} // InMemory вариант не должен выполнять доп. операцию обновления
+    public void updateBook(BookDto bookDto) { } // InMemory вариант не должен выполнять доп. операцию обновления
 
     @Override
     public Book getBook(int bookId) {

@@ -16,13 +16,14 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class StorageQueryService {
+
     @InjectTo(useImplementation = DbStorageRepository.class)
     private StorageRepository bookStorageRepository;
 
-    @ConfigProperty(propertyName="liquidMonths", type=int.class)
+    @ConfigProperty(propertyName = "liquidMonths", type = int.class)
     private int liquidMonthAmount = 6;
 
-    public StorageQueryService() {}
+    public StorageQueryService() { }
 
     public List<Book> getSorted(BookSortBy sortBy) {
         return bookStorageRepository.getSortedBooks(sortBy);

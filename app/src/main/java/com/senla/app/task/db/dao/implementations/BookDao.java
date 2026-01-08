@@ -81,5 +81,4 @@ public class BookDao extends AbstractGenericDao<BookDto, Integer> {
     protected String additionalJoinQuery() {
         return "LEFT JOIN orders ON books.order_id=orders.id";
     }
-
 }

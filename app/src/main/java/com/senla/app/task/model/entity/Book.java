@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 
 public class Book implements Serializable {
+
     private final int id;
     private final String title;
     private final String description;

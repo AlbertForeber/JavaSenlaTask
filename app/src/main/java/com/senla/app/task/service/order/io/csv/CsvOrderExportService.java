@@ -20,7 +20,7 @@ public class CsvOrderExportService implements OrderExportService {
 
     private Order order;
 
-    public CsvOrderExportService() {}
+    public CsvOrderExportService() { }
 
     @Override
     public void exportOrder(int orderId, String path) throws IllegalArgumentException, IOException {
@@ -55,7 +55,6 @@ public class CsvOrderExportService implements OrderExportService {
             bw.write(completionDate != null ? (DataConverter.calendarToString(completionDate) + ";") : ";");
 
             bw.write(order.getStatus().name());
-
         }
     }
 }

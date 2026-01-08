@@ -8,6 +8,7 @@ import com.senla.app.task.view.header.Header;
 import com.senla.app.task.view.menu.Menu;
 
 public class ConsoleMenuBuilder implements MenuBuilder {
+
     private Menu currentMenu;
     private Header header;
 
