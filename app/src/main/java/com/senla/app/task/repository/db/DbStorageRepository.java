@@ -6,6 +6,7 @@ import com.senla.app.task.db.dao.implementations.BookDao;
 import com.senla.app.task.model.comparators.book.*;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
+import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.model.dto.BookDto;
 
@@ -52,22 +53,21 @@ public class DbStorageRepository implements StorageRepository {
 
     @Override
     public List<Book> getSortedBooks(BookSortBy sortBy) {
-        Comparator<Book> comparator = switch (sortBy) {
-            case TITLE -> new BookTitleComparator();
-            case PRICE -> new BookPriceComparator();
-            case AVAILABILITY -> new BookAvailabilityComparator();
-            case ADMISSION_DATE -> new BookAdmiDateComparator();
-            case PUBLICATION_DATE -> new BookPublDateComparator();
-            case DATE_PRICE -> new BookAdmiDatePriceComparator();
-            case NO_SORT -> null;
-        };
+        StringBuilder additionSortQuery = new StringBuilder("ORDER BY ");
+
+        switch (sortBy) {
+            case TITLE -> additionSortQuery.append("title");
+            case PUBLICATION_DATE -> additionSortQuery.append("publication_date");
+            case ADMISSION_DATE -> additionSortQuery.append("admission_date");
+            case PRICE -> additionSortQuery.append("price");
+            case AVAILABILITY -> additionSortQuery.append("books.status");
+            case DATE_PRICE -> additionSortQuery.append("admission_date, price");
+        }
 
         try {
-            Stream<Book> books = bookDao.findAll().stream().map(BookDto::toBusinessObject);
-
-            if (comparator != null) return books.sorted(comparator).toList();
-            return books.toList();
-
+            return bookDao.findAll(
+                    sortBy != BookSortBy.NO_SORT ? additionSortQuery.toString() : ""
+            ).stream().map(BookDto::toBusinessObject).toList();
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }

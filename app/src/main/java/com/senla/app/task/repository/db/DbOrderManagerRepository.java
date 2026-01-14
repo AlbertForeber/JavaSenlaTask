@@ -48,7 +48,7 @@ public class DbOrderManagerRepository implements OrderManagerRepository {
     @Override
     public Order getOrder(int orderId) {
         try {
-            List<Integer> orderedBookIds = bookDao.findAll()
+            List<Integer> orderedBookIds = bookDao.findAll("")
                     .stream()
                     .filter(o -> o.getOrderId() == orderId)
                     .map(BookDto::getId).toList();
@@ -65,23 +65,19 @@ public class DbOrderManagerRepository implements OrderManagerRepository {
 
     @Override
     public List<Order> getSortedOrders(OrderSortBy sortBy) {
-        Comparator<Order> comparator = switch (sortBy) {
-            case PRICE -> new OrderPriceComparator();
-            case STATUS -> new OrderStatusComparator();
-            case COMPLETION_DATE -> new OrderComplDateComparator();
-            case PRICE_DATE -> new OrderComplDatePriceComparator();
-            case NO_SORT -> null;
-        };
+        StringBuilder additionSortQuery = new StringBuilder("ORDER BY ");
+
+        switch (sortBy) {
+            case PRICE -> additionSortQuery.append("total_sum");
+            case STATUS -> additionSortQuery.append("status");
+            case COMPLETION_DATE -> additionSortQuery.append("completion_date");
+            case PRICE_DATE -> additionSortQuery.append("total_sum, completion_date");
+        }
 
         try {
-            List<Order> arr = convertOrderDtosToOrders (orderDao.findAll());
-
-            if (sortBy == OrderSortBy.COMPLETION_DATE || sortBy == OrderSortBy.PRICE_DATE) {
-                arr = arr.stream().filter(x -> x.getCompletionDate() != null).collect(Collectors.toList());
-            }
-
-            if (comparator != null) arr.sort(comparator);
-            return arr;
+            return convertOrderDtosToOrders(
+                    orderDao.findAll(sortBy != OrderSortBy.NO_SORT? additionSortQuery.toString() : "")
+            );
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
@@ -98,7 +94,7 @@ public class DbOrderManagerRepository implements OrderManagerRepository {
     }
 
     private List<Order> convertOrderDtosToOrders(List<OrderDto> orderDtos) throws SQLException {
-        List<BookDto> currentBooks = bookDao.findAll();
+        List<BookDto> currentBooks = bookDao.findAll("");
         HashMap<Integer, ArrayList<Integer>> orderToBooks = new HashMap<>();
 
         ArrayList<Order> toReturn = new ArrayList<>();
