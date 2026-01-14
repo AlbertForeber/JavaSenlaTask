@@ -8,7 +8,7 @@ import java.util.List;
 public interface GenericDao<T, ID> {
 
     T findById(ID id) throws SQLException;
-    List<T> findAll() throws SQLException;
+    List<T> findAll(String additionalOrderQuery) throws SQLException;
     void save(T entity) throws SQLException;
     void update(T entity) throws SQLException;
     void delete(ID id) throws SQLException;

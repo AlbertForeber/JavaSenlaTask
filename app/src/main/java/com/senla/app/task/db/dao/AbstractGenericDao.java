@@ -52,9 +52,9 @@ public abstract class AbstractGenericDao<T, ID> implements GenericDao<T, ID> {
     }
 
     @Override
-    public List<T> findAll() throws SQLException {
+    public List<T> findAll(String additionOrderQuery) throws SQLException {
         try (
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + getTableName() + " " + additionalJoinQuery())
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + getTableName() + " " + additionalJoinQuery() + " " + additionOrderQuery)
         ) {
             // Аналогичная проблема
 //            preparedStatement.setString(1, getTableName());
