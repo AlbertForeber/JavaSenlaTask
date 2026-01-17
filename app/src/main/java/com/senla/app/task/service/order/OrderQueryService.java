@@ -1,0 +1,107 @@
+package com.senla.app.task.service.order;
+
+import com.senla.annotation.InjectTo;
+import com.senla.app.task.repository.OrderManagerRepository;
+import com.senla.app.task.model.entity.Order;
+import com.senla.app.task.model.entity.sortby.OrderSortBy;
+import com.senla.app.task.model.entity.status.OrderStatus;
+import com.senla.app.task.repository.db.DbOrderManagerRepository;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
+
+
+// Сервис, а не фасад, так как содержит бизнес-логику, а не простые вызовы готовых методов
+// + все методы отвечают за одну предметную область.
+
+public class OrderQueryService {
+
+    @InjectTo(useImplementation = DbOrderManagerRepository.class)
+    private OrderManagerRepository orderManagerRepository;
+
+    public OrderQueryService() {}
+
+    public List<Order> getSorted(OrderSortBy sortBy) {
+        return orderManagerRepository.getSortedOrders(sortBy);
+    }
+
+    public List<Order> getCompletedOrdersInInterval(
+            int fromYear,
+            int fromMonth,
+            int fromDate,
+            int toYear,
+            int toMonth,
+            int toDate
+    ) {
+        List<Order> orders = orderManagerRepository.getSortedOrders(OrderSortBy.PRICE_DATE);
+        List<Order> toReturn = new ArrayList<>();
+
+        long from = new GregorianCalendar(fromYear, fromMonth - 1, fromDate).getTimeInMillis();
+        long to = new GregorianCalendar(toYear, toMonth - 1, toDate).getTimeInMillis();
+
+        for (Order order : orders) {
+            long orderTime = order.getCompletionDate().getTimeInMillis();
+            if (from <= orderTime && orderTime <= to && order.getStatus() == OrderStatus.COMPLETED) {
+                toReturn.add(order);
+            }
+        }
+
+        return toReturn;
+    }
+
+    public long getIncomeInInterval (
+            int fromYear,
+            int fromMonth,
+            int fromDate,
+            int toYear,
+            int toMonth,
+            int toDate
+    ) {
+        int toReturn = 0;
+
+        for (Order order : getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate)) {
+            toReturn += order.getTotalSum();
+        }
+
+        return toReturn;
+    }
+
+    public int getOrderAmountInInterval (
+            int fromYear,
+            int fromMonth,
+            int fromDate,
+            int toYear,
+            int toMonth,
+            int toDate
+    ) {
+        return getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate).size();
+    }
+
+    public String getOrderDetails(int orderId) {
+        return orderManagerRepository.getOrder(orderId).toString();
+    }
+
+    public void saveState(String path) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path + "order"))) {
+            for (Order order : orderManagerRepository.getSortedOrders(OrderSortBy.NO_SORT)) {
+                oos.writeObject(order);
+            }
+        }
+    }
+
+    public void loadState(String path) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path + "order"))) {
+            Order order;
+            while (true) {
+                try {
+                    order = (Order) ois.readObject();
+                    orderManagerRepository.addOrder(order.getId(), order);
+                } catch (EOFException e) {
+                    break;
+                }
+            }
+        }
+    }
+}
