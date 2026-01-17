@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("application") // ← ДОБАВЬТЕ ЭТУ СТРОКУ
+    id("application")
 }
 
 application {
