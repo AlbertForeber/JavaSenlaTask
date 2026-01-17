@@ -1,15 +1,16 @@
 package com.senla.app.task.repository.db;
 
 import com.senla.annotation.InjectTo;
-import com.senla.app.task.db.dao.implementations.BookDao;
-import com.senla.app.task.db.dao.implementations.RequestDao;
-import com.senla.app.task.model.dto.RequestDto;
+import com.senla.app.task.db.dao.jdbc_implementations.BookDao;
+import com.senla.app.task.db.dao.jdbc_implementations.RequestDao;
+import com.senla.app.task.model.dto.jdbc.RequestDto;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.RequestManagerRepository;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +35,7 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
     @Override
     public void addRequest(Book book) {
         try {
-            List<RequestDto> alreadyIn = requestDao.findAll("").stream().filter(o -> Objects.equals(o.getBookName(), book.getTitle())).toList();
+            List<RequestDto> alreadyIn = requestDao.findAll(null).stream().filter(o -> Objects.equals(o.getBookName(), book.getTitle())).toList();
 
             if (!alreadyIn.isEmpty()) {
                 RequestDto toUpdate = alreadyIn.getFirst();
@@ -62,7 +63,7 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
     public void cancelRequests(String bookName) {
         try {
 
-            for (RequestDto requestDto : requestDao.findAll("")) {
+            for (RequestDto requestDto : requestDao.findAll(null)) {
                 if (Objects.equals(requestDto.getBookName(), bookName))
                     requestDao.delete(requestDto.getId());
             }
@@ -73,16 +74,16 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
 
     @Override
     public List<Request> getSortedRequests(RequestSortBy sortBy) {
-        StringBuilder additionSortQuery = new StringBuilder("ORDER BY ");
+        List<String> sortByList = new ArrayList<>();
 
         switch (sortBy) {
-            case BOOK_NAME -> additionSortQuery.append("title");
-            case AMOUNT -> additionSortQuery.append("amount");
+            case BOOK_NAME -> sortByList.add("title");
+            case AMOUNT -> sortByList.add("amount");
         }
 
         try {
             return requestDao.findAll(
-                    sortBy != RequestSortBy.NO_SORT ? additionSortQuery.toString() : ""
+                    sortBy != RequestSortBy.NO_SORT ? sortByList : null
             ).stream().map(RequestDto::toBusinessObject).toList();
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
@@ -91,7 +92,7 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
 
     private int getBookIdByName(String bookName) throws SQLException {
         return bookDao
-                .findAll("")
+                .findAll(null)
                 .stream()
                 .dropWhile(o -> !Objects.equals(o.getTitle(), bookName))
                 .toList().getFirst().getId();

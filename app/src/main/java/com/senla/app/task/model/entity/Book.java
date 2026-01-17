@@ -1,22 +1,51 @@
 package com.senla.app.task.model.entity;
 
 import com.senla.app.task.model.entity.status.BookStatus;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
+@Entity
+@Table(name = "books")
 public class Book implements Serializable {
 
-    private final int id;
-    private final String title;
-    private final String description;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "books_seq")
+    @SequenceGenerator(
+            name = "books_seq",
+            sequenceName = "books_id_seq",
+            allocationSize = 1 // Сколько держим объектов в памяти, до например, операции вставки
+    )
+    @Column(name = "id")
+    private int id;
+
+    @Column(name = "title")
+    private String title;
+
+    @Column(name = "description")
+    private String description;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "publication_date")
     private Calendar publicationDate = new GregorianCalendar();
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "admission_date")
     private Calendar admissionDate = new GregorianCalendar();
+
+    @Column(name = "price")
     private int price;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private BookStatus status;
+
     private String reservist = null;
+
+    public Book() { }
 
     public Book(
             int id,

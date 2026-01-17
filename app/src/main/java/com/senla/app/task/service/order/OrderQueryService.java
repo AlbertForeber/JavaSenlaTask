@@ -24,7 +24,7 @@ public class OrderQueryService {
     public OrderQueryService() { }
 
     public List<Order> getSorted(OrderSortBy sortBy) {
-        return orderManagerRepository.getSortedOrders(sortBy);
+        return orderManagerRepository.getSortedOrders(sortBy, true);
     }
 
     public List<Order> getCompletedOrdersInInterval(
@@ -33,9 +33,11 @@ public class OrderQueryService {
             int fromDate,
             int toYear,
             int toMonth,
-            int toDate
+            int toDate,
+
+            boolean getBooks
     ) {
-        List<Order> orders = orderManagerRepository.getSortedOrders(OrderSortBy.PRICE_DATE);
+        List<Order> orders = orderManagerRepository.getSortedOrders(OrderSortBy.PRICE_DATE, getBooks);
         List<Order> toReturn = new ArrayList<>();
 
         long from = new GregorianCalendar(fromYear, fromMonth - 1, fromDate).getTimeInMillis();
@@ -61,7 +63,7 @@ public class OrderQueryService {
     ) {
         int toReturn = 0;
 
-        for (Order order : getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate)) {
+        for (Order order : getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate, false)) {
             toReturn += order.getTotalSum();
         }
 
@@ -76,7 +78,7 @@ public class OrderQueryService {
             int toMonth,
             int toDate
     ) {
-        return getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate).size();
+        return getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate, false).size();
     }
 
     public String getOrderDetails(int orderId) {
@@ -85,7 +87,7 @@ public class OrderQueryService {
 
     public void saveState(String path) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path + "order"))) {
-            for (Order order : orderManagerRepository.getSortedOrders(OrderSortBy.NO_SORT)) {
+            for (Order order : orderManagerRepository.getSortedOrders(OrderSortBy.NO_SORT, true)) {
                 oos.writeObject(order);
             }
         }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractGenericDao<T, ID> implements GenericDao<T, ID> {
+public abstract class AbstractJdbcDao<T, ID> implements GenericDao<T, ID> {
 
     protected final Connection connection = DbConnection.getInstance().initOrGetConnection();
 
@@ -52,14 +52,20 @@ public abstract class AbstractGenericDao<T, ID> implements GenericDao<T, ID> {
     }
 
     @Override
-    public List<T> findAll(String additionOrderQuery) throws SQLException {
+    public List<T> findAll(List<String> sortBy) throws SQLException {
         try (
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + getTableName() + " " + additionalJoinQuery() + " " + additionOrderQuery)
+                PreparedStatement preparedStatement = connection
+                        .prepareStatement(
+                                "SELECT * FROM " + getTableName() + " "
+                                + additionalJoinQuery()
+                                + (sortBy != null ? " ORDER BY " + String.join(", ", sortBy) : "")
+                                )
         ) {
-            // Аналогичная проблема
-//            preparedStatement.setString(1, getTableName());
-
-//            System.out.println("SELECT * FROM " + getTableName() + " " + additionalJoinQuery());
+            /*
+            Аналогичная проблема
+            preparedStatement.setString(1, getTableName());
+            System.out.println("SELECT * FROM " + getTableName() + " " + additionalJoinQuery());
+            */
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<T> entities = new ArrayList<>();

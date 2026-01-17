@@ -4,7 +4,7 @@ import com.senla.annotation.InjectTo;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.repository.StorageRepository;
-import com.senla.app.task.model.dto.BookDto;
+import com.senla.app.task.model.dto.jdbc.BookDto;
 import com.senla.app.task.repository.db.DbStorageRepository;
 import com.senla.app.task.service.storage.io.StorageImportService;
 import com.senla.app.task.service.storage.io.BookImportConstants;

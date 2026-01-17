@@ -6,7 +6,7 @@ import com.senla.app.task.model.comparators.book.*;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.model.entity.status.BookStatus;
-import com.senla.app.task.model.dto.BookDto;
+import com.senla.app.task.model.dto.jdbc.BookDto;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package com.senla.app.task.model.dto;
+package com.senla.app.task.model.dto.jdbc;
 
 import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.status.OrderStatus;

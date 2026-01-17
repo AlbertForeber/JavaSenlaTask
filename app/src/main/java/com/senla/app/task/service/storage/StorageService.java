@@ -7,7 +7,7 @@ import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.repository.db.DbStorageRepository;
-import com.senla.app.task.model.dto.BookDto;
+import com.senla.app.task.model.dto.jdbc.BookDto;
 import com.senla.app.task.repository.db.DbRequestManagerRepository;
 import com.senla.app.task.service.unit_of_work.UnitOfWork;
 import com.senla.app.task.service.unit_of_work.db.DbUnitOfWork;

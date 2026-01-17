@@ -75,14 +75,14 @@ public class Order implements Serializable {
         return String.format("""
                 ORDER:
                     id: %d,
-                    bookNames: %s,
+                    bookIds: %s,
                     customerName: %s,
                     completionDate: %d %d %d
                     totalSum: %d,
                     status: %s
                 """,
                 id,
-                orderedBookIds,
+                orderedBookIds != null ? orderedBookIds : "NOT RECEIVED",
                 customerName,
                 completionDate != null ? completionDate.get(Calendar.YEAR) : 0,
                 completionDate != null ? completionDate.get(Calendar.MONTH) + 1 : 0,

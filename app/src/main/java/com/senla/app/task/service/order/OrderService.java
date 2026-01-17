@@ -1,7 +1,7 @@
 package com.senla.app.task.service.order;
 
 import com.senla.annotation.InjectTo;
-import com.senla.app.task.model.dto.BookDto;
+import com.senla.app.task.model.dto.jdbc.BookDto;
 import com.senla.app.task.repository.OrderManagerRepository;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.repository.StorageRepository;

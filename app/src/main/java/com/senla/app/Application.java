@@ -3,7 +3,8 @@ package com.senla.app;
 import com.senla.app.task.controller.MainController;
 import com.senla.app.task.view.Navigator;
 import com.senla.app.task.view.console.ConsoleNavigator;
-import com.senla.app.task.view.enums.NavigateTo;
+
+import java.sql.SQLException;
 
 
 public class Application {
@@ -18,8 +19,15 @@ public class Application {
         mainController.addToNeedDi(navigator);
 
         mainController.injectDependencies();
-        // mainController.loadState();
+//        mainController.loadState();
 
-        navigator.navigateTo(NavigateTo.MAIN);
+//        navigator.navigateTo(NavigateTo.MAIN);
+//        BookDao bookDao = new BookDao();
+//
+        try {
+            System.out.println(bookDao.findAll(null));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

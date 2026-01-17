@@ -10,6 +10,6 @@ public interface OrderManagerRepository {
     void addOrder(int orderId, Order order) throws IllegalArgumentException;
     void updateOrder(Order order);
     Order getOrder(int orderId);
-    List<Order> getSortedOrders(OrderSortBy sortBy);
+    List<Order> getSortedOrders(OrderSortBy sortBy, boolean getBooks);
     boolean removeOrder(int orderId);
 }

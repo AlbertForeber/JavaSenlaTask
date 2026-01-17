@@ -38,7 +38,7 @@ public class InMemoryOrderManagerRepository implements OrderManagerRepository {
     }
 
     @Override
-    public List<Order> getSortedOrders(OrderSortBy sortBy) {
+    public List<Order> getSortedOrders(OrderSortBy sortBy, boolean getBooks) {
         Comparator<Order> comparator = switch (sortBy) {
             case PRICE -> new OrderPriceComparator();
             case STATUS -> new OrderStatusComparator();

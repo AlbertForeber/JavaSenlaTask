@@ -1,14 +1,14 @@
-package com.senla.app.task.db.dao.implementations;
+package com.senla.app.task.db.dao.jdbc_implementations;
 
-import com.senla.app.task.db.dao.AbstractGenericDao;
-import com.senla.app.task.model.dto.OrderDto;
+import com.senla.app.task.db.dao.AbstractJdbcDao;
+import com.senla.app.task.model.dto.jdbc.OrderDto;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class OrderDao extends AbstractGenericDao<OrderDto, Integer> {
+public class OrderDao extends AbstractJdbcDao<OrderDto, Integer> {
 
     @Override
     protected String getTableName() {

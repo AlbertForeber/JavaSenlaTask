@@ -1,14 +1,14 @@
-package com.senla.app.task.db.dao.implementations;
+package com.senla.app.task.db.dao.jdbc_implementations;
 
-import com.senla.app.task.db.dao.AbstractGenericDao;
-import com.senla.app.task.model.dto.BookDto;
+import com.senla.app.task.db.dao.AbstractJdbcDao;
+import com.senla.app.task.model.dto.jdbc.BookDto;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BookDao extends AbstractGenericDao<BookDto, Integer> {
+public class BookDao extends AbstractJdbcDao<BookDto, Integer> {
 
     public BookDao() {
         super();

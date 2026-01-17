@@ -179,7 +179,7 @@ public class OrderController extends BaseController {
 
         if (dateFrom != null && dateTo != null) {
             try {
-                ioHandler.showMessage(orderQueryService.getCompletedOrdersInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]).toString());
+                ioHandler.showMessage(orderQueryService.getCompletedOrdersInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0], true).toString());
             } catch (Exception e) {
                 logger.error("Ошибка доступа к базе: {}", e.getMessage());
 ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);

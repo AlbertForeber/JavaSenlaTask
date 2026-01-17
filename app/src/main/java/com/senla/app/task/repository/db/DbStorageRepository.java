@@ -1,12 +1,13 @@
 package com.senla.app.task.repository.db;
 
 import com.senla.annotation.InjectTo;
-import com.senla.app.task.db.dao.implementations.BookDao;
+import com.senla.app.task.db.dao.jdbc_implementations.BookDao;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.repository.StorageRepository;
-import com.senla.app.task.model.dto.BookDto;
+import com.senla.app.task.model.dto.jdbc.BookDto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DbStorageRepository implements StorageRepository {
@@ -46,20 +47,20 @@ public class DbStorageRepository implements StorageRepository {
 
     @Override
     public List<Book> getSortedBooks(BookSortBy sortBy) {
-        StringBuilder additionSortQuery = new StringBuilder("ORDER BY ");
+        List<String> sortByList = new ArrayList<>();
 
         switch (sortBy) {
-            case TITLE -> additionSortQuery.append("title");
-            case PUBLICATION_DATE -> additionSortQuery.append("publication_date");
-            case ADMISSION_DATE -> additionSortQuery.append("admission_date");
-            case PRICE -> additionSortQuery.append("price");
-            case AVAILABILITY -> additionSortQuery.append("books.status");
-            case DATE_PRICE -> additionSortQuery.append("admission_date, price");
+            case TITLE -> sortByList.add("title");
+            case PUBLICATION_DATE -> sortByList.add("publication_date");
+            case ADMISSION_DATE -> sortByList.add("admission_date");
+            case PRICE -> sortByList.add("price");
+            case AVAILABILITY -> sortByList.add("books.status");
+            case DATE_PRICE -> sortByList.addAll(List.of("admission_date", "price"));
         }
 
         try {
             return bookDao.findAll(
-                    sortBy != BookSortBy.NO_SORT ? additionSortQuery.toString() : ""
+                    sortBy != BookSortBy.NO_SORT ? sortByList : null
             ).stream().map(BookDto::toBusinessObject).toList();
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
