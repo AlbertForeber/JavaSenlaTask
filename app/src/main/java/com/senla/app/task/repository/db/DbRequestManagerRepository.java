@@ -6,6 +6,7 @@ import com.senla.app.task.db.dao.implementations.RequestDao;
 import com.senla.app.task.model.dto.RequestDto;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.Request;
+import com.senla.app.task.model.entity.sortby.OrderSortBy;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.RequestManagerRepository;
 

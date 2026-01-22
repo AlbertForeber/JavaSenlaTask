@@ -4,6 +4,7 @@ import com.senla.annotation.InjectTo;
 import com.senla.app.task.db.dao.implementations.BookDao;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
+import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.model.dto.BookDto;
 
