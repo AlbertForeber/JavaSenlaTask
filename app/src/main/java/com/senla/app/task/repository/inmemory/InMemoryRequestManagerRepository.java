@@ -10,6 +10,7 @@ import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import java.util.*;
 
 public class InMemoryRequestManagerRepository implements RequestManagerRepository {
+
     private final LinkedHashMap<Integer, Request> requests = new LinkedHashMap<>();
 
     @Override
@@ -31,7 +32,6 @@ public class InMemoryRequestManagerRepository implements RequestManagerRepositor
             lastId = request.getId();
         }
         requests.put(lastId + 1, new Request(lastId + 1, book.getTitle()));
-
     }
 
 
@@ -68,5 +68,4 @@ public class InMemoryRequestManagerRepository implements RequestManagerRepositor
     public String toString() {
         return requests.toString();
     }
-
 }

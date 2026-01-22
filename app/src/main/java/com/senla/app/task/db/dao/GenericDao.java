@@ -6,6 +6,7 @@ import java.util.List;
 // T - тип сущности
 // ID - тип идентификатора
 public interface GenericDao<T, ID> {
+
     T findById(ID id) throws SQLException;
     List<T> findAll(String additionalOrderQuery) throws SQLException;
     void save(T entity) throws SQLException;

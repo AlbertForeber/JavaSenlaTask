@@ -3,6 +3,7 @@ package com.senla.app.task.model.dto;
 import com.senla.app.task.model.entity.Request;
 
 public class RequestDto {
+
     private Integer id = null;
     private final int bookId;
     private final String bookName;

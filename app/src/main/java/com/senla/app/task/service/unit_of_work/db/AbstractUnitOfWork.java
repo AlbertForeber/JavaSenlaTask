@@ -1,14 +1,12 @@
 package com.senla.app.task.service.unit_of_work.db;
 
-import com.senla.app.task.db.DbConnection;
 import com.senla.app.task.service.unit_of_work.ThrowingRunnable;
 import com.senla.app.task.service.unit_of_work.ThrowingSupplier;
 import com.senla.app.task.service.unit_of_work.TransactionException;
 import com.senla.app.task.service.unit_of_work.UnitOfWork;
 
-import java.sql.Connection;
-
 public abstract class AbstractUnitOfWork implements UnitOfWork {
+
     private boolean inTransaction = false;
 
     protected abstract void doBegin();

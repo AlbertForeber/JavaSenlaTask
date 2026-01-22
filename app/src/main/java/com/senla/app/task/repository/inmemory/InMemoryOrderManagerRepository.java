@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class InMemoryOrderManagerRepository implements OrderManagerRepository {
+
     private final HashMap<Integer, Order> orders = new HashMap<>();
 
 
@@ -21,7 +22,7 @@ public class InMemoryOrderManagerRepository implements OrderManagerRepository {
     }
 
     @Override
-    public void updateOrder(Order order) {} // InMemory вариант не должен выполнять доп. операцию обновления
+    public void updateOrder(Order order) { } // InMemory вариант не должен выполнять доп. операцию обновления
 
     @Override
     public Order getOrder(int orderId) {

@@ -12,11 +12,14 @@ import com.senla.app.task.service.unit_of_work.TransactionException;
 import com.senla.app.task.utils.Colors;
 import com.senla.app.task.view.IOHandler;
 import com.senla.app.task.view.console.ConsoleIOHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class RequestController extends BaseController {
+
     @InjectTo
     private RequestService requestService;
 
@@ -32,22 +35,32 @@ public class RequestController extends BaseController {
     @InjectTo(useImplementation = ConsoleIOHandler.class)
     private IOHandler ioHandler;
 
+    private static final Logger logger = LogManager.getLogger(RequestController.class);
+
     public RequestController() {
         super();
     }
 
     public void createRequest() {
         ioHandler.showMessage(Colors.BLUE + "Введите ID книги на которую создается запрос:" + Colors.RESET);
+        int bookId = 0;
 
         try {
-            requestService.createRequest(Integer.parseInt(ioHandler.handleInput()));
+            bookId = Integer.parseInt(ioHandler.handleInput());
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
+            return;
         }
-        catch (TransactionException e) {
+
+        logger.info("Начало обработки добавления запроса");
+
+        try {
+            requestService.createRequest(bookId);
+        } catch (TransactionException e) {
+            logger.error(e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
+            logger.error("Книга недоступна");
             ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET);
         }
     }
@@ -73,11 +86,14 @@ public class RequestController extends BaseController {
             return;
         }
 
+        logger.info("Начало обработки получения отсортированных запросов");
+
         try {
             requestQueryService.getSorted(requestSortBy).stream()
                     .map(Object::toString)
                     .forEach(ioHandler::showMessage);
         } catch (Exception e) {
+            logger.error("Ошибка доступа к базе при получении запросов" + e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
         }
     }
@@ -109,7 +125,6 @@ public class RequestController extends BaseController {
 
             requestExportService.exportRequest(requestId, ioHandler.handleInput());
             ioHandler.showMessage(Colors.YELLOW + "Запрос с ID: '" + requestId + "' успешно экспортирован" + Colors.RESET);
-
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
         } catch (IOException e) {
@@ -118,5 +133,4 @@ public class RequestController extends BaseController {
             ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
         }
     }
-
 }

@@ -30,14 +30,14 @@ public class CsvOrderImportService implements OrderImportService {
     @InjectTo
     private OrderService orderService;
 
-    public CsvOrderImportService() {}
+    public CsvOrderImportService() { }
 
     public void importOrder(String fileName) throws IllegalArgumentException, IOException {
         Map<String, ArrayList<String>> fields = FileParser.parseFile(
                 fileName, OrderImportConstants.ALLOWED_FIELDS, OrderImportConstants.REQUIRED_FIELDS
         );
 
-        for (int i = 0; i < fields.get("id").size(); i ++) {
+        for (int i = 0; i < fields.get("id").size(); i++) {
             List<Integer> bookIds = Arrays.stream(fields.get("bookIds").get(i).split(",")).map(Integer::parseInt).toList();
             validateBookNames(bookIds);
             OrderStatus status = getVerifiedStatus(fields.get("status").get(i), fields, i);

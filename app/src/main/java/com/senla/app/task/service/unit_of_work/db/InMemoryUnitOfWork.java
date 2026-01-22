@@ -2,14 +2,14 @@ package com.senla.app.task.service.unit_of_work.db;
 
 public class InMemoryUnitOfWork extends AbstractUnitOfWork {
 
-    public InMemoryUnitOfWork() {}
+    public InMemoryUnitOfWork() { }
 
     @Override
-    protected void doBegin() {}
+    protected void doBegin() { }
 
     @Override
-    protected void doCommit() {}
+    protected void doCommit() { }
 
     @Override
-    protected void doRollback() {}
+    protected void doRollback() { }
 }

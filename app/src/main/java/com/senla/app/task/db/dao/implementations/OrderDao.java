@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class OrderDao extends AbstractGenericDao<OrderDto, Integer> {
+
     @Override
     protected String getTableName() {
         return "orders";

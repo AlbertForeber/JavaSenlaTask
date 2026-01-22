@@ -1,20 +1,14 @@
 package com.senla.app.task.repository.db;
 
-
 import com.senla.annotation.InjectTo;
 import com.senla.app.task.db.dao.implementations.BookDao;
-import com.senla.app.task.model.comparators.book.*;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.model.dto.BookDto;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class DbStorageRepository implements StorageRepository {
 

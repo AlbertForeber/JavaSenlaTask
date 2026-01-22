@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.*;
 
 public final class FileParser {
+
     public static int parseNumericField(String toParse, String fieldName) {
         try {
             return Integer.parseInt(toParse);
@@ -42,8 +43,6 @@ public final class FileParser {
         keysCopy.removeAll(allowedFields);
 
         if (!keysCopy.isEmpty()) throw new IllegalArgumentException("Файл содержит неизвестные поля: " + keysCopy);
-
-
     }
 
     private static void processLine(String line, LinkedHashMap<String, ArrayList<String>> fields, Set<String> requiredFields) throws IllegalArgumentException {
@@ -58,7 +57,7 @@ public final class FileParser {
             if (i >= values.size()) throw new IllegalArgumentException("Строка содержит недостаточно полей\n" + line);
 
             fields.get(value).add(values.get(i));
-            i ++;
+            i++;
         }
 
 

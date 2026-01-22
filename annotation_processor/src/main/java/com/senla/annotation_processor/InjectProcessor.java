@@ -4,10 +4,12 @@ import com.senla.annotation.InjectTo;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
 
 
 public class InjectProcessor {
+
     private static final HashMap<Class<?>, Object> DEPENDENCIES = new HashMap<>();
 
     public static void addDependency(Class<?> clazz, Object object) {
@@ -49,11 +51,9 @@ public class InjectProcessor {
                             implementationErrorAddition = ". При указанной реализации '" + useImplementation.getSimpleName() + "'";
                         } else constructor = fieldType.getConstructor();
 
-
                         constructor.trySetAccessible();
                         dependency = constructor.newInstance();
                         addDependency(fieldType, dependency);
-
                     } catch (NoSuchMethodException e) {
                         throw new IllegalArgumentException("Для объекта типа '" + fieldType.getSimpleName() +
                                 "' нет конструктора без параметров" + implementationErrorAddition);

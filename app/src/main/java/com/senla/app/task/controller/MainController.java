@@ -1,7 +1,6 @@
 package com.senla.app.task.controller;
 
 import com.senla.annotation.InjectTo;
-import com.senla.annotation_processor.ConfigProcessor;
 import com.senla.annotation_processor.InjectProcessor;
 import com.senla.app.task.service.StateLoadSaveFacade;
 import com.senla.app.task.utils.Colors;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainController extends BaseController {
+
     private final String STATE_PATH = Routes.PATH_TO_STATE;
 
     @InjectTo(useImplementation = ConsoleIOHandler.class)
@@ -51,15 +51,15 @@ public class MainController extends BaseController {
     }
 
 
-    public void applyConfig(List<Object> applyConfigFor) {
-        for (Object o : applyConfigFor) {
-            try {
-                ConfigProcessor.applyConfig(o);
-            } catch (IllegalArgumentException e) {
-                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
-            }
-        }
-    }
+//    public void applyConfig(List<Object> applyConfigFor) {
+//        for (Object o : applyConfigFor) {
+//            try {
+//                ConfigProcessor.applyConfig(o);
+//            } catch (IllegalArgumentException e) {
+//                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
+//            }
+//        }
+//    }
 
     public void loadState() {
         try {

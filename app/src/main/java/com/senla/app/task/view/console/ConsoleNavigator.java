@@ -22,7 +22,6 @@ public class ConsoleNavigator implements Navigator {
 
     private NavigateTo currentNavPoint;
 
-
     @Override
     public void navigateTo(NavigateTo navigateTo) {
         if (navigateTo != currentNavPoint) {
@@ -35,7 +34,6 @@ public class ConsoleNavigator implements Navigator {
                     case ORDER -> menuBuilder.buildMenu(new OrderMenuFactory(), this);
                     case REQUEST -> menuBuilder.buildMenu(new RequestMenuFactory(), this);
                 }
-
             } catch (IllegalArgumentException e) {
                 ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
             }
@@ -44,7 +42,6 @@ public class ConsoleNavigator implements Navigator {
         menuRenderer.renderMenu(menuBuilder.getCurrentMenu(), menuBuilder.getCurrentMenuHeader());
         ioHandler.handleOptionInput(menuBuilder.getCurrentMenu());
     }
-
     private void startNavigation() {
         navigateTo(NavigateTo.MAIN);
     }

@@ -3,8 +3,6 @@ package com.senla.app.task.repository.db;
 import com.senla.annotation.InjectTo;
 import com.senla.app.task.db.dao.implementations.BookDao;
 import com.senla.app.task.db.dao.implementations.RequestDao;
-import com.senla.app.task.model.comparators.request.RequestAmountComparator;
-import com.senla.app.task.model.comparators.request.RequestBookNameComparator;
 import com.senla.app.task.model.dto.RequestDto;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.Request;
@@ -13,11 +11,8 @@ import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.RequestManagerRepository;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class DbRequestManagerRepository implements RequestManagerRepository {
 
@@ -44,10 +39,9 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
 
             if (!alreadyIn.isEmpty()) {
                 RequestDto toUpdate = alreadyIn.getFirst();
-                requestDao.update(new RequestDto(toUpdate.getId(), toUpdate.getBookId(), book.getTitle(),toUpdate.getAmount() + 1));
+                requestDao.update(new RequestDto(toUpdate.getId(), toUpdate.getBookId(), book.getTitle(), toUpdate.getAmount() + 1));
             } else
                 requestDao.save(new RequestDto(book.getId(), book.getTitle(), 1));
-
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
@@ -76,7 +70,6 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
-
     }
 
     @Override

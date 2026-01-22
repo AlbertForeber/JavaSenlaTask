@@ -6,6 +6,7 @@ import com.senla.app.task.view.menu.Menu;
 import com.senla.app.task.view.menu.MenuAction;
 
 public class ConsoleMenuRenderer implements MenuRenderer {
+
     @Override
     public void renderMenu(Menu menu, Header header) {
         header.showHeader();

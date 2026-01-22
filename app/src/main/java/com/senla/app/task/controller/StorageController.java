@@ -13,6 +13,8 @@ import com.senla.app.task.utils.Colors;
 import com.senla.app.task.utils.DataConverter;
 import com.senla.app.task.view.IOHandler;
 import com.senla.app.task.view.console.ConsoleIOHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,39 +36,56 @@ public class StorageController extends BaseController {
     @InjectTo(useImplementation = ConsoleIOHandler.class)
     private IOHandler ioHandler;
 
+    private static final Logger logger = LogManager.getLogger(StorageController.class);
+
     public StorageController() {
         super();
     }
 
     public void writeOffBook() {
         ioHandler.showMessage(Colors.BLUE + "Введите ID книги:" + Colors.RESET);
+        int bookId = 0;
 
         try {
-            storageService.writeOffBook(Integer.parseInt(ioHandler.handleInput()));
+            bookId = Integer.parseInt(ioHandler.handleInput());
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
-        }
-        catch (TransactionException e) {
-            ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
-        }
-        catch (Exception e) {
-            ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET + e.getMessage());
+            return;
         }
 
+        logger.info("Начало обработки списания книги");
+
+        try {
+            storageService.writeOffBook(bookId);
+        } catch (TransactionException e) {
+            logger.error(e.getMessage());
+            ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
+        } catch (Exception e) {
+            logger.error("Книга недоступна: {}", e.getMessage());
+            ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET + e.getMessage());
+        }
     }
 
     public void addBookToStorage() {
         ioHandler.showMessage(Colors.BLUE + "Введите ID книги:" + Colors.RESET);
+        int bookId = 0;
 
         try {
-            storageService.addBookToStorage(Integer.parseInt(ioHandler.handleInput()));
+            bookId = Integer.parseInt(ioHandler.handleInput());
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
+            return;
         }
-        catch (TransactionException e) {
+
+        logger.info("Начало обработки добавления книги");
+
+        try {
+            storageService.addBookToStorage(bookId);
+        } catch (TransactionException e) {
+            logger.error(e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
+            logger.error("Книга недоступна");
             ioHandler.showMessage(Colors.YELLOW + "КНИГА НЕДОСТУПНА" + Colors.RESET);
         }
     }
@@ -98,11 +117,14 @@ public class StorageController extends BaseController {
             return;
         }
 
+        logger.info("Начало обработки вывода отсортированных книг");
+
         try {
             storageQueryService.getSorted(bookSortBy).stream()
                     .map(Object::toString)
                     .forEach(ioHandler::showMessage);
         } catch (Exception e) {
+            logger.error("Ошибка доступа к базе при получении книг: {}", e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
         }
     }
@@ -115,23 +137,32 @@ public class StorageController extends BaseController {
 
         if (date != null) {
             try {
+                logger.info("Начало обработки получения малопродаваемых книг");
                 storageQueryService.getHardToSell(date[2], date[1], date[0]).forEach(System.out::println);
             } catch (Exception e) {
+                logger.error("Ошибка доступа к базе при получении малопродаваемых книг: {}", e.getMessage());
                 ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
             }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
-
     }
 
     public void getBookDescription() {
         ioHandler.showMessage(Colors.BLUE + "Введите ID книги:" + Colors.RESET);
+        int bookId = 0;
 
         try {
-            ioHandler.showMessage(storageQueryService.getBookDescription(Integer.parseInt(ioHandler.handleInput())));
+            bookId = Integer.parseInt(ioHandler.handleInput());
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
+            return;
         }
-        catch (Exception e) {
+
+        logger.info("Начало обработки получения описания книги");
+
+        try {
+            ioHandler.showMessage(storageQueryService.getBookDescription(bookId));
+        } catch (Exception e) {
+            logger.error("Ошибка доступа к базе: {}", e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
         }
     }
@@ -163,7 +194,6 @@ public class StorageController extends BaseController {
 
             storageExportService.exportBook(requestId, ioHandler.handleInput());
             ioHandler.showMessage(Colors.YELLOW + "Книга с ID: '" + requestId + "' успешно экспортирована" + Colors.RESET);
-
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
         } catch (IOException e) {

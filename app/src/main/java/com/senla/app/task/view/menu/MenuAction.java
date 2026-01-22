@@ -3,6 +3,7 @@ package com.senla.app.task.view.menu;
 import java.util.function.Consumer;
 
 public class MenuAction {
+
     private final String description;
     private final Consumer<Object> action;
 

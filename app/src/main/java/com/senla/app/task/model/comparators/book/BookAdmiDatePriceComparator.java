@@ -5,6 +5,7 @@ import com.senla.app.task.model.entity.Book;
 import java.util.Comparator;
 
 public class BookAdmiDatePriceComparator implements Comparator<Book> {
+
     Comparator<Book> c1 = new BookAdmiDateComparator();
     Comparator<Book> c2 = new BookPriceComparator();
 

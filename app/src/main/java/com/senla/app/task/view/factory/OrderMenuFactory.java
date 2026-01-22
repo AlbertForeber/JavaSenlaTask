@@ -7,6 +7,7 @@ import com.senla.app.task.view.menu.Menu;
 import com.senla.app.task.view.menu.OrderMenu;
 
 public class OrderMenuFactory implements MenuFactory {
+
     @Override
     public Menu createMenu(Navigator navigator) {
         return new OrderMenu(navigator);

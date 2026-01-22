@@ -5,6 +5,7 @@ import com.senla.app.task.model.entity.Order;
 import java.util.Comparator;
 
 public class OrderComplDatePriceComparator implements Comparator<Order> {
+
     Comparator<Order> c1 = new OrderComplDateComparator();
     Comparator<Order> c2 = new OrderPriceComparator();
 

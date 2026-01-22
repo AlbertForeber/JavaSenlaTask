@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.List;
 
 public class RequestQueryService {
+
     @InjectTo(useImplementation = DbRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
@@ -37,8 +38,6 @@ public class RequestQueryService {
                     break;
                 }
             }
-
-
         }
     }
 }

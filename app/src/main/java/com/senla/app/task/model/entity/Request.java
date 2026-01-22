@@ -3,6 +3,7 @@ package com.senla.app.task.model.entity;
 import java.io.Serializable;
 
 public class Request implements Serializable {
+
     private final int id;
     private final String bookName;
     private int amount = 1;
@@ -46,6 +47,11 @@ public class Request implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        return this.bookName.hashCode();
+    }
+
+    @Override
     public String toString() {
         return String.format("""
                 REQUEST:
@@ -58,6 +64,4 @@ public class Request implements Serializable {
                 amount
         );
     }
-
-
 }

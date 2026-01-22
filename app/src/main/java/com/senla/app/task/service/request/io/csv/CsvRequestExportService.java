@@ -15,7 +15,7 @@ public class CsvRequestExportService implements RequestExportService {
     @InjectTo(useImplementation = DbRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
-    public CsvRequestExportService() {}
+    public CsvRequestExportService() { }
 
     @Override
     public void exportRequest(int requestId, String path) throws IllegalArgumentException, IOException {

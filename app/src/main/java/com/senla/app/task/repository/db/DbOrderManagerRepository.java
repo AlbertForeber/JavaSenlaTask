@@ -3,10 +3,6 @@ package com.senla.app.task.repository.db;
 import com.senla.annotation.InjectTo;
 import com.senla.app.task.db.dao.implementations.BookDao;
 import com.senla.app.task.db.dao.implementations.OrderDao;
-import com.senla.app.task.model.comparators.order.OrderComplDateComparator;
-import com.senla.app.task.model.comparators.order.OrderComplDatePriceComparator;
-import com.senla.app.task.model.comparators.order.OrderPriceComparator;
-import com.senla.app.task.model.comparators.order.OrderStatusComparator;
 import com.senla.app.task.model.dto.BookDto;
 import com.senla.app.task.model.dto.OrderDto;
 import com.senla.app.task.model.entity.Order;
@@ -15,12 +11,11 @@ import com.senla.app.task.repository.OrderManagerRepository;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DbOrderManagerRepository implements OrderManagerRepository {
+
     @InjectTo
     OrderDao orderDao;
 
@@ -57,7 +52,6 @@ public class DbOrderManagerRepository implements OrderManagerRepository {
 
             if (orderDto == null) return null;
             return orderDto.toBusinessObject(orderedBookIds);
-
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
@@ -76,7 +70,7 @@ public class DbOrderManagerRepository implements OrderManagerRepository {
 
         try {
             return convertOrderDtosToOrders(
-                    orderDao.findAll(sortBy != OrderSortBy.NO_SORT? additionSortQuery.toString() : "")
+                    orderDao.findAll(sortBy != OrderSortBy.NO_SORT ? additionSortQuery.toString() : "")
             );
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);

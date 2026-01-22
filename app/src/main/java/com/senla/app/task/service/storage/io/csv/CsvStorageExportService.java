@@ -16,7 +16,7 @@ public class CsvStorageExportService implements StorageExportService {
     @InjectTo(useImplementation = DbStorageRepository.class)
     private StorageRepository storageRepository;
 
-    public CsvStorageExportService() {}
+    public CsvStorageExportService() { }
 
     @Override
     public void exportBook(int bookId, String path) throws IllegalArgumentException, IOException {

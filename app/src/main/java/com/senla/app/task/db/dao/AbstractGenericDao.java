@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractGenericDao<T, ID> implements GenericDao<T, ID> {
+
     protected final Connection connection = DbConnection.getInstance().initOrGetConnection();
 
     protected abstract String getTableName();

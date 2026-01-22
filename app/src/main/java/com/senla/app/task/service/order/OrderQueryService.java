@@ -21,7 +21,7 @@ public class OrderQueryService {
     @InjectTo(useImplementation = DbOrderManagerRepository.class)
     private OrderManagerRepository orderManagerRepository;
 
-    public OrderQueryService() {}
+    public OrderQueryService() { }
 
     public List<Order> getSorted(OrderSortBy sortBy) {
         return orderManagerRepository.getSortedOrders(sortBy);
@@ -51,7 +51,7 @@ public class OrderQueryService {
         return toReturn;
     }
 
-    public long getIncomeInInterval (
+    public long getIncomeInInterval(
             int fromYear,
             int fromMonth,
             int fromDate,
@@ -68,7 +68,7 @@ public class OrderQueryService {
         return toReturn;
     }
 
-    public int getOrderAmountInInterval (
+    public int getOrderAmountInInterval(
             int fromYear,
             int fromMonth,
             int fromDate,

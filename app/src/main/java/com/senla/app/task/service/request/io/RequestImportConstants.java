@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 public class RequestImportConstants {
+
     public static final Set<String> REQUIRED_FIELDS = new LinkedHashSet<>(List.of(
             "id", "bookName", "amount"
     ));

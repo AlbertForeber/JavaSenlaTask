@@ -7,7 +7,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DbConnection {
+public final class DbConnection {
+
     static private DbConnection INSTANCE = null;
 
     private Connection connection = null;
@@ -27,7 +28,7 @@ public class DbConnection {
         return INSTANCE;
     }
 
-    private DbConnection() {}
+    private DbConnection() { }
 
     public Connection initOrGetConnection() {
 

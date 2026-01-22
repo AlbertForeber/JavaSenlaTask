@@ -14,7 +14,7 @@ public class RequestService {
     @InjectTo(useImplementation = DbStorageRepository.class)
     private StorageRepository storageRepository;
 
-    public RequestService() {}
+    public RequestService() { }
 
     public void createRequest(int bookId) {
         requestManagerRepository.addRequest(storageRepository.getBook(bookId));

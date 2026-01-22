@@ -7,6 +7,7 @@ import com.senla.app.task.view.menu.Menu;
 import java.util.Scanner;
 
 public class ConsoleIOHandler implements IOHandler {
+
     private final Scanner scanner = new Scanner(System.in);
 
     @Override

@@ -20,7 +20,7 @@ public class CsvStorageImportService implements StorageImportService {
     @InjectTo(useImplementation = DbStorageRepository.class)
     private StorageRepository storageRepository;
 
-    public CsvStorageImportService() {}
+    public CsvStorageImportService() { }
 
     @Override
     public void importBook(String fileName) throws IllegalArgumentException, IOException {
@@ -28,7 +28,7 @@ public class CsvStorageImportService implements StorageImportService {
                 fileName, BookImportConstants.ALLOWED_FIELDS, BookImportConstants.REQUIRED_FIELDS
         );
 
-        for (int i = 0; i < fields.get("id").size(); i ++) {
+        for (int i = 0; i < fields.get("id").size(); i++) {
 
             int[] publicationDate = DataConverter.getDateInArray(fields.get("publicationDate").get(i));
             int[] admissionDate = DataConverter.getDateInArray(fields.get("admissionDate").get(i));
@@ -84,5 +84,4 @@ public class CsvStorageImportService implements StorageImportService {
             default -> throw new IllegalArgumentException("Неверный статус: " + fields.get("status").get(index));
         };
     }
-
 }

@@ -19,6 +19,7 @@ public class Application {
 
         mainController.injectDependencies();
         // mainController.loadState();
+
         navigator.navigateTo(NavigateTo.MAIN);
     }
 }
