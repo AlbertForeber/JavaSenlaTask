@@ -1,50 +1,115 @@
 package com.senla.app.task.db.dao;
 
+import com.senla.app.task.db.DatabaseException;
 import com.senla.app.task.utils.HibernateUtil;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.NoResultException;
+import org.hibernate.HibernateException;
 
-import java.sql.SQLException;
 import java.util.List;
 
-public class AbstractHibernateDao<T, PK> implements GenericDao<T, PK> {
+public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, PK, SB> {
 
-    private Class<T> type;
+    private final Class<T> type;
+    private final String sql = "SELECT " + getEntityAlias()
+            + " FROM " + getEntityName() + " " + getEntityAlias();
 
-    @Override
-    public T findById(PK pk) throws SQLException {
-        return HibernateUtil.getSession().get(type, pk);
+    protected abstract String getEntityName();
+
+    protected abstract String getEntityAlias();
+
+    protected abstract String getAliasesForSortBy(SB sortBy);
+
+    protected String additionalJoinFetchQuery() {
+        return "";
+    }
+
+    public AbstractHibernateDao(Class<T> type) {
+        this.type = type;
     }
 
     @Override
-    public List<T> findAll(List<String> sortBy) throws SQLException {
+    public T findById(PK pk, boolean useJoin) {
+        try {
+            StringBuilder findByIdSql = new StringBuilder(sql);
 
-        CriteriaBuilder criteriaBuilder = HibernateUtil.getSession().getCriteriaBuilder();
-        CriteriaQuery<T> cq = criteriaBuilder.createQuery(type);
-        Root<T> root = cq.from(type);
+            if (useJoin)
+                findByIdSql.append(" ").append(additionalJoinFetchQuery());
+            findByIdSql.append(" WHERE ").append(getEntityAlias()).append(".id = :id");
 
-        List<Order> orders = sortBy.stream().map(o -> criteriaBuilder.asc(root.get(o))).toList();
-
-        cq.orderBy(orders);
-        // root.fetch()
-
-        return HibernateUtil.getSession().createQuery(cq).getResultList();
+            return HibernateUtil.getSession().createQuery(findByIdSql.toString(), type).setParameter("id", pk).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (HibernateException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
     @Override
-    public void save(T entity) throws SQLException {
+    public List<T> findAll(SB sortBy, boolean useJoin) {
+        try {
+            HibernateUtil.getSession().clear();
 
+            StringBuilder findAllSql = new StringBuilder(sql);
+
+            if (useJoin)
+                findAllSql.append(" ").append(additionalJoinFetchQuery());
+
+            if (sortBy != null) {
+                findAllSql
+                    .append(" ORDER BY ")
+                    .append(
+                        String.join(", ", getAliasesForSortBy(sortBy))
+                    );
+            }
+
+            return HibernateUtil.getSession().createQuery(findAllSql.toString(), type).getResultList();
+/*
+            CriteriaBuilder criteriaBuilder = HibernateUtil.getSession().getCriteriaBuilder();
+            CriteriaQuery<T> cq = criteriaBuilder.createQuery(type);
+            Root<T> root = cq.from(type);
+
+            if (sortBy != null) {
+                List<Order> orders = sortBy.stream().map(o -> criteriaBuilder.asc(root.get(o))).toList();
+                cq.orderBy(orders);
+            }
+
+            // root.fetch()
+
+            return HibernateUtil.getSession().createQuery(cq).getResultList();
+*/
+        } catch (HibernateException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
     @Override
-    public void update(T entity) throws SQLException {
-
+    public void save(T entity) {
+        try {
+            HibernateUtil.getSession().merge(entity);
+        } catch (HibernateException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
     @Override
-    public void delete(PK pk) throws SQLException {
+    public void update(T entity) {
+        try {
+            HibernateUtil.getSession().merge(entity);
+        } catch (HibernateException e) {
+            throw new DatabaseException(e.getMessage());
+        }
+    }
 
+    @Override
+    public void delete(PK pk) {
+        try {
+            if (HibernateUtil
+                    .getSession()
+                    .createMutationQuery("DELETE FROM " + getEntityName() + " WHERE id = :id")
+                    .setParameter("id", pk)
+                    .executeUpdate() == 0) throw new DatabaseException("Неверный id для удаления");
+        } catch (HibernateException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 }

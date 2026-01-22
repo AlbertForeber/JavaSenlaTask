@@ -1,4 +1,16 @@
-11:25:06.076 INFO  com.senla.app.task.controller.OrderController - Начало обработки вывода отсортированных заказов
-11:25:15.020 INFO  com.senla.app.task.controller.OrderController - Начало обработки вывода отсортированных заказов
-11:25:22.391 INFO  com.senla.app.task.controller.OrderController - Начало обработки вывода отсортированных заказов
-11:25:32.088 INFO  com.senla.app.task.controller.StorageController - Начало обработки вывода отсортированных книг
+22:57:15.516 INFO  com.senla.app.task.controller.OrderController - Начало обработки вывода количества выполненых в интервал заказов
+22:57:15.568 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.1.Final
+22:57:15.669 INFO  org.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+22:57:15.706 WARN  org.hibernate.engine.jdbc.connections.internal.ConnectionProviderInitiator - HHH000022: c3p0 properties were encountered, but the c3p0 provider class was not found on the classpath; these properties are going to be ignored.
+22:57:15.708 WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using built-in connection pool (not intended for production use)
+22:57:15.710 INFO  org.hibernate.orm.connections.pooling - HHH10001005: Loaded JDBC driver class: org.postgresql.Driver
+22:57:15.710 INFO  org.hibernate.orm.connections.pooling - HHH10001012: Connecting with JDBC URL [jdbc:postgresql://localhost:5432/senladb]
+22:57:15.710 INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=senla}
+22:57:15.710 INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+22:57:15.711 INFO  org.hibernate.orm.connections.pooling - HHH10001115: Connection pool size: 20 (min=1)
+22:57:15.831 WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+22:57:16.309 INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+22:57:16.316 INFO  org.hibernate.orm.connections.access - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@294ae501] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+22:57:16.531 INFO  com.senla.app.task.controller.OrderController - Вывод количества заказов выполненных за интервал успешно завершен
+22:57:40.352 INFO  com.senla.app.task.controller.RequestController - Начало обработки получения отсортированных запросов
+22:57:40.411 INFO  com.senla.app.task.controller.RequestController - Вывод отсортированных запросов успешно завершен

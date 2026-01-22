@@ -7,10 +7,9 @@ import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.repository.db.DbStorageRepository;
-import com.senla.app.task.model.dto.jdbc.BookDto;
 import com.senla.app.task.repository.db.DbRequestManagerRepository;
 import com.senla.app.task.service.unit_of_work.UnitOfWork;
-import com.senla.app.task.service.unit_of_work.db.DbUnitOfWork;
+import com.senla.app.task.service.unit_of_work.implementations.HibernateUnitOfWork;
 
 public class StorageService {
 
@@ -20,7 +19,7 @@ public class StorageService {
     @InjectTo(useImplementation = DbRequestManagerRepository.class)
     private RequestManagerRepository requestManagerRepository;
 
-    @InjectTo(useImplementation = DbUnitOfWork.class)
+    @InjectTo(useImplementation = HibernateUnitOfWork.class)
     private UnitOfWork unitOfWork;
 
     @ConfigProperty(propertyName = "cancelRequests", type = boolean.class)
@@ -30,19 +29,19 @@ public class StorageService {
 
     public void writeOffBook(int bookId) {
         unitOfWork.executeVoid(() -> {
-            Book book = bookStorageRepository.getBook(bookId);
+            Book book = bookStorageRepository.getBook(bookId, false);
             book.setStatus(BookStatus.SOLD_OUT, null);
 
-            bookStorageRepository.updateBook(new BookDto(book, null));
+            bookStorageRepository.updateBook(book);
         });
     }
 
     public void addBookToStorage(int bookId) {
         unitOfWork.executeVoid(() -> {
-            Book book = bookStorageRepository.getBook(bookId);
+            Book book = bookStorageRepository.getBook(bookId, false);
             book.setStatus(BookStatus.FREE);
 
-            bookStorageRepository.updateBook(new BookDto(book, null));
+            bookStorageRepository.updateBook(book);
 
             if (cancelRequests)
                 requestManagerRepository.cancelRequests(book.getTitle());

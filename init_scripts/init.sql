@@ -23,6 +23,11 @@ CREATE TABLE IF NOT EXISTS requests(
     amount INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS book_order(
+    book_id INT REFERENCES books(id),
+    order_id INT REFERENCES orders(id),
+    PRIMARY KEY (book_id, order_id)
+);
 
 INSERT INTO orders (customer_name, total_sum, completion_date, status)
 VALUES
@@ -43,3 +48,10 @@ VALUES
     ('B_Book8', 'Desc8', '1928-1-20', '2025-8-8', 400, 'RESERVED', 3),
     ('A_Book9', 'Desc8', '1918-1-18', '2025-9-9', 801, 'FREE', NULL),
     ('J_Book10', 'Desc10', '1993-1-10', '2025-10-10', 200, 'RESERVED', 4);
+
+INSERT INTO book_order
+VALUES
+    (6, 1),
+    (7, 2),
+    (8, 3),
+    (10, 4);

@@ -25,7 +25,7 @@ public class InMemoryOrderManagerRepository implements OrderManagerRepository {
     public void updateOrder(Order order) { } // InMemory вариант не должен выполнять доп. операцию обновления
 
     @Override
-    public Order getOrder(int orderId) {
+    public Order getOrder(int orderId, boolean getLinkedObjects) {
         if (orders.containsKey(orderId)) {
             return orders.get(orderId);
         }
@@ -38,7 +38,7 @@ public class InMemoryOrderManagerRepository implements OrderManagerRepository {
     }
 
     @Override
-    public List<Order> getSortedOrders(OrderSortBy sortBy, boolean getBooks) {
+    public List<Order> getSortedOrders(OrderSortBy sortBy, boolean getLinkedObjects) {
         Comparator<Order> comparator = switch (sortBy) {
             case PRICE -> new OrderPriceComparator();
             case STATUS -> new OrderStatusComparator();

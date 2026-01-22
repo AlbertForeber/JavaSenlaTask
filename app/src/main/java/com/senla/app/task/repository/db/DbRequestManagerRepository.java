@@ -1,32 +1,25 @@
 package com.senla.app.task.repository.db;
 
 import com.senla.annotation.InjectTo;
-import com.senla.app.task.db.dao.jdbc_implementations.BookDao;
-import com.senla.app.task.db.dao.jdbc_implementations.RequestDao;
-import com.senla.app.task.model.dto.jdbc.RequestDto;
+import com.senla.app.task.db.dao.GenericDao;
+import com.senla.app.task.db.dao.hibernate_implementations.RequestDao;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.RequestManagerRepository;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class DbRequestManagerRepository implements RequestManagerRepository {
 
-    @InjectTo
-    RequestDao requestDao;
-
-    @InjectTo
-    BookDao bookDao;
+    @InjectTo(useImplementation = RequestDao.class)
+    GenericDao<Request, Integer, RequestSortBy> requestDao;
 
     @Override
-    public void addRequest(int requestId, String bookName) {
+    public void addRequest(int requestId, Book book) {
         try {
-            int bookId = getBookIdByName(bookName);
-            requestDao.save(new RequestDto(requestId, bookId, bookName, 1));
+            requestDao.save(new Request(requestId, book, 1));
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
@@ -35,13 +28,15 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
     @Override
     public void addRequest(Book book) {
         try {
-            List<RequestDto> alreadyIn = requestDao.findAll(null).stream().filter(o -> Objects.equals(o.getBookName(), book.getTitle())).toList();
+            List<Request> alreadyIn = requestDao.findAll(null, true).stream().filter(o -> Objects.equals(o.getBook().getTitle(), book.getTitle())).toList();
 
             if (!alreadyIn.isEmpty()) {
-                RequestDto toUpdate = alreadyIn.getFirst();
-                requestDao.update(new RequestDto(toUpdate.getId(), toUpdate.getBookId(), book.getTitle(), toUpdate.getAmount() + 1));
+                Request toUpdate = alreadyIn.getFirst();
+                toUpdate.incrementAmount();
+
+                requestDao.update(toUpdate);
             } else
-                requestDao.save(new RequestDto(book.getId(), book.getTitle(), 1));
+                requestDao.save(new Request(0, book, 1));
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
@@ -50,10 +45,7 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
     @Override
     public Request getRequest(int requestId) {
         try {
-            RequestDto requestDto = requestDao.findById(requestId);
-
-            if (requestDto == null) return null;
-            return requestDto.toBusinessObject();
+            return requestDao.findById(requestId, true);
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
@@ -63,9 +55,9 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
     public void cancelRequests(String bookName) {
         try {
 
-            for (RequestDto requestDto : requestDao.findAll(null)) {
-                if (Objects.equals(requestDto.getBookName(), bookName))
-                    requestDao.delete(requestDto.getId());
+            for (Request request : requestDao.findAll(null, true)) {
+                if (Objects.equals(request.getBook().getTitle(), bookName))
+                    requestDao.delete(request.getId());
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
@@ -74,31 +66,10 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
 
     @Override
     public List<Request> getSortedRequests(RequestSortBy sortBy) {
-        List<String> sortByList = new ArrayList<>();
-
-        switch (sortBy) {
-            case BOOK_NAME -> sortByList.add("title");
-            case AMOUNT -> sortByList.add("amount");
-        }
-
         try {
-            return requestDao.findAll(
-                    sortBy != RequestSortBy.NO_SORT ? sortByList : null
-            ).stream().map(RequestDto::toBusinessObject).toList();
+            return requestDao.findAll(sortBy != RequestSortBy.NO_SORT ? sortBy : null, true);
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
-    }
-
-    private int getBookIdByName(String bookName) throws SQLException {
-        return bookDao
-                .findAll(null)
-                .stream()
-                .dropWhile(o -> !Objects.equals(o.getTitle(), bookName))
-                .toList().getFirst().getId();
-    }
-
-    private String getBookNameFromDto(RequestDto requestDto) throws SQLException {
-        return bookDao.findById(requestDto.getBookId()).getTitle();
     }
 }

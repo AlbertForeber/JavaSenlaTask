@@ -1,4 +1,6 @@
-package com.senla.app.task.service.unit_of_work.db;
+package com.senla.app.task.service.unit_of_work.implementations;
+
+import com.senla.app.task.service.unit_of_work.AbstractUnitOfWork;
 
 public class InMemoryUnitOfWork extends AbstractUnitOfWork {
 

@@ -1,5 +1,8 @@
 package com.senla.app.task.service.unit_of_work;
 
+import com.senla.app.task.service.unit_of_work.func_interfaces.ThrowingRunnable;
+import com.senla.app.task.service.unit_of_work.func_interfaces.ThrowingSupplier;
+
 public interface UnitOfWork extends AutoCloseable {
 
     // Для возвращающих функций

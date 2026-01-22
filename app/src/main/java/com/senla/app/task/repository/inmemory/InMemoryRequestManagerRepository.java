@@ -14,9 +14,9 @@ public class InMemoryRequestManagerRepository implements RequestManagerRepositor
     private final LinkedHashMap<Integer, Request> requests = new LinkedHashMap<>();
 
     @Override
-    public void addRequest(int requestId, String bookName) {
+    public void addRequest(int requestId, Book book) {
         if (requests.containsKey(requestId)) requests.get(requestId).incrementAmount();
-        else requests.put(requestId, new Request(requestId, bookName));
+        else requests.put(requestId, new Request(requestId, book));
     }
 
     @Override
@@ -25,13 +25,13 @@ public class InMemoryRequestManagerRepository implements RequestManagerRepositor
         int lastId = 0;
 
         for (Request request : requests.values()) {
-            if (Objects.equals(request.getBookName(), book.getTitle())) {
+            if (Objects.equals(request.getBook(), book)) {
                 request.incrementAmount();
                 return;
             }
             lastId = request.getId();
         }
-        requests.put(lastId + 1, new Request(lastId + 1, book.getTitle()));
+        requests.put(lastId + 1, new Request(lastId + 1, book));
     }
 
 
@@ -44,7 +44,8 @@ public class InMemoryRequestManagerRepository implements RequestManagerRepositor
     public void cancelRequests(String bookName) {
         //requests.removeIf(r -> Objects.equals(r.getBookName(), bookName));
         for (Request request : requests.values()) {
-            if (Objects.equals(request.getBookName(), bookName)) requests.remove(request.getId());
+            if (Objects.equals(request.getBook().getTitle(), bookName))
+                requests.remove(request.getId());
         }
     }
 

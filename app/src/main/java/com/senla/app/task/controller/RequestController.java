@@ -4,19 +4,12 @@ import com.senla.annotation.InjectTo;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.service.request.RequestQueryService;
 import com.senla.app.task.service.request.RequestService;
-import com.senla.app.task.service.request.io.RequestExportService;
-import com.senla.app.task.service.request.io.RequestImportService;
-import com.senla.app.task.service.request.io.csv.CsvRequestExportService;
-import com.senla.app.task.service.request.io.csv.CsvRequestImportService;
 import com.senla.app.task.service.unit_of_work.TransactionException;
 import com.senla.app.task.utils.Colors;
 import com.senla.app.task.view.IOHandler;
 import com.senla.app.task.view.console.ConsoleIOHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public class RequestController extends BaseController {
 
@@ -25,12 +18,6 @@ public class RequestController extends BaseController {
 
     @InjectTo
     private RequestQueryService requestQueryService;
-
-    @InjectTo(useImplementation = CsvRequestImportService.class)
-    private RequestImportService requestImportService;
-
-    @InjectTo(useImplementation = CsvRequestExportService.class)
-    private RequestExportService requestExportService;
 
     @InjectTo(useImplementation = ConsoleIOHandler.class)
     private IOHandler ioHandler;
@@ -56,6 +43,7 @@ public class RequestController extends BaseController {
 
         try {
             requestService.createRequest(bookId);
+            logger.info("Запрос на книгу #{} успешно создан", bookId);
         } catch (TransactionException e) {
             logger.error(e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
@@ -92,45 +80,10 @@ public class RequestController extends BaseController {
             requestQueryService.getSorted(requestSortBy).stream()
                     .map(Object::toString)
                     .forEach(ioHandler::showMessage);
+            logger.info("Вывод отсортированных запросов успешно завершен");
         } catch (Exception e) {
-            logger.error("Ошибка доступа к базе при получении запросов" + e.getMessage());
-            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
-        }
-    }
-
-    public void importRequest() {
-        ioHandler.showMessage(Colors.BLUE + "Введите путь к файлу" + Colors.RESET);
-        String fileName = ioHandler.handleInput();
-
-        try {
-            requestImportService.importRequest(fileName);
-            ioHandler.showMessage(Colors.YELLOW + "Запрос '" + fileName + "' успешно импортирован" + Colors.RESET);
-        } catch (FileNotFoundException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ФАЙЛ '" + fileName + "' НЕ НАЙДЕН" + Colors.RESET);
-        } catch (IOException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ВО ВРЕМЯ ЧТЕНИЯ ДОКУМЕНТА" + Colors.RESET);
-        } catch (IllegalArgumentException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
-        }
-    }
-
-    public void exportRequest() {
-        ioHandler.showMessage(Colors.BLUE + "Введите ID запроса" + Colors.RESET);
-
-        try {
-            int requestId = Integer.parseInt(ioHandler.handleInput());
-
-            ioHandler.showMessage(Colors.BLUE + "Введите путь для файла (Без имени файла, с разделителем на конце)" + Colors.RESET);
-            ioHandler.showMessage(Colors.BLUE + "Пример: ./dir1/dir2/dir3/ (для Linux)" + Colors.RESET);
-
-            requestExportService.exportRequest(requestId, ioHandler.handleInput());
-            ioHandler.showMessage(Colors.YELLOW + "Запрос с ID: '" + requestId + "' успешно экспортирован" + Colors.RESET);
-        } catch (NumberFormatException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
-        } catch (IOException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ВО ВРЕМЯ СОЗДАНИЯ ДОКУМЕНТА" + Colors.RESET);
-        } catch (IllegalArgumentException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
+            logger.error("Ошибка при получении запросов {}", e.getMessage());
+            ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
         }
     }
 }

@@ -8,18 +8,13 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
-@Entity
-@Table(name = "books")
+@Entity(name = "books")
 public class Book implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "books_seq")
-    @SequenceGenerator(
-            name = "books_seq",
-            sequenceName = "books_id_seq",
-            allocationSize = 1 // Сколько держим объектов в памяти, до например, операции вставки
-    )
-    @Column(name = "id")
+//    Так как книги уже добавлены, создавать генератор нет смысла
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_seq")
+//    @SequenceGenerator(name = "book_seq", sequenceName = "books_id_seq", allocationSize = 1)
     private int id;
 
     @Column(name = "title")
@@ -43,9 +38,11 @@ public class Book implements Serializable {
     @Column(name = "status")
     private BookStatus status;
 
-    private String reservist = null;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private Order order = null;
 
-    public Book() { }
+    protected Book() { }
 
     public Book(
             int id,
@@ -82,7 +79,7 @@ public class Book implements Serializable {
             Calendar admissionDate,
             int price,
             BookStatus initStatus,
-            String reservist
+            Order order
     ) {
         this.id = id;
         this.title = title;
@@ -91,7 +88,7 @@ public class Book implements Serializable {
         this.admissionDate = admissionDate;
         this.price = price;
         this.status = initStatus;
-        this.reservist = reservist;
+        this.order = order;
     }
 
     public int getId() {
@@ -109,13 +106,13 @@ public class Book implements Serializable {
     public void setStatus(BookStatus status) {
         if (status != BookStatus.RESERVED) {
             this.status = status;
-            this.reservist = null;
+            this.order = null;
         }
     }
 
-    public void setStatus(BookStatus status, String reservist) {
+    public void setStatus(BookStatus status, Order order) {
         if (status == BookStatus.RESERVED) {
-            this.reservist = reservist;
+            this.order = order;
         }
         this.status = status;
     }
@@ -144,8 +141,8 @@ public class Book implements Serializable {
         return description;
     }
 
-    public String getReservist() {
-        return reservist;
+    public int getOrderId() {
+        return order != null ? order.getId() : 0;
     }
 
     @Override
@@ -159,6 +156,7 @@ public class Book implements Serializable {
                     admissionDate: %d %d %d
                     price: %d
                     bookStatus: %s
+                    in order: %d
                 """,
                 id,
                 title,
@@ -170,7 +168,8 @@ public class Book implements Serializable {
                 admissionDate.get(Calendar.MONTH) + 1,
                 admissionDate.get(Calendar.DATE),
                 price,
-                status
+                status,
+                getOrderId()
                 );
     }
 }

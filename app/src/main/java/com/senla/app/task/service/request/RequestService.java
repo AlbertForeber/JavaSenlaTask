@@ -5,6 +5,8 @@ import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.repository.db.DbRequestManagerRepository;
 import com.senla.app.task.repository.db.DbStorageRepository;
+import com.senla.app.task.service.unit_of_work.UnitOfWork;
+import com.senla.app.task.service.unit_of_work.implementations.HibernateUnitOfWork;
 
 public class RequestService {
 
@@ -14,9 +16,14 @@ public class RequestService {
     @InjectTo(useImplementation = DbStorageRepository.class)
     private StorageRepository storageRepository;
 
+    @InjectTo(useImplementation = HibernateUnitOfWork.class)
+    private UnitOfWork unitOfWork;
+
     public RequestService() { }
 
     public void createRequest(int bookId) {
-        requestManagerRepository.addRequest(storageRepository.getBook(bookId));
+        unitOfWork.executeVoid(() -> requestManagerRepository
+                        .addRequest(storageRepository
+                        .getBook(bookId, false)));
     }
 }

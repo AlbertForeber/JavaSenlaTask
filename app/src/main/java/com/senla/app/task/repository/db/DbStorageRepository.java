@@ -1,67 +1,50 @@
 package com.senla.app.task.repository.db;
 
 import com.senla.annotation.InjectTo;
-import com.senla.app.task.db.dao.jdbc_implementations.BookDao;
+import com.senla.app.task.db.dao.GenericDao;
+import com.senla.app.task.db.dao.hibernate_implementations.BookDao;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.repository.StorageRepository;
-import com.senla.app.task.model.dto.jdbc.BookDto;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DbStorageRepository implements StorageRepository {
 
-    @InjectTo
-    private BookDao bookDao;
+    @InjectTo(useImplementation = BookDao.class)
+    GenericDao<Book, Integer, BookSortBy> bookDao;
 
     @Override
-    public void addBook(BookDto bookDto) throws IllegalArgumentException {
+    public void addBook(Book book) throws IllegalArgumentException {
         try {
-            bookDao.save(bookDto);
+            bookDao.save(book);
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
 
     @Override
-    public void updateBook(BookDto bookDto) {
+    public void updateBook(Book book) {
         try {
-            bookDao.update(bookDto);
+            bookDao.update(book);
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
 
     @Override
-    public Book getBook(int bookId) {
+    public Book getBook(int bookId, boolean getLinkedObjects) {
         try {
-            BookDto bookDto = bookDao.findById(bookId);
-
-            if (bookDto == null) return null;
-            return bookDto.toBusinessObject();
+            return bookDao.findById(bookId, getLinkedObjects);
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
 
     @Override
-    public List<Book> getSortedBooks(BookSortBy sortBy) {
-        List<String> sortByList = new ArrayList<>();
-
-        switch (sortBy) {
-            case TITLE -> sortByList.add("title");
-            case PUBLICATION_DATE -> sortByList.add("publication_date");
-            case ADMISSION_DATE -> sortByList.add("admission_date");
-            case PRICE -> sortByList.add("price");
-            case AVAILABILITY -> sortByList.add("books.status");
-            case DATE_PRICE -> sortByList.addAll(List.of("admission_date", "price"));
-        }
-
+    public List<Book> getSortedBooks(BookSortBy sortBy, boolean getLinkedObjects) {
         try {
-            return bookDao.findAll(
-                    sortBy != BookSortBy.NO_SORT ? sortByList : null
-            ).stream().map(BookDto::toBusinessObject).toList();
+            return bookDao.findAll(sortBy != BookSortBy.NO_SORT ? sortBy : null, getLinkedObjects);
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }

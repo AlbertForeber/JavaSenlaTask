@@ -44,7 +44,7 @@ public final class HibernateUtil {
                 INSTANCE.sessionFactory =  configuration.buildSessionFactory();
             } catch (Exception e) {
                 logger.error("Ошибка Hibernate {}", e.getMessage());
-                System.err.println("Ошибка Hibernate " + e.getMessage());
+                System.err.println("КРИТИЧЕСКАЯ ОШИБКА: Ошибка Hibernate " + e.getMessage());
             }
         }
         return INSTANCE;
@@ -52,8 +52,24 @@ public final class HibernateUtil {
 
     public static Session getSession() throws HibernateException {
         if (session == null || !session.isOpen()) {
+            System.out.println(Colors.BLUE + "СЕССИЯ ОТКРЫТА" + Colors.RESET);
             session = getInstance().sessionFactory.openSession();
         }
         return session;
+    }
+
+    public static void closeSession() {
+        if (session != null && session.isOpen()) {
+            try {
+                System.out.println(Colors.BLUE + "СЕССИЯ ЗАКРЫТА" + Colors.RESET);
+                session.close();
+            } catch (HibernateException ignored) { }
+        }
+    }
+
+    public static void shutdown() {
+        if (INSTANCE != null) {
+            getInstance().sessionFactory.close();
+        }
     }
 }

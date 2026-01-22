@@ -6,6 +6,8 @@ import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
 import com.senla.app.task.model.entity.status.OrderStatus;
 import com.senla.app.task.repository.db.DbOrderManagerRepository;
+import com.senla.app.task.service.unit_of_work.UnitOfWork;
+import com.senla.app.task.service.unit_of_work.implementations.HibernateUnitOfWork;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -21,10 +23,13 @@ public class OrderQueryService {
     @InjectTo(useImplementation = DbOrderManagerRepository.class)
     private OrderManagerRepository orderManagerRepository;
 
+    @InjectTo(useImplementation = HibernateUnitOfWork.class)
+    private UnitOfWork unitOfWork;
+
     public OrderQueryService() { }
 
     public List<Order> getSorted(OrderSortBy sortBy) {
-        return orderManagerRepository.getSortedOrders(sortBy, true);
+        return unitOfWork.execute(() -> orderManagerRepository.getSortedOrders(sortBy, true));
     }
 
     public List<Order> getCompletedOrdersInInterval(
@@ -37,20 +42,25 @@ public class OrderQueryService {
 
             boolean getBooks
     ) {
-        List<Order> orders = orderManagerRepository.getSortedOrders(OrderSortBy.PRICE_DATE, getBooks);
-        List<Order> toReturn = new ArrayList<>();
+        return unitOfWork.execute(() -> {
+                List<Order> orders = orderManagerRepository.getSortedOrders(OrderSortBy.PRICE_DATE, getBooks);
+                List<Order> toReturn = new ArrayList<>();
 
-        long from = new GregorianCalendar(fromYear, fromMonth - 1, fromDate).getTimeInMillis();
-        long to = new GregorianCalendar(toYear, toMonth - 1, toDate).getTimeInMillis();
+                long from = new GregorianCalendar(fromYear, fromMonth - 1, fromDate).getTimeInMillis();
+                long to = new GregorianCalendar(toYear, toMonth - 1, toDate).getTimeInMillis();
 
-        for (Order order : orders) {
-            long orderTime = order.getCompletionDate().getTimeInMillis();
-            if (from <= orderTime && orderTime <= to && order.getStatus() == OrderStatus.COMPLETED) {
-                toReturn.add(order);
+                for (Order order : orders) {
+                    if (order.getCompletionDate() == null) continue;
+
+                    long orderTime = order.getCompletionDate().getTimeInMillis();
+                    if (from <= orderTime && orderTime <= to && order.getStatus() == OrderStatus.COMPLETED) {
+                        toReturn.add(order);
+                    }
+                }
+
+                return toReturn;
             }
-        }
-
-        return toReturn;
+        );
     }
 
     public long getIncomeInInterval(
@@ -61,6 +71,7 @@ public class OrderQueryService {
             int toMonth,
             int toDate
     ) {
+
         int toReturn = 0;
 
         for (Order order : getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate, false)) {
@@ -82,7 +93,10 @@ public class OrderQueryService {
     }
 
     public String getOrderDetails(int orderId) {
-        return orderManagerRepository.getOrder(orderId).toString();
+        return unitOfWork.execute(() -> {
+            Order order = orderManagerRepository.getOrder(orderId, true);
+            return order == null ? null : order.toString();
+        });
     }
 
     public void saveState(String path) throws IOException {
