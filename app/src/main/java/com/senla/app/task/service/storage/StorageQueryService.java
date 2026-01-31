@@ -2,6 +2,8 @@ package com.senla.app.task.service.storage;
 
 import com.senla.annotation.ConfigProperty;
 import com.senla.annotation.InjectTo;
+import com.senla.annotation.db_qualifiers.Hibernate;
+import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
@@ -9,24 +11,35 @@ import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.repository.db.DbStorageRepository;
 import com.senla.app.task.service.unit_of_work.UnitOfWork;
 import com.senla.app.task.service.unit_of_work.implementations.HibernateUnitOfWork;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+@Service
 public class StorageQueryService {
 
     @InjectTo(useImplementation = DbStorageRepository.class)
     private StorageRepository bookStorageRepository;
 
     @ConfigProperty(propertyName = "liquidMonths", type = int.class)
-    private int liquidMonthAmount;
+    private final int liquidMonthAmount;
 
     @InjectTo(useImplementation = HibernateUnitOfWork.class)
-    private UnitOfWork unitOfWork;
+    private final UnitOfWork unitOfWork;
 
-    public StorageQueryService() { }
+    public StorageQueryService(
+            @Db                                 StorageRepository bookStorageRepository,
+            @Value("${storage.liquid-months}")  int liquidMonthAmount,
+            @Hibernate                          UnitOfWork unitOfWork
+    ) {
+        this.bookStorageRepository = bookStorageRepository;
+        this.liquidMonthAmount = liquidMonthAmount;
+        this.unitOfWork = unitOfWork;
+    }
 
     public List<Book> getSorted(BookSortBy sortBy) {
         return unitOfWork.execute(() -> bookStorageRepository.getSortedBooks(sortBy, true));

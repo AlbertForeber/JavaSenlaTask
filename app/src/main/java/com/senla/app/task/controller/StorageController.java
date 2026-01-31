@@ -1,6 +1,7 @@
 package com.senla.app.task.controller;
 
 import com.senla.annotation.InjectTo;
+import com.senla.annotation.ui_qualifiers.Console;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.service.storage.StorageQueryService;
 import com.senla.app.task.service.storage.StorageService;
@@ -11,22 +12,29 @@ import com.senla.app.task.view.IOHandler;
 import com.senla.app.task.view.console.ConsoleIOHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
-public class StorageController extends BaseController {
+@Component
+public class StorageController {
 
     @InjectTo(configurable = true)
-    private StorageService storageService;
+    private final StorageService storageService;
 
     @InjectTo(configurable = true)
-    private StorageQueryService storageQueryService;
+    private final StorageQueryService storageQueryService;
 
     @InjectTo(useImplementation = ConsoleIOHandler.class)
-    private IOHandler ioHandler;
+    private final IOHandler ioHandler;
 
     private static final Logger logger = LogManager.getLogger(StorageController.class);
 
-    public StorageController() {
-        super();
+    public StorageController(
+            StorageService storageService,
+            StorageQueryService storageQueryService,
+            @Console IOHandler ioHandler) {
+        this.storageService = storageService;
+        this.storageQueryService = storageQueryService;
+        this.ioHandler = ioHandler;
     }
 
     public void writeOffBook() {

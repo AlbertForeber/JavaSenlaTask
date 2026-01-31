@@ -1,14 +1,18 @@
 package com.senla.app.task.repository.inmemory;
 
+import com.senla.annotation.repo_qualifiers.InMemory;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.model.comparators.request.RequestAmountComparator;
 import com.senla.app.task.model.comparators.request.RequestBookNameComparator;
 import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository
+@InMemory
 public class InMemoryRequestManagerRepository implements RequestManagerRepository {
 
     private final LinkedHashMap<Integer, Request> requests = new LinkedHashMap<>();

@@ -1,12 +1,16 @@
 package com.senla.app.task.view.console;
 
+import com.senla.annotation.ui_qualifiers.Console;
 import com.senla.annotation_processor.InjectProcessor;
 import com.senla.app.task.view.MenuBuilder;
 import com.senla.app.task.view.Navigator;
 import com.senla.app.task.view.factory.MenuFactory;
 import com.senla.app.task.view.header.Header;
 import com.senla.app.task.view.menu.Menu;
+import org.springframework.stereotype.Component;
 
+@Component
+@Console
 public class ConsoleMenuBuilder implements MenuBuilder {
 
     private Menu currentMenu;

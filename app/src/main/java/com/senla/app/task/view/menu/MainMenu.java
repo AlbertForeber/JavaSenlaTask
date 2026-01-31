@@ -1,7 +1,5 @@
 package com.senla.app.task.view.menu;
 
-import com.senla.annotation.InjectTo;
-import com.senla.app.task.controller.MainController;
 import com.senla.app.task.view.Navigator;
 import com.senla.app.task.view.enums.NavigateTo;
 
@@ -9,11 +7,8 @@ import java.util.List;
 
 public class MainMenu implements Menu {
 
-    private final List<com.senla.app.task.view.menu.MenuAction> menu;
+    private final List<MenuAction> menu;
     private final Navigator navigator;
-
-    @InjectTo
-    MainController controller;
 
     public MainMenu(Navigator navigator) {
         this.navigator = navigator;
@@ -21,7 +16,7 @@ public class MainMenu implements Menu {
                 new MenuAction("1. Меню управления хранилищем", o -> navigator.navigateTo(NavigateTo.STORAGE)),
                 new MenuAction("2. Меню управления заказами",   o -> navigator.navigateTo(NavigateTo.ORDER)),
                 new MenuAction("3. Меню управления запросами",  o -> navigator.navigateTo(NavigateTo.REQUEST)),
-                new MenuAction("4. Выход",  o -> { } /* controller.saveState() */)
+                new MenuAction("4. Выход",  o -> { })
         );
     }
 

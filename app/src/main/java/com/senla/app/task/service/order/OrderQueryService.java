@@ -1,6 +1,8 @@
 package com.senla.app.task.service.order;
 
 import com.senla.annotation.InjectTo;
+import com.senla.annotation.db_qualifiers.Hibernate;
+import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.task.repository.OrderManagerRepository;
 import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
@@ -8,6 +10,7 @@ import com.senla.app.task.model.entity.status.OrderStatus;
 import com.senla.app.task.repository.db.DbOrderManagerRepository;
 import com.senla.app.task.service.unit_of_work.UnitOfWork;
 import com.senla.app.task.service.unit_of_work.implementations.HibernateUnitOfWork;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -18,15 +21,22 @@ import java.util.List;
 // Сервис, а не фасад, так как содержит бизнес-логику, а не простые вызовы готовых методов
 // + все методы отвечают за одну предметную область.
 
+@Service
 public class OrderQueryService {
 
     @InjectTo(useImplementation = DbOrderManagerRepository.class)
-    private OrderManagerRepository orderManagerRepository;
+    private final OrderManagerRepository orderManagerRepository;
 
     @InjectTo(useImplementation = HibernateUnitOfWork.class)
-    private UnitOfWork unitOfWork;
+    private final UnitOfWork unitOfWork;
 
-    public OrderQueryService() { }
+    public OrderQueryService(
+            @Db OrderManagerRepository orderManagerRepository,
+            @Hibernate UnitOfWork unitOfWork
+    ) {
+        this.orderManagerRepository = orderManagerRepository;
+        this.unitOfWork = unitOfWork;
+    }
 
     public List<Order> getSorted(OrderSortBy sortBy) {
         return unitOfWork.execute(() -> orderManagerRepository.getSortedOrders(sortBy, true));

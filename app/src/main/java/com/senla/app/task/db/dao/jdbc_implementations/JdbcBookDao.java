@@ -1,5 +1,6 @@
 package com.senla.app.task.db.dao.jdbc_implementations;
 
+import com.senla.annotation.db_qualifiers.Jdbc;
 import com.senla.app.task.db.DatabaseException;
 import com.senla.app.task.db.dao.AbstractJdbcDao;
 import com.senla.app.task.model.entity.Book;
@@ -8,6 +9,7 @@ import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.model.entity.status.OrderStatus;
 import com.senla.app.task.utils.DateConverter;
+import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -16,7 +18,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BookDao extends AbstractJdbcDao<Book, Integer, BookSortBy> {
+@Component
+@Jdbc
+public class JdbcBookDao extends AbstractJdbcDao<Book, Integer, BookSortBy> {
 
     private final Map<Integer, Order> orderCache = new HashMap<>();
 
@@ -34,7 +38,7 @@ public class BookDao extends AbstractJdbcDao<Book, Integer, BookSortBy> {
         orderCache.clear();
     }
 
-    public BookDao() {
+    public JdbcBookDao() {
         super();
     }
 

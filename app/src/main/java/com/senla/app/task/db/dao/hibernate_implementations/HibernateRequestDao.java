@@ -1,20 +1,24 @@
 package com.senla.app.task.db.dao.hibernate_implementations;
 
+import com.senla.annotation.db_qualifiers.Hibernate;
 import com.senla.app.task.db.DatabaseException;
 import com.senla.app.task.db.dao.AbstractHibernateDao;
 import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-public class RequestDao extends AbstractHibernateDao<Request, Integer, RequestSortBy> {
+@Component
+@Hibernate
+public class HibernateRequestDao extends AbstractHibernateDao<Request, Integer, RequestSortBy> {
 
     private final Map<RequestSortBy, String> aliasesForSortBy = Map.of(
             RequestSortBy.AMOUNT,       "r.amount",
             RequestSortBy.BOOK_NAME,    "b.title"
     );
 
-    public RequestDao() {
+    public HibernateRequestDao() {
         super(Request.class);
     }
 

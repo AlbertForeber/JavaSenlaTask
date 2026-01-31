@@ -1,23 +1,34 @@
 package com.senla.app.task.service.request;
 
 import com.senla.annotation.InjectTo;
+import com.senla.annotation.db_qualifiers.Hibernate;
+import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.db.DbRequestManagerRepository;
 import com.senla.app.task.service.unit_of_work.UnitOfWork;
 import com.senla.app.task.service.unit_of_work.implementations.HibernateUnitOfWork;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.List;
 
+@Service
 public class RequestQueryService {
 
     @InjectTo(useImplementation = DbRequestManagerRepository.class)
-    private RequestManagerRepository requestManagerRepository;
+    private final RequestManagerRepository requestManagerRepository;
 
     @InjectTo(useImplementation = HibernateUnitOfWork.class)
-    private UnitOfWork unitOfWork;
+    private final UnitOfWork unitOfWork;
+
+    public RequestQueryService(
+            @Db RequestManagerRepository requestManagerRepository,
+            @Hibernate UnitOfWork unitOfWork) {
+        this.requestManagerRepository = requestManagerRepository;
+        this.unitOfWork = unitOfWork;
+    }
 
     public List<Request> getSorted(RequestSortBy sortBy) {
         return unitOfWork.execute(() -> requestManagerRepository.getSortedRequests(sortBy));

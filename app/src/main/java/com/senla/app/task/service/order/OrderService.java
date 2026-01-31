@@ -1,6 +1,8 @@
 package com.senla.app.task.service.order;
 
 import com.senla.annotation.InjectTo;
+import com.senla.annotation.db_qualifiers.Hibernate;
+import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.task.repository.OrderManagerRepository;
 import com.senla.app.task.repository.RequestManagerRepository;
 import com.senla.app.task.repository.StorageRepository;
@@ -13,6 +15,7 @@ import com.senla.app.task.repository.db.DbRequestManagerRepository;
 import com.senla.app.task.repository.db.DbStorageRepository;
 import com.senla.app.task.service.unit_of_work.UnitOfWork;
 import com.senla.app.task.service.unit_of_work.implementations.HibernateUnitOfWork;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
@@ -20,21 +23,31 @@ import java.util.*;
 // Сервис, а не фасад, так как содержит бизнес-логику, а не простые вызовы готовых методов
 // + все методы отвечают за одну предметную область.
 
+@Service
 public class OrderService {
 
     @InjectTo(useImplementation = DbOrderManagerRepository.class)
-    private OrderManagerRepository orderManagerRepository;
+    private final OrderManagerRepository orderManagerRepository;
 
     @InjectTo(useImplementation = DbStorageRepository.class)
-    private StorageRepository bookStorageRepository;
+    private final StorageRepository bookStorageRepository;
 
     @InjectTo(useImplementation = DbRequestManagerRepository.class)
-    private RequestManagerRepository requestManagerRepository;
+    private final RequestManagerRepository requestManagerRepository;
 
     @InjectTo(useImplementation = HibernateUnitOfWork.class)
-    private UnitOfWork unitOfWork;
+    private final UnitOfWork unitOfWork;
 
-    public OrderService() { }
+    public OrderService(
+            @Db OrderManagerRepository orderManagerRepository,
+            @Db StorageRepository bookStorageRepository,
+            @Db RequestManagerRepository requestManagerRepository,
+            @Hibernate UnitOfWork unitOfWork) {
+        this.orderManagerRepository = orderManagerRepository;
+        this.bookStorageRepository = bookStorageRepository;
+        this.requestManagerRepository = requestManagerRepository;
+        this.unitOfWork = unitOfWork;
+    }
 
     public boolean createOrder(int orderId, List<Integer> bookIds, String customerName) {
         return unitOfWork.execute(() -> {

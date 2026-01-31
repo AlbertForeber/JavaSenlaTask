@@ -1,19 +1,25 @@
 package com.senla.app.task.repository.db;
 
-import com.senla.annotation.InjectTo;
+import com.senla.annotation.db_qualifiers.Hibernate;
+import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.task.db.DatabaseException;
 import com.senla.app.task.db.dao.GenericDao;
-import com.senla.app.task.db.dao.hibernate_implementations.OrderDao;
 import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
 import com.senla.app.task.repository.OrderManagerRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
+@Db
 public class DbOrderManagerRepository implements OrderManagerRepository {
 
-    @InjectTo(useImplementation = OrderDao.class)
-    GenericDao<Order, Integer, OrderSortBy> orderDao;
+    private final GenericDao<Order, Integer, OrderSortBy> orderDao;
+
+    public DbOrderManagerRepository(@Hibernate GenericDao<Order, Integer, OrderSortBy> orderDao) {
+        this.orderDao = orderDao;
+    }
 
     @Override
     public void addOrder(int orderId, Order order) throws IllegalArgumentException {

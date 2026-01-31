@@ -2,6 +2,8 @@ package com.senla.app.task.service.storage;
 
 import com.senla.annotation.ConfigProperty;
 import com.senla.annotation.InjectTo;
+import com.senla.annotation.db_qualifiers.Hibernate;
+import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.repository.RequestManagerRepository;
@@ -10,22 +12,34 @@ import com.senla.app.task.repository.db.DbStorageRepository;
 import com.senla.app.task.repository.db.DbRequestManagerRepository;
 import com.senla.app.task.service.unit_of_work.UnitOfWork;
 import com.senla.app.task.service.unit_of_work.implementations.HibernateUnitOfWork;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+@Service
 public class StorageService {
 
     @InjectTo(useImplementation = DbStorageRepository.class)
-    private StorageRepository bookStorageRepository;
+    private final StorageRepository bookStorageRepository;
 
     @InjectTo(useImplementation = DbRequestManagerRepository.class)
-    private RequestManagerRepository requestManagerRepository;
+    private final RequestManagerRepository requestManagerRepository;
 
     @InjectTo(useImplementation = HibernateUnitOfWork.class)
-    private UnitOfWork unitOfWork;
+    private final UnitOfWork unitOfWork;
 
     @ConfigProperty(propertyName = "cancelRequests", type = boolean.class)
-    private boolean cancelRequests = true;
+    private final boolean cancelRequests;
 
-    public StorageService() { }
+    public StorageService(
+            @Db                                     StorageRepository bookStorageRepository,
+            @Db                                     RequestManagerRepository requestManagerRepository,
+            @Hibernate                              UnitOfWork unitOfWork,
+            @Value("${storage.cancel-requests}")    boolean cancelRequests) {
+        this.bookStorageRepository = bookStorageRepository;
+        this.requestManagerRepository = requestManagerRepository;
+        this.unitOfWork = unitOfWork;
+        this.cancelRequests = cancelRequests;
+    }
 
     public void writeOffBook(int bookId) {
         unitOfWork.executeVoid(() -> {

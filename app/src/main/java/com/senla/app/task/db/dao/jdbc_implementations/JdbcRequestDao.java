@@ -1,5 +1,6 @@
 package com.senla.app.task.db.dao.jdbc_implementations;
 
+import com.senla.annotation.db_qualifiers.Jdbc;
 import com.senla.app.task.db.DatabaseException;
 import com.senla.app.task.db.dao.AbstractJdbcDao;
 import com.senla.app.task.model.entity.Book;
@@ -7,13 +8,16 @@ import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.model.entity.status.BookStatus;
 import com.senla.app.task.utils.DateConverter;
+import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-public class RequestDao extends AbstractJdbcDao<Request, Integer, RequestSortBy> {
+@Component
+@Jdbc
+public class JdbcRequestDao extends AbstractJdbcDao<Request, Integer, RequestSortBy> {
 
     private final Map<RequestSortBy, String> aliasesForSortBy = Map.of(
             RequestSortBy.AMOUNT,       "r.amount",

@@ -1,11 +1,15 @@
 package com.senla.app.task.view.console;
 
+import com.senla.annotation.ui_qualifiers.Console;
 import com.senla.app.task.utils.Colors;
 import com.senla.app.task.view.IOHandler;
 import com.senla.app.task.view.menu.Menu;
+import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
 
+@Component
+@Console
 public class ConsoleIOHandler implements IOHandler {
 
     private final Scanner scanner = new Scanner(System.in);

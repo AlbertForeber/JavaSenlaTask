@@ -1,20 +1,26 @@
 package com.senla.app.task.repository.db;
 
-import com.senla.annotation.InjectTo;
+import com.senla.annotation.db_qualifiers.Hibernate;
+import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.task.db.dao.GenericDao;
-import com.senla.app.task.db.dao.hibernate_implementations.RequestDao;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.RequestManagerRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
 
+@Repository
+@Db
 public class DbRequestManagerRepository implements RequestManagerRepository {
 
-    @InjectTo(useImplementation = RequestDao.class)
-    GenericDao<Request, Integer, RequestSortBy> requestDao;
+    private final GenericDao<Request, Integer, RequestSortBy> requestDao;
+
+    public DbRequestManagerRepository(@Hibernate GenericDao<Request, Integer, RequestSortBy> requestDao) {
+        this.requestDao = requestDao;
+    }
 
     @Override
     public void addRequest(int requestId, Book book) {

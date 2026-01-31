@@ -1,6 +1,7 @@
 package com.senla.app.task.controller;
 
 import com.senla.annotation.InjectTo;
+import com.senla.annotation.ui_qualifiers.Console;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.service.request.RequestQueryService;
 import com.senla.app.task.service.request.RequestService;
@@ -10,22 +11,29 @@ import com.senla.app.task.view.IOHandler;
 import com.senla.app.task.view.console.ConsoleIOHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
-public class RequestController extends BaseController {
+@Component
+public class RequestController {
 
     @InjectTo
-    private RequestService requestService;
+    private final RequestService requestService;
 
     @InjectTo
-    private RequestQueryService requestQueryService;
+    private final RequestQueryService requestQueryService;
 
     @InjectTo(useImplementation = ConsoleIOHandler.class)
-    private IOHandler ioHandler;
+    private final IOHandler ioHandler;
 
     private static final Logger logger = LogManager.getLogger(RequestController.class);
 
-    public RequestController() {
-        super();
+    public RequestController(
+            RequestService requestService,
+            RequestQueryService requestQueryService,
+            @Console IOHandler ioHandler) {
+        this.requestService = requestService;
+        this.requestQueryService = requestQueryService;
+        this.ioHandler = ioHandler;
     }
 
     public void createRequest() {

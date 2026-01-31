@@ -1,6 +1,7 @@
 package com.senla.app.task.controller;
 
 import com.senla.annotation.InjectTo;
+import com.senla.annotation.ui_qualifiers.Console;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
 import com.senla.app.task.model.entity.status.OrderStatus;
 import com.senla.app.task.service.order.OrderQueryService;
@@ -12,26 +13,34 @@ import com.senla.app.task.view.IOHandler;
 import com.senla.app.task.view.console.ConsoleIOHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class OrderController extends BaseController {
+@Component
+public class OrderController {
 
     @InjectTo
-    private OrderService orderService;
+    private final OrderService orderService;
 
     @InjectTo
-    private OrderQueryService orderQueryService;
+    private final OrderQueryService orderQueryService;
 
     @InjectTo(useImplementation = ConsoleIOHandler.class)
-    private IOHandler ioHandler;
+    private final IOHandler ioHandler;
 
     private static final Logger logger = LogManager.getLogger(OrderController.class);
 
-    public OrderController() {
-        super();
+    public OrderController(
+            OrderService orderService,
+            OrderQueryService orderQueryService,
+            @Console IOHandler ioHandler
+    ) {
+        this.orderService = orderService;
+        this.orderQueryService = orderQueryService;
+        this.ioHandler = ioHandler;
     }
 
     public void createOrder() {

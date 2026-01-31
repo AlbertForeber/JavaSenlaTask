@@ -1,21 +1,25 @@
 package com.senla.app.task.view.menu;
 
-import com.senla.annotation.InjectTo;
+import com.senla.annotation.ui_qualifiers.Console;
 import com.senla.app.task.controller.RequestController;
 import com.senla.app.task.view.Navigator;
 import com.senla.app.task.view.enums.NavigateTo;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
+@Scope("prototype")
 public class RequestMenu implements Menu {
 
     private final List<MenuAction> menu;
     private final Navigator navigator;
 
-    @InjectTo
-    RequestController controller;
-
-    public RequestMenu(Navigator navigator) {
+    public RequestMenu(
+            @Console Navigator navigator,
+            RequestController controller
+    ) {
         this.navigator = navigator;
         this.menu = List.of(
                 new MenuAction("1. Добавить запрос", o -> {
@@ -26,15 +30,7 @@ public class RequestMenu implements Menu {
                     controller.getSorted();
                     navigator.navigateTo(NavigateTo.REQUEST);
                 }),
-                new MenuAction("3. Импорт запроса",   o -> {
-//                    controller.importRequest();
-                    navigator.navigateTo(NavigateTo.REQUEST);
-                }),
-                new MenuAction("4. Экспорт запроса",   o -> {
-//                    controller.exportRequest();
-                    navigator.navigateTo(NavigateTo.REQUEST);
-                }),
-                new MenuAction("5. Назад",  o -> navigator.navigateTo(NavigateTo.MAIN))
+                new MenuAction("3. Назад",  o -> navigator.navigateTo(NavigateTo.MAIN))
         );
     }
 

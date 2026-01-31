@@ -1,13 +1,17 @@
 package com.senla.app.task.db.dao.hibernate_implementations;
 
+import com.senla.annotation.db_qualifiers.Hibernate;
 import com.senla.app.task.db.DatabaseException;
 import com.senla.app.task.db.dao.AbstractHibernateDao;
 import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-public class OrderDao extends AbstractHibernateDao<Order, Integer, OrderSortBy> {
+@Component
+@Hibernate
+public class HibernateOrderDao extends AbstractHibernateDao<Order, Integer, OrderSortBy> {
 
     private final Map<OrderSortBy, String> aliasesForSortBy = Map.of(
             OrderSortBy.PRICE,              "o.totalSum",
@@ -16,7 +20,7 @@ public class OrderDao extends AbstractHibernateDao<Order, Integer, OrderSortBy> 
             OrderSortBy.PRICE_DATE,         "o.totalSum, o.completionDate"
     );
 
-    public OrderDao() {
+    public HibernateOrderDao() {
         super(Order.class);
     }
 

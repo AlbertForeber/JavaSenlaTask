@@ -1,13 +1,17 @@
 package com.senla.app.task.db.dao.hibernate_implementations;
 
+import com.senla.annotation.db_qualifiers.Hibernate;
 import com.senla.app.task.db.DatabaseException;
 import com.senla.app.task.db.dao.AbstractHibernateDao;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-public class BookDao extends AbstractHibernateDao<Book, Integer, BookSortBy> {
+@Component
+@Hibernate
+public class HibernateBookDao extends AbstractHibernateDao<Book, Integer, BookSortBy> {
 
     private final Map<BookSortBy, String> aliasesForSortBy = Map.of(
             BookSortBy.TITLE,               "b.title",
@@ -18,7 +22,7 @@ public class BookDao extends AbstractHibernateDao<Book, Integer, BookSortBy> {
             BookSortBy.DATE_PRICE,          "b.admissionDate, b.price"
     );
 
-    public BookDao() {
+    public HibernateBookDao() {
         super(Book.class);
     }
 

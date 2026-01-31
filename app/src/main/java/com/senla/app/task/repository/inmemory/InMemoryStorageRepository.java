@@ -1,14 +1,18 @@
 package com.senla.app.task.repository.inmemory;
 
 
+import com.senla.annotation.repo_qualifiers.InMemory;
 import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.model.comparators.book.*;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.model.entity.status.BookStatus;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository
+@InMemory
 public class InMemoryStorageRepository implements StorageRepository {
 
     private final HashMap<Integer, Book> storage = new HashMap<>();

@@ -1,18 +1,24 @@
 package com.senla.app.task.repository.db;
 
-import com.senla.annotation.InjectTo;
+import com.senla.annotation.db_qualifiers.Hibernate;
+import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.task.db.dao.GenericDao;
-import com.senla.app.task.db.dao.hibernate_implementations.BookDao;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.repository.StorageRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
+@Db
 public class DbStorageRepository implements StorageRepository {
 
-    @InjectTo(useImplementation = BookDao.class)
-    GenericDao<Book, Integer, BookSortBy> bookDao;
+    private final GenericDao<Book, Integer, BookSortBy> bookDao;
+
+    public DbStorageRepository(@Hibernate GenericDao<Book, Integer, BookSortBy> bookDao) {
+        this.bookDao = bookDao;
+    }
 
     @Override
     public void addBook(Book book) throws IllegalArgumentException {
