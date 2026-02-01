@@ -9,22 +9,27 @@ import org.springframework.stereotype.Component;
 @Hibernate
 public class HibernateUnitOfWork extends AbstractUnitOfWork {
 
+    private final HibernateUtil hibernateUtil;
     private Transaction tx;
+
+    public HibernateUnitOfWork(HibernateUtil hibernateUtil) {
+        this.hibernateUtil = hibernateUtil;
+    }
 
     @Override
     protected void doBegin() {
-        tx = HibernateUtil.getSession().beginTransaction();
+        tx = hibernateUtil.getSession().beginTransaction();
     }
 
     @Override
     protected void doCommit() {
         tx.commit();
-        HibernateUtil.closeSession();
+        hibernateUtil.closeSession();
     }
 
     @Override
     protected void doRollback() {
         tx.rollback();
-        HibernateUtil.closeSession();
+        hibernateUtil.closeSession();
     }
 }

@@ -120,7 +120,7 @@ public class StorageController {
             storageQueryService.getSorted(bookSortBy).stream()
                     .map(Object::toString)
                     .forEach(ioHandler::showMessage);
-            logger.error("Вывод отсортированных книг успешно завершен");
+            logger.info("Вывод отсортированных книг успешно завершен");
         } catch (Exception e) {
             logger.error("Ошибка при получении книг: {}", e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
@@ -137,7 +137,7 @@ public class StorageController {
             try {
                 logger.info("Начало обработки получения залежавшихся книг");
                 storageQueryService.getHardToSell(date[2], date[1], date[0]).forEach(System.out::println);
-                logger.error("Вывод залежавшихся книг успешно завершен");
+                logger.info("Вывод залежавшихся книг успешно завершен");
             } catch (Exception e) {
                 logger.error("Ошибка при получении малопродаваемых книг: {}", e.getMessage());
                 ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
@@ -160,7 +160,7 @@ public class StorageController {
 
         try {
             ioHandler.showMessage(storageQueryService.getBookDescription(bookId));
-            logger.error("Вывод описания книги успешно завершен");
+            logger.info("Вывод описания книги успешно завершен");
         } catch (Exception e) {
             logger.error("Ошибка доступа к базе: {}", e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);

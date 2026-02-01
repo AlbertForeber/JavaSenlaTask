@@ -5,6 +5,7 @@ import com.senla.app.task.db.DatabaseException;
 import com.senla.app.task.db.dao.AbstractHibernateDao;
 import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
+import com.senla.app.task.utils.HibernateUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -20,8 +21,8 @@ public class HibernateOrderDao extends AbstractHibernateDao<Order, Integer, Orde
             OrderSortBy.PRICE_DATE,         "o.totalSum, o.completionDate"
     );
 
-    public HibernateOrderDao() {
-        super(Order.class);
+    public HibernateOrderDao(HibernateUtil hibernateUtil) {
+        super(Order.class, hibernateUtil);
     }
 
     @Override

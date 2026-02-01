@@ -5,6 +5,7 @@ import com.senla.app.task.db.DatabaseException;
 import com.senla.app.task.db.dao.AbstractHibernateDao;
 import com.senla.app.task.model.entity.Request;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
+import com.senla.app.task.utils.HibernateUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -18,8 +19,8 @@ public class HibernateRequestDao extends AbstractHibernateDao<Request, Integer, 
             RequestSortBy.BOOK_NAME,    "b.title"
     );
 
-    public HibernateRequestDao() {
-        super(Request.class);
+    public HibernateRequestDao(HibernateUtil hibernateUtil) {
+        super(Request.class, hibernateUtil);
     }
 
     @Override

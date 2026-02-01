@@ -1,64 +1,56 @@
 package com.senla.app.task.utils;
 
-import com.senla.annotation.ConfigProperty;
-import com.senla.annotation_processor.ConfigProcessor;
+import com.senla.annotation.db_qualifiers.Hibernate;
+import jakarta.annotation.PreDestroy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+// Концептуально остался Singleton
+@Component
+@Hibernate
 public final class HibernateUtil {
 
     private static final Logger logger = LogManager.getLogger(HibernateUtil.class);
-    private static HibernateUtil INSTANCE = null;
-
-    @ConfigProperty(propertyName = "db_url")
-    private String url = "";
-
-    @ConfigProperty(propertyName = "db_username")
-    private String username = "";
-
-    @ConfigProperty(propertyName = "db_password")
-    private String password = "";
 
     private SessionFactory sessionFactory;
-    private static Session session = null;
+    private Session session = null;
 
-    HibernateUtil() { }
+    public HibernateUtil(
+            @Value("${db.url}")        String url,
+            @Value("${db.username}")   String username,
+            @Value("${db.password}")   String password
+    ) {
+        try {
+            Configuration configuration = new Configuration();
+            configuration.configure("hibernate.cfg.xml");
 
-    private static HibernateUtil getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HibernateUtil();
-            ConfigProcessor.applyConfig(INSTANCE);
+            configuration.setProperty("hibernate.connection.url", url);
+            configuration.setProperty("hibernate.connection.username", username);
+            configuration.setProperty("hibernate.connection.password", password);
 
-            try {
-                Configuration configuration = new Configuration();
-                configuration.configure("hibernate.cfg.xml");
-
-                configuration.setProperty("hibernate.connection.url", INSTANCE.url);
-                configuration.setProperty("hibernate.connection.username", INSTANCE.username);
-                configuration.setProperty("hibernate.connection.password", INSTANCE.password);
-
-                INSTANCE.sessionFactory =  configuration.buildSessionFactory();
-            } catch (Exception e) {
-                logger.error("Ошибка Hibernate {}", e.getMessage());
-                System.err.println("КРИТИЧЕСКАЯ ОШИБКА: Ошибка Hibernate " + e.getMessage());
-            }
+            sessionFactory =  configuration.buildSessionFactory();
+        } catch (Exception e) {
+            logger.error("Ошибка Hibernate {}", e.getMessage());
+            System.err.println("КРИТИЧЕСКАЯ ОШИБКА: Ошибка Hibernate (" + e.getMessage() + ")");
+            System.exit(1);
         }
-        return INSTANCE;
     }
 
-    public static Session getSession() throws HibernateException {
+    public Session getSession() throws HibernateException {
         if (session == null || !session.isOpen()) {
             System.out.println(Colors.BLUE + "СЕССИЯ ОТКРЫТА" + Colors.RESET);
-            session = getInstance().sessionFactory.openSession();
+            session = sessionFactory.openSession();
         }
         return session;
     }
 
-    public static void closeSession() {
+    public void closeSession() {
         if (session != null && session.isOpen()) {
             try {
                 System.out.println(Colors.BLUE + "СЕССИЯ ЗАКРЫТА" + Colors.RESET);
@@ -67,9 +59,9 @@ public final class HibernateUtil {
         }
     }
 
-    public static void shutdown() {
-        if (INSTANCE != null) {
-            getInstance().sessionFactory.close();
-        }
+    @PreDestroy
+    public void shutdown() {
+        sessionFactory.close();
+        System.out.println(Colors.BLUE + "SESSION FACTORY ЗАКРЫТА" + Colors.RESET);
     }
 }

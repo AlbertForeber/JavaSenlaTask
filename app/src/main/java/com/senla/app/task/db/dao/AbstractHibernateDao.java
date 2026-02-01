@@ -10,6 +10,7 @@ import java.util.List;
 public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, PK, SB> {
 
     private final Class<T> type;
+    private final HibernateUtil hibernateUtil;
     private final String sql = "SELECT " + getEntityAlias()
             + " FROM " + getEntityName() + " " + getEntityAlias();
 
@@ -23,8 +24,9 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
         return "";
     }
 
-    public AbstractHibernateDao(Class<T> type) {
+    public AbstractHibernateDao(Class<T> type, HibernateUtil hibernateUtil) {
         this.type = type;
+        this.hibernateUtil = hibernateUtil;
     }
 
     @Override
@@ -36,7 +38,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
                 findByIdSql.append(" ").append(additionalJoinFetchQuery());
             findByIdSql.append(" WHERE ").append(getEntityAlias()).append(".id = :id");
 
-            return HibernateUtil.getSession().createQuery(findByIdSql.toString(), type).setParameter("id", pk).getSingleResult();
+            return hibernateUtil.getSession().createQuery(findByIdSql.toString(), type).setParameter("id", pk).getSingleResult();
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
@@ -47,7 +49,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
     @Override
     public List<T> findAll(SB sortBy, boolean useJoin) {
         try {
-            HibernateUtil.getSession().clear();
+            hibernateUtil.getSession().clear();
 
             StringBuilder findAllSql = new StringBuilder(sql);
 
@@ -62,9 +64,9 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
                     );
             }
 
-            return HibernateUtil.getSession().createQuery(findAllSql.toString(), type).getResultList();
+            return hibernateUtil.getSession().createQuery(findAllSql.toString(), type).getResultList();
 /*
-            CriteriaBuilder criteriaBuilder = HibernateUtil.getSession().getCriteriaBuilder();
+            CriteriaBuilder criteriaBuilder = hibernateUtil.getSession().getCriteriaBuilder();
             CriteriaQuery<T> cq = criteriaBuilder.createQuery(type);
             Root<T> root = cq.from(type);
 
@@ -75,7 +77,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
 
             // root.fetch()
 
-            return HibernateUtil.getSession().createQuery(cq).getResultList();
+            return hibernateUtil.getSession().createQuery(cq).getResultList();
 */
         } catch (HibernateException e) {
             throw new DatabaseException(e.getMessage());
@@ -85,7 +87,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
     @Override
     public void save(T entity) {
         try {
-            HibernateUtil.getSession().merge(entity);
+            hibernateUtil.getSession().merge(entity);
         } catch (HibernateException e) {
             throw new DatabaseException(e.getMessage());
         }
@@ -94,7 +96,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
     @Override
     public void update(T entity) {
         try {
-            HibernateUtil.getSession().merge(entity);
+            hibernateUtil.getSession().merge(entity);
         } catch (HibernateException e) {
             throw new DatabaseException(e.getMessage());
         }
@@ -103,7 +105,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
     @Override
     public void delete(PK pk) {
         try {
-            if (HibernateUtil
+            if (hibernateUtil
                     .getSession()
                     .createMutationQuery("DELETE FROM " + getEntityName() + " WHERE id = :id")
                     .setParameter("id", pk)
