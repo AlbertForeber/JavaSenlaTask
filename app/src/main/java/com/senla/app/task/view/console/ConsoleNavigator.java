@@ -9,7 +9,6 @@ import com.senla.app.task.view.MenuRenderer;
 import com.senla.app.task.view.Navigator;
 import com.senla.app.task.view.enums.NavigateTo;
 import com.senla.app.task.view.factory.*;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
