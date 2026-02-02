@@ -9,11 +9,13 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 // Концептуально остался Singleton
 @Component
 @Hibernate
+@DependsOn("liquibase")
 public final class HibernateUtil {
 
     private static final Logger logger = LogManager.getLogger(HibernateUtil.class);
