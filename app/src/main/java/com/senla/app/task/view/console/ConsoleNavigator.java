@@ -25,7 +25,7 @@ public class ConsoleNavigator implements Navigator {
     @InjectTo(useImplementation = ConsoleIOHandler.class)
     private final IOHandler ioHandler;
 
-    ApplicationContext context;
+    FactoryProvider factoryProvider;
 
     private NavigateTo currentNavPoint;
 
@@ -33,12 +33,12 @@ public class ConsoleNavigator implements Navigator {
             @Console MenuBuilder menuBuilder,
             @Console MenuRenderer menuRenderer,
             @Console IOHandler ioHandler,
-            ApplicationContext context
+            FactoryProvider factoryProvider
     ) {
         this.menuBuilder = menuBuilder;
         this.menuRenderer = menuRenderer;
         this.ioHandler = ioHandler;
-        this.context = context;
+        this.factoryProvider = factoryProvider;
     }
 
     @Override
@@ -48,10 +48,10 @@ public class ConsoleNavigator implements Navigator {
                 currentNavPoint = navigateTo;
 
                 switch (navigateTo) {
-                    case MAIN -> menuBuilder.buildMenu(context.getBean("mainMenuFactory", MainMenuFactory.class), this);
-                    case STORAGE -> menuBuilder.buildMenu(context.getBean("storageMenuFactory", StorageMenuFactory.class), this);
-                    case ORDER -> menuBuilder.buildMenu(context.getBean("orderMenuFactory", OrderMenuFactory.class), this);
-                    case REQUEST -> menuBuilder.buildMenu(context.getBean("requestMenuFactory", RequestMenuFactory.class), this);
+                    case MAIN -> menuBuilder.buildMenu(factoryProvider.getFactory("mainMenuFactory"), this);
+                    case STORAGE -> menuBuilder.buildMenu(factoryProvider.getFactory("storageMenuFactory"), this);
+                    case ORDER -> menuBuilder.buildMenu(factoryProvider.getFactory("orderMenuFactory"), this);
+                    case REQUEST -> menuBuilder.buildMenu(factoryProvider.getFactory("requestMenuFactory"), this);
                 }
             } catch (IllegalArgumentException e) {
                 ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
