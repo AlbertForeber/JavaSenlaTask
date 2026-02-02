@@ -48,10 +48,10 @@ public class ConsoleNavigator implements Navigator {
                 currentNavPoint = navigateTo;
 
                 switch (navigateTo) {
-                    case MAIN -> menuBuilder.buildMenu(factoryProvider.getFactory("mainMenuFactory"), this);
-                    case STORAGE -> menuBuilder.buildMenu(factoryProvider.getFactory("storageMenuFactory"), this);
-                    case ORDER -> menuBuilder.buildMenu(factoryProvider.getFactory("orderMenuFactory"), this);
-                    case REQUEST -> menuBuilder.buildMenu(factoryProvider.getFactory("requestMenuFactory"), this);
+                    case MAIN       -> menuBuilder.buildMenu(factoryProvider.getFactory("mainMenuFactory"), this);
+                    case STORAGE    -> menuBuilder.buildMenu(factoryProvider.getFactory("storageMenuFactory"), this);
+                    case ORDER      -> menuBuilder.buildMenu(factoryProvider.getFactory("orderMenuFactory"), this);
+                    case REQUEST    -> menuBuilder.buildMenu(factoryProvider.getFactory("requestMenuFactory"), this);
                 }
             } catch (IllegalArgumentException e) {
                 ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
