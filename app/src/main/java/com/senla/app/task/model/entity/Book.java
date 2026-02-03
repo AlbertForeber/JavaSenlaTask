@@ -1,22 +1,48 @@
 package com.senla.app.task.model.entity;
 
 import com.senla.app.task.model.entity.status.BookStatus;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
+@Entity(name = "books")
 public class Book implements Serializable {
 
-    private final int id;
-    private final String title;
-    private final String description;
+    @Id
+//    Так как книги уже добавлены, создавать генератор нет смысла
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_seq")
+//    @SequenceGenerator(name = "book_seq", sequenceName = "books_id_seq", allocationSize = 1)
+    private int id;
+
+    @Column(name = "title")
+    private String title;
+
+    @Column(name = "description")
+    private String description;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "publication_date")
     private Calendar publicationDate = new GregorianCalendar();
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "admission_date")
     private Calendar admissionDate = new GregorianCalendar();
+
+    @Column(name = "price")
     private int price;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private BookStatus status;
-    private String reservist = null;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private Order order = null;
+
+    protected Book() { }
 
     public Book(
             int id,
@@ -53,7 +79,7 @@ public class Book implements Serializable {
             Calendar admissionDate,
             int price,
             BookStatus initStatus,
-            String reservist
+            Order order
     ) {
         this.id = id;
         this.title = title;
@@ -62,7 +88,7 @@ public class Book implements Serializable {
         this.admissionDate = admissionDate;
         this.price = price;
         this.status = initStatus;
-        this.reservist = reservist;
+        this.order = order;
     }
 
     public int getId() {
@@ -80,13 +106,13 @@ public class Book implements Serializable {
     public void setStatus(BookStatus status) {
         if (status != BookStatus.RESERVED) {
             this.status = status;
-            this.reservist = null;
+            this.order = null;
         }
     }
 
-    public void setStatus(BookStatus status, String reservist) {
+    public void setStatus(BookStatus status, Order order) {
         if (status == BookStatus.RESERVED) {
-            this.reservist = reservist;
+            this.order = order;
         }
         this.status = status;
     }
@@ -115,8 +141,8 @@ public class Book implements Serializable {
         return description;
     }
 
-    public String getReservist() {
-        return reservist;
+    public int getOrderId() {
+        return order != null ? order.getId() : 0;
     }
 
     @Override
@@ -130,6 +156,7 @@ public class Book implements Serializable {
                     admissionDate: %d %d %d
                     price: %d
                     bookStatus: %s
+                    in order: %d
                 """,
                 id,
                 title,
@@ -141,7 +168,8 @@ public class Book implements Serializable {
                 admissionDate.get(Calendar.MONTH) + 1,
                 admissionDate.get(Calendar.DATE),
                 price,
-                status
+                status,
+                getOrderId()
                 );
     }
 }

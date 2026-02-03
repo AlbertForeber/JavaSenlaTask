@@ -1,48 +1,46 @@
 package com.senla.app.task.controller;
 
 import com.senla.annotation.InjectTo;
+import com.senla.annotation.ui_qualifiers.Console;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
 import com.senla.app.task.model.entity.status.OrderStatus;
 import com.senla.app.task.service.order.OrderQueryService;
 import com.senla.app.task.service.order.OrderService;
-import com.senla.app.task.service.order.io.OrderExportService;
-import com.senla.app.task.service.order.io.OrderImportService;
-import com.senla.app.task.service.order.io.csv.CsvOrderExportService;
-import com.senla.app.task.service.order.io.csv.CsvOrderImportService;
 import com.senla.app.task.service.unit_of_work.TransactionException;
 import com.senla.app.task.utils.Colors;
-import com.senla.app.task.utils.DataConverter;
+import com.senla.app.task.utils.DateConverter;
 import com.senla.app.task.view.IOHandler;
 import com.senla.app.task.view.console.ConsoleIOHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class OrderController extends BaseController {
+@Component
+public class OrderController {
 
     @InjectTo
-    private OrderService orderService;
+    private final OrderService orderService;
 
     @InjectTo
-    private OrderQueryService orderQueryService;
-
-    @InjectTo(useImplementation = CsvOrderImportService.class)
-    private OrderImportService orderImportService;
-
-    @InjectTo(useImplementation = CsvOrderExportService.class)
-    private OrderExportService orderExportService;
+    private final OrderQueryService orderQueryService;
 
     @InjectTo(useImplementation = ConsoleIOHandler.class)
-    private IOHandler ioHandler;
+    private final IOHandler ioHandler;
 
     private static final Logger logger = LogManager.getLogger(OrderController.class);
 
-    public OrderController() {
-        super();
+    public OrderController(
+            OrderService orderService,
+            OrderQueryService orderQueryService,
+            @Console IOHandler ioHandler
+    ) {
+        this.orderService = orderService;
+        this.orderQueryService = orderQueryService;
+        this.ioHandler = ioHandler;
     }
 
     public void createOrder() {
@@ -75,6 +73,7 @@ public class OrderController extends BaseController {
                 logger.error("Ошибка при создании заказа #{}", orderId);
                 ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ПРИ СОЗДАНИИ ЗАКАЗА #" + orderId + Colors.RESET);
             }
+            logger.info("Заказ #{} успешно добавлен", orderId);
         } catch (TransactionException e) {
             logger.error(e.getMessage());
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
@@ -94,6 +93,7 @@ public class OrderController extends BaseController {
             ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
         }
 
+        logger.info("Заказ #{} успешно отменен", orderId);
         ioHandler.showMessage(Colors.YELLOW + "Заказ #" + orderId + " отменен" + Colors.RESET);
     }
 
@@ -120,6 +120,7 @@ public class OrderController extends BaseController {
 
         try {
             if (orderService.changeOrderStatus(orderId, newStatus)) {
+                logger.info("Статус заказа #{} успешно изменен", orderId);
                 ioHandler.showMessage(Colors.YELLOW + "Статус заказа #" + orderId + " успешно изменен" + Colors.RESET);
             } else {
                 logger.error("Ошибка изменения статуса заказа #{}", orderId);
@@ -160,29 +161,31 @@ public class OrderController extends BaseController {
             orderQueryService.getSorted(orderSortBy).stream()
                     .map(Object::toString)
                     .forEach(ioHandler::showMessage);
+            logger.info("Вывод отсортированных заказов успешно завершен");
         } catch (Exception e) {
-            logger.error("Ошибка доступа к базе при получении отсортированных заказов: {}", e.getMessage());
-            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+            logger.error("Ошибка при получении отсортированных заказов: {}", e.getMessage());
+            ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
         }
     }
 
     public void getCompletedOrdersInInterval() {
         ioHandler.showMessage("Введите дату начала интервала в формате (1.1.2025):");
         String input = ioHandler.handleInput();
-        int[] dateFrom = DataConverter.getDateInArray(input);
+        int[] dateFrom = DateConverter.getDateInArray(input);
 
         ioHandler.showMessage("Введите дату конца интервала в формате (1.1.2025):");
         input = ioHandler.handleInput();
-        int[] dateTo = DataConverter.getDateInArray(input);
+        int[] dateTo = DateConverter.getDateInArray(input);
 
         logger.info("Начало обработки вывода выполненых в интервал заказов");
 
         if (dateFrom != null && dateTo != null) {
             try {
-                ioHandler.showMessage(orderQueryService.getCompletedOrdersInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0]).toString());
+                ioHandler.showMessage(orderQueryService.getCompletedOrdersInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0], true).toString());
+                logger.info("Вывод заказов выполненных за интервал успешно завершен");
             } catch (Exception e) {
                 logger.error("Ошибка доступа к базе: {}", e.getMessage());
-ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
             }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
     }
@@ -190,20 +193,21 @@ ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: 
     public void getIncomeInInterval() {
         ioHandler.showMessage("Введите дату начала интервала в формате (1.1.2025):");
         String input = ioHandler.handleInput();
-        int[] dateFrom = DataConverter.getDateInArray(input);
+        int[] dateFrom = DateConverter.getDateInArray(input);
 
         ioHandler.showMessage("Введите дату конца интервала в формате (1.1.2025):");
         input = ioHandler.handleInput();
-        int[] dateTo = DataConverter.getDateInArray(input);
+        int[] dateTo = DateConverter.getDateInArray(input);
 
         logger.info("Начало обработки вывода прибыли за интервал");
 
         if (dateFrom != null && dateTo != null) {
             try {
                 ioHandler.showMessage(Long.toString(orderQueryService.getIncomeInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0])));
+                logger.info("Вывод дохода за интервал успешно завершен");
             } catch (Exception e) {
-                logger.error("Ошибка доступа к базе при выводе прибыли: {}", e.getMessage());
-                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+                logger.error("Ошибка при выводе прибыли: {}", e.getMessage());
+                ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
             }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
     }
@@ -211,20 +215,21 @@ ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: 
     public void getOrderAmountInInterval() {
         ioHandler.showMessage("Введите дату начала интервала в формате (1.1.2025):");
         String input = ioHandler.handleInput();
-        int[] dateFrom = DataConverter.getDateInArray(input);
+        int[] dateFrom = DateConverter.getDateInArray(input);
 
         ioHandler.showMessage("Введите дату конца интервала в формате (1.1.2025):");
         input = ioHandler.handleInput();
-        int[] dateTo = DataConverter.getDateInArray(input);
+        int[] dateTo = DateConverter.getDateInArray(input);
 
         logger.info("Начало обработки вывода количества выполненых в интервал заказов");
 
         if (dateFrom != null && dateTo != null) {
             try {
                 ioHandler.showMessage(Integer.toString(orderQueryService.getOrderAmountInInterval(dateFrom[2], dateFrom[1], dateFrom[0], dateTo[2], dateTo[1], dateTo[0])));
+                logger.info("Вывод количества заказов выполненных за интервал успешно завершен");
             } catch (Exception e) {
-                logger.error("Ошибка доступа к базе при выводе количества заказов: {}", e.getMessage());
-                ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
+                logger.error("Ошибка при выводе количества заказов: {}", e.getMessage());
+                ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
             }
         } else ioHandler.showMessage(Colors.YELLOW + "НЕВЕРНЫЙ ФОРМАТ ДАТЫ" + Colors.RESET);
     }
@@ -232,52 +237,19 @@ ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: 
     public void getOrderDetails() {
         ioHandler.showMessage(Colors.BLUE + "Введите ID заказа" + Colors.RESET);
 
-        logger.info("Начало обработки вывода деталей заказов");
+        logger.info("Начало обработки вывода деталей заказа");
 
         try {
             int orderId = Integer.parseInt(ioHandler.handleInput());
-            ioHandler.showMessage(orderQueryService.getOrderDetails(orderId));
+
+            String result = orderQueryService.getOrderDetails(orderId);
+            ioHandler.showMessage(Objects.requireNonNullElse(result, Colors.YELLOW + "ЗАКАЗ С УКАЗАННЫМ ID НЕ НАЙДЕН" + Colors.RESET));
+            logger.info("Вывод деталей заказа успешно завершен");
         } catch (NumberFormatException e) {
             ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
         } catch (Exception e) {
-            logger.error("Ошибка доступа к базе при выводе деталей: {}", e.getMessage());
-            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ДОСТУПА К БАЗЕ: " + e.getMessage() + Colors.RESET);
-        }
-    }
-
-    public void importOrder() {
-        ioHandler.showMessage(Colors.BLUE + "Введите путь к файлу" + Colors.RESET);
-        String fileName = ioHandler.handleInput();
-
-        try {
-            orderImportService.importOrder(fileName);
-            ioHandler.showMessage(Colors.YELLOW + "Заказ '" + fileName + "' успешно импортирован" + Colors.RESET);
-        } catch (FileNotFoundException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ФАЙЛ '" + fileName + "' НЕ НАЙДЕН" + Colors.RESET);
-        } catch (IOException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ВО ВРЕМЯ ЧТЕНИЯ ДОКУМЕНТА" + Colors.RESET);
-        } catch (IllegalArgumentException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
-        }
-    }
-
-    public void exportOrder() {
-        ioHandler.showMessage(Colors.BLUE + "Введите ID заказа" + Colors.RESET);
-
-        try {
-            int orderId = Integer.parseInt(ioHandler.handleInput());
-
-            ioHandler.showMessage(Colors.BLUE + "Введите путь для файла (Без имени файла, с разделителем на конце)" + Colors.RESET);
-            ioHandler.showMessage(Colors.BLUE + "Пример: ./dir1/dir2/dir3/ (для Linux)" + Colors.RESET);
-
-            orderExportService.exportOrder(orderId, ioHandler.handleInput());
-            ioHandler.showMessage(Colors.YELLOW + "Заказ с ID: '" + orderId + "' успешно экспортирован" + Colors.RESET);
-        } catch (NumberFormatException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ID ДОЛЖЕН БЫТЬ ЧИСЛЕННЫМ ЗНАЧЕНИЕМ" + Colors.RESET);
-        } catch (IOException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА ВО ВРЕМЯ СОЗДАНИЯ ДОКУМЕНТА" + Colors.RESET);
-        } catch (IllegalArgumentException e) {
-            ioHandler.showMessage(Colors.YELLOW + "ОШИБКА: " + e.getMessage() + Colors.RESET);
+            logger.error("Ошибка при выводе деталей: {}", e.getMessage());
+            ioHandler.showMessage(Colors.YELLOW + e.getMessage() + Colors.RESET);
         }
     }
 }

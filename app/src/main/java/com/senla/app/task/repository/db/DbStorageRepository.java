@@ -1,67 +1,57 @@
 package com.senla.app.task.repository.db;
 
-import com.senla.annotation.InjectTo;
-import com.senla.app.task.db.dao.implementations.BookDao;
+import com.senla.annotation.db_qualifiers.Hibernate;
+import com.senla.annotation.repo_qualifiers.Db;
+import com.senla.app.task.db.dao.GenericDao;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.StorageRepository;
-import com.senla.app.task.model.dto.BookDto;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
+@Db
 public class DbStorageRepository implements StorageRepository {
 
-    @InjectTo
-    private BookDao bookDao;
+    private final GenericDao<Book, Integer, BookSortBy> bookDao;
+
+    public DbStorageRepository(@Hibernate GenericDao<Book, Integer, BookSortBy> bookDao) {
+        this.bookDao = bookDao;
+    }
 
     @Override
-    public void addBook(BookDto bookDto) throws IllegalArgumentException {
+    public void addBook(Book book) throws IllegalArgumentException {
         try {
-            bookDao.save(bookDto);
+            bookDao.save(book);
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
 
     @Override
-    public void updateBook(BookDto bookDto) {
+    public void updateBook(Book book) {
         try {
-            bookDao.update(bookDto);
+            bookDao.update(book);
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
 
     @Override
-    public Book getBook(int bookId) {
+    public Book getBook(int bookId, boolean getLinkedObjects) {
         try {
-            BookDto bookDto = bookDao.findById(bookId);
-
-            if (bookDto == null) return null;
-            return bookDto.toBusinessObject();
+            return bookDao.findById(bookId, getLinkedObjects);
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
 
     @Override
-    public List<Book> getSortedBooks(BookSortBy sortBy) {
-        StringBuilder additionSortQuery = new StringBuilder("ORDER BY ");
-
-        switch (sortBy) {
-            case TITLE -> additionSortQuery.append("title");
-            case PUBLICATION_DATE -> additionSortQuery.append("publication_date");
-            case ADMISSION_DATE -> additionSortQuery.append("admission_date");
-            case PRICE -> additionSortQuery.append("price");
-            case AVAILABILITY -> additionSortQuery.append("books.status");
-            case DATE_PRICE -> additionSortQuery.append("admission_date, price");
-        }
-
+    public List<Book> getSortedBooks(BookSortBy sortBy, boolean getLinkedObjects) {
         try {
-            return bookDao.findAll(
-                    sortBy != BookSortBy.NO_SORT ? additionSortQuery.toString() : ""
-            ).stream().map(BookDto::toBusinessObject).toList();
+            return bookDao.findAll(sortBy != BookSortBy.NO_SORT ? sortBy : null, getLinkedObjects);
         } catch (Exception e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }

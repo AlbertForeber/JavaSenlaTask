@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface OrderManagerRepository {
 
-    void addOrder(int orderId, Order order) throws IllegalArgumentException;
+    void addOrder(int orderId, Order order);
     void updateOrder(Order order);
-    Order getOrder(int orderId);
-    List<Order> getSortedOrders(OrderSortBy sortBy);
+    Order getOrder(int orderId, boolean getLinkedObjects);
+    List<Order> getSortedOrders(OrderSortBy sortBy, boolean getLinkedObjects);
     boolean removeOrder(int orderId);
 }

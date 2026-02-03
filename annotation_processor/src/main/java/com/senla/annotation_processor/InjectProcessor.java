@@ -1,39 +1,35 @@
 package com.senla.annotation_processor;
 
 import com.senla.annotation.InjectTo;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.HashMap;
 
 
 public class InjectProcessor {
 
-    private static final HashMap<Class<?>, Object> DEPENDENCIES = new HashMap<>();
+    private static final HashMap<Type, Object> DEPENDENCIES = new HashMap<>();
 
-    public static void addDependency(Class<?> clazz, Object object) {
-        DEPENDENCIES.put(clazz, object);
+    public static void addDependency(Type type, Object object) {
+        DEPENDENCIES.put(type, object);
     }
 
     public static void injectDependencies(Object object) throws IllegalArgumentException {
         Class<?> clazz = object.getClass();
 
-
         for (Field field : clazz.getDeclaredFields()) {
             InjectTo annotation = field.getAnnotation(InjectTo.class);
             Class<?> fieldType = field.getType();
-
+            Type type = field.getGenericType();
 
             if (annotation != null) {
-
-
                 Class<?> useImplementation = annotation.useImplementation();
                 boolean configurable = annotation.configurable();
 
 
                 String implementationErrorAddition = "";
-                Object dependency = DEPENDENCIES.get(fieldType);
+                Object dependency = DEPENDENCIES.get(type);
 
                 field.trySetAccessible();
 
@@ -53,7 +49,7 @@ public class InjectProcessor {
 
                         constructor.trySetAccessible();
                         dependency = constructor.newInstance();
-                        addDependency(fieldType, dependency);
+                        addDependency(type, dependency);
                     } catch (NoSuchMethodException e) {
                         throw new IllegalArgumentException("Для объекта типа '" + fieldType.getSimpleName() +
                                 "' нет конструктора без параметров" + implementationErrorAddition);

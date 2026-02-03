@@ -1,32 +1,31 @@
 package com.senla.app.task.repository.db;
 
-import com.senla.annotation.InjectTo;
-import com.senla.app.task.db.dao.implementations.BookDao;
-import com.senla.app.task.db.dao.implementations.OrderDao;
-import com.senla.app.task.model.dto.BookDto;
-import com.senla.app.task.model.dto.OrderDto;
+import com.senla.annotation.db_qualifiers.Hibernate;
+import com.senla.annotation.repo_qualifiers.Db;
+import com.senla.app.task.db.DatabaseException;
+import com.senla.app.task.db.dao.GenericDao;
 import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
 import com.senla.app.task.repository.OrderManagerRepository;
+import org.springframework.stereotype.Repository;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
+@Repository
+@Db
 public class DbOrderManagerRepository implements OrderManagerRepository {
 
-    @InjectTo
-    OrderDao orderDao;
+    private final GenericDao<Order, Integer, OrderSortBy> orderDao;
 
-    @InjectTo
-    BookDao bookDao;
+    public DbOrderManagerRepository(@Hibernate GenericDao<Order, Integer, OrderSortBy> orderDao) {
+        this.orderDao = orderDao;
+    }
 
     @Override
     public void addOrder(int orderId, Order order) throws IllegalArgumentException {
         try {
-            orderDao.save(new OrderDto(order));
-        } catch (Exception e) {
+            orderDao.save(order);
+        } catch (DatabaseException e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
@@ -34,45 +33,27 @@ public class DbOrderManagerRepository implements OrderManagerRepository {
     @Override
     public void updateOrder(Order order) {
         try {
-            orderDao.update(new OrderDto(order));
-        } catch (Exception e) {
+            orderDao.update(order);
+        } catch (DatabaseException e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
 
     @Override
-    public Order getOrder(int orderId) {
+    public Order getOrder(int orderId, boolean getLinkedObjects) {
         try {
-            List<Integer> orderedBookIds = bookDao.findAll("")
-                    .stream()
-                    .filter(o -> o.getOrderId() == orderId)
-                    .map(BookDto::getId).toList();
-
-            OrderDto orderDto = orderDao.findById(orderId);
-
-            if (orderDto == null) return null;
-            return orderDto.toBusinessObject(orderedBookIds);
-        } catch (Exception e) {
+            return orderDao.findById(orderId, getLinkedObjects);
+        } catch (DatabaseException e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
 
     @Override
-    public List<Order> getSortedOrders(OrderSortBy sortBy) {
-        StringBuilder additionSortQuery = new StringBuilder("ORDER BY ");
-
-        switch (sortBy) {
-            case PRICE -> additionSortQuery.append("total_sum");
-            case STATUS -> additionSortQuery.append("status");
-            case COMPLETION_DATE -> additionSortQuery.append("completion_date");
-            case PRICE_DATE -> additionSortQuery.append("total_sum, completion_date");
-        }
+    public List<Order> getSortedOrders(OrderSortBy sortBy, boolean getLinkedObjects) {
 
         try {
-            return convertOrderDtosToOrders(
-                    orderDao.findAll(sortBy != OrderSortBy.NO_SORT ? additionSortQuery.toString() : "")
-            );
-        } catch (Exception e) {
+            return orderDao.findAll(sortBy != OrderSortBy.NO_SORT ? sortBy : null, getLinkedObjects);
+        } catch (DatabaseException e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
     }
@@ -82,29 +63,8 @@ public class DbOrderManagerRepository implements OrderManagerRepository {
         try {
             orderDao.delete(orderId);
             return true;
-        } catch (Exception e) {
+        } catch (DatabaseException e) {
             throw new IllegalArgumentException("Исключение БД: " + e);
         }
-    }
-
-    private List<Order> convertOrderDtosToOrders(List<OrderDto> orderDtos) throws SQLException {
-        List<BookDto> currentBooks = bookDao.findAll("");
-        HashMap<Integer, ArrayList<Integer>> orderToBooks = new HashMap<>();
-
-        ArrayList<Order> toReturn = new ArrayList<>();
-
-        for (OrderDto orderDto : orderDtos) {
-            ArrayList<Integer> bookIds = new ArrayList<>();
-            orderToBooks.put(orderDto.getId(), bookIds);
-            toReturn.add(orderDto.toBusinessObject(bookIds));
-        }
-
-        for (BookDto i : currentBooks) {
-            if (orderToBooks.containsKey(i.getOrderId())) {
-                orderToBooks.get(i.getOrderId()).add(i.getId());
-            }
-        }
-
-        return toReturn;
     }
 }

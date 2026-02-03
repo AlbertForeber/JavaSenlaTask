@@ -4,7 +4,9 @@ import com.senla.app.task.view.header.Header;
 import com.senla.app.task.view.header.MainMenuHeader;
 import com.senla.app.task.view.menu.MainMenu;
 import com.senla.app.task.view.menu.Menu;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MainMenuFactory implements MenuFactory {
 
     @Override

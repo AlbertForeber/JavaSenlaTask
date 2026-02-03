@@ -1,9 +1,7 @@
-package com.senla.app.task.service.unit_of_work.db;
+package com.senla.app.task.service.unit_of_work;
 
-import com.senla.app.task.service.unit_of_work.ThrowingRunnable;
-import com.senla.app.task.service.unit_of_work.ThrowingSupplier;
-import com.senla.app.task.service.unit_of_work.TransactionException;
-import com.senla.app.task.service.unit_of_work.UnitOfWork;
+import com.senla.app.task.service.unit_of_work.func_interfaces.ThrowingRunnable;
+import com.senla.app.task.service.unit_of_work.func_interfaces.ThrowingSupplier;
 
 public abstract class AbstractUnitOfWork implements UnitOfWork {
 
@@ -18,7 +16,7 @@ public abstract class AbstractUnitOfWork implements UnitOfWork {
             doBegin();
             inTransaction = true;
         } catch (Exception e) {
-            throw new TransactionException("ошибка при запуске " + e.getMessage());
+            throw new TransactionException("ОШИБКА ДОСТУПА К БАЗЕ: Не удалось запустить транзакцию (" + e.getMessage() + ")");
         }
     }
 
@@ -26,7 +24,7 @@ public abstract class AbstractUnitOfWork implements UnitOfWork {
         try {
             if (inTransaction) doCommit();
         } catch (Exception e) {
-            throw new TransactionException("ошибка при подтверждении " + e.getMessage());
+            throw new TransactionException("ОШИБКА ДОСТУПА К БАЗЕ: Не удалось завершить транзакцию (" + e.getMessage() + ")");
         } finally {
             inTransaction = false;
         }
@@ -36,7 +34,7 @@ public abstract class AbstractUnitOfWork implements UnitOfWork {
         try {
             if (inTransaction) doRollback();
         } catch (Exception e) {
-            throw new TransactionException("ошибка при откате " + e.getMessage());
+            throw new TransactionException("ОШИБКА ДОСТУПА К БАЗЕ: Не удалось отменить транзакцию (" + e.getMessage() + ")");
         } finally {
             inTransaction = false;
         }
@@ -54,7 +52,7 @@ public abstract class AbstractUnitOfWork implements UnitOfWork {
             throw e;
         } catch (Exception e) {
             rollback();
-            throw new TransactionException("ошибка во время выполнения " + e.getMessage());
+            throw new TransactionException("ОШИБКА ДОСТУПА К БАЗЕ: При выполнении транзакции произошла ошибка (" + e.getMessage() + ")");
         }
     }
 
@@ -69,7 +67,7 @@ public abstract class AbstractUnitOfWork implements UnitOfWork {
             throw e;
         } catch (Exception e) {
             rollback();
-            throw new TransactionException("ошибка во время выполнения " + e.getMessage());
+            throw new TransactionException("ОШИБКА ДОСТУПА К БАЗЕ: При выполнении транзакции произошла ошибка (" + e.getMessage() + ")" + e.getMessage());
         }
     }
 
@@ -78,7 +76,7 @@ public abstract class AbstractUnitOfWork implements UnitOfWork {
         try {
             if (inTransaction) doRollback();
         } catch (Exception e) {
-            throw new TransactionException("ошибка при завершении " + e.getMessage());
+            throw new TransactionException("ОШИБКА ДОСТУПА К БАЗЕ: Не удалось отменить транзакцию (" + e.getMessage() + ")");
         }
     }
 }

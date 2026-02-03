@@ -1,5 +1,6 @@
 package com.senla.app.task.repository.inmemory;
 
+import com.senla.annotation.repo_qualifiers.InMemory;
 import com.senla.app.task.repository.OrderManagerRepository;
 import com.senla.app.task.model.comparators.order.OrderComplDateComparator;
 import com.senla.app.task.model.comparators.order.OrderComplDatePriceComparator;
@@ -7,10 +8,13 @@ import com.senla.app.task.model.comparators.order.OrderPriceComparator;
 import com.senla.app.task.model.comparators.order.OrderStatusComparator;
 import com.senla.app.task.model.entity.Order;
 import com.senla.app.task.model.entity.sortby.OrderSortBy;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Component
+@InMemory
 public class InMemoryOrderManagerRepository implements OrderManagerRepository {
 
     private final HashMap<Integer, Order> orders = new HashMap<>();
@@ -25,7 +29,7 @@ public class InMemoryOrderManagerRepository implements OrderManagerRepository {
     public void updateOrder(Order order) { } // InMemory вариант не должен выполнять доп. операцию обновления
 
     @Override
-    public Order getOrder(int orderId) {
+    public Order getOrder(int orderId, boolean getLinkedObjects) {
         if (orders.containsKey(orderId)) {
             return orders.get(orderId);
         }
@@ -38,7 +42,7 @@ public class InMemoryOrderManagerRepository implements OrderManagerRepository {
     }
 
     @Override
-    public List<Order> getSortedOrders(OrderSortBy sortBy) {
+    public List<Order> getSortedOrders(OrderSortBy sortBy, boolean getLinkedObjects) {
         Comparator<Order> comparator = switch (sortBy) {
             case PRICE -> new OrderPriceComparator();
             case STATUS -> new OrderStatusComparator();

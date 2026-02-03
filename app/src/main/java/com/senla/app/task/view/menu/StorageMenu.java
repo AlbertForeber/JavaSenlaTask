@@ -1,22 +1,25 @@
 package com.senla.app.task.view.menu;
 
-import com.senla.annotation.InjectTo;
+import com.senla.annotation.ui_qualifiers.Console;
 import com.senla.app.task.controller.StorageController;
 import com.senla.app.task.view.Navigator;
 import com.senla.app.task.view.enums.NavigateTo;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
+@Scope("prototype")
 public class StorageMenu implements Menu {
 
     private final List<MenuAction> menu;
     private final Navigator navigator;
 
-    @InjectTo
-    private StorageController controller;
-
-
-    public StorageMenu(Navigator navigator) {
+    public StorageMenu(
+            @Console Navigator navigator,
+            StorageController controller
+    ) {
         this.navigator = navigator;
         this.menu = List.of(
                 new MenuAction("1. Добавить книгу в хранилище", o -> {
@@ -39,16 +42,7 @@ public class StorageMenu implements Menu {
                     controller.writeOffBook();
                     navigator.navigateTo(NavigateTo.STORAGE);
                 }),
-                new MenuAction("6. Импорт книги",  o -> {
-                    controller.importBook();
-                    navigator.navigateTo(NavigateTo.STORAGE);
-                }),
-                new MenuAction("7. Экспорт книги",  o -> {
-                    controller.exportBook();
-                    navigator.navigateTo(NavigateTo.STORAGE);
-                }),
-                new MenuAction("8. Назад",  o -> navigator.navigateTo(NavigateTo.MAIN))
-
+                new MenuAction("6. Назад",  o -> navigator.navigateTo(NavigateTo.MAIN))
         );
     }
 

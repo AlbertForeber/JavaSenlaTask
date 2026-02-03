@@ -1,5 +1,6 @@
 package com.senla.app.task.utils;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -9,9 +10,9 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class DataConverter {
+public final class DateConverter {
 
-    private DataConverter() { }
+    private DateConverter() { }
 
     static public int[] getDateInArray(String date) {
 
@@ -36,6 +37,16 @@ public final class DataConverter {
                 date.get(Calendar.MONTH) + 1,
                 date.get(Calendar.YEAR)
         );
+    }
+
+    static public Calendar jsonStringToCalendar(String date) {
+        return localDateToCalendar(LocalDate.parse(date));
+    }
+
+    static public Calendar dateSqlToCalendar(Date date) {
+        if (date == null) return null;
+
+        return localDateToCalendar(date.toLocalDate());
     }
 
     static public Calendar localDateToCalendar(LocalDate localDate) {

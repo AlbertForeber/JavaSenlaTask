@@ -1,21 +1,25 @@
 package com.senla.app.task.view.menu;
 
-import com.senla.annotation.InjectTo;
+import com.senla.annotation.ui_qualifiers.Console;
 import com.senla.app.task.controller.OrderController;
 import com.senla.app.task.view.Navigator;
 import com.senla.app.task.view.enums.NavigateTo;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
+@Scope("prototype")
 public class OrderMenu implements Menu {
 
     private final List<MenuAction> menu;
     private final Navigator navigator;
 
-    @InjectTo
-    OrderController controller;
-
-    public OrderMenu(Navigator navigator) {
+    public OrderMenu(
+            @Console Navigator navigator,
+            OrderController controller
+    ) {
         this.navigator = navigator;
         this.menu = List.of(
                 new MenuAction("1. Создать заказ", o -> {
@@ -50,16 +54,7 @@ public class OrderMenu implements Menu {
                     controller.getIncomeInInterval();
                     navigator.navigateTo(NavigateTo.ORDER);
                 }),
-                new MenuAction("9. Импорт заказа ",  o -> {
-                    controller.importOrder();
-                    navigator.navigateTo(NavigateTo.ORDER);
-                }),
-                new MenuAction("10. Экспорт заказа ",  o -> {
-                    controller.exportOrder();
-                    navigator.navigateTo(NavigateTo.ORDER);
-                }),
-                new MenuAction("11. Назад",  o -> navigator.navigateTo(NavigateTo.MAIN))
-
+                new MenuAction("9. Назад",  o -> navigator.navigateTo(NavigateTo.MAIN))
         );
     }
 

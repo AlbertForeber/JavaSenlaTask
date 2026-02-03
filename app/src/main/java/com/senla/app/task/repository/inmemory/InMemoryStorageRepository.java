@@ -1,15 +1,18 @@
 package com.senla.app.task.repository.inmemory;
 
 
+import com.senla.annotation.repo_qualifiers.InMemory;
 import com.senla.app.task.repository.StorageRepository;
 import com.senla.app.task.model.comparators.book.*;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
 import com.senla.app.task.model.entity.status.BookStatus;
-import com.senla.app.task.model.dto.BookDto;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository
+@InMemory
 public class InMemoryStorageRepository implements StorageRepository {
 
     private final HashMap<Integer, Book> storage = new HashMap<>();
@@ -22,30 +25,30 @@ public class InMemoryStorageRepository implements StorageRepository {
         storage.put(5, new Book(5, "C_Book5", "Desc5", 2025, 5, 5, BookStatus.FREE));
 
         storage.put(6, new Book(6, "D_Book6", "Desc6", 2025, 6, 6, BookStatus.FREE));
-        storage.get(6).setStatus(BookStatus.RESERVED, "reservist6");
+        storage.get(6).setStatus(BookStatus.RESERVED, null);
 
         storage.put(7, new Book(7, "E_Book7", "Desc7", 2025, 7, 7, BookStatus.FREE));
-        storage.get(7).setStatus(BookStatus.RESERVED, "reservist7");
+        storage.get(7).setStatus(BookStatus.RESERVED, null);
 
         storage.put(8, new Book(8, "B_Book8", "Desc8", 2025, 8, 8, BookStatus.FREE));
-        storage.get(8).setStatus(BookStatus.RESERVED, "reservist8");
+        storage.get(8).setStatus(BookStatus.RESERVED, null);
 
         storage.put(9, new Book(9, "A_Book9", "Desc9", 2025, 9, 9, BookStatus.FREE));
 
         storage.put(10, new Book(10, "J_Book10", "Desc10", 2025, 10, 10, BookStatus.RESERVED));
-        storage.get(10).setStatus(BookStatus.RESERVED, "reservist10");
+        storage.get(10).setStatus(BookStatus.RESERVED, null);
     }
 
     @Override
-    public void addBook(BookDto bookDto) throws IllegalArgumentException {
-        storage.put(bookDto.getId(), bookDto.toBusinessObject());
+    public void addBook(Book book) throws IllegalArgumentException {
+        storage.put(book.getId(), book);
     }
 
     @Override
-    public void updateBook(BookDto bookDto) { } // InMemory вариант не должен выполнять доп. операцию обновления
+    public void updateBook(Book book) { } // InMemory вариант не должен выполнять доп. операцию обновления
 
     @Override
-    public Book getBook(int bookId) {
+    public Book getBook(int bookId, boolean getLinkedObjects) {
         if (storage.containsKey(bookId)) {
             return storage.get(bookId);
         }
@@ -58,7 +61,7 @@ public class InMemoryStorageRepository implements StorageRepository {
     }
 
     @Override
-    public List<Book> getSortedBooks(BookSortBy sortBy) {
+    public List<Book> getSortedBooks(BookSortBy sortBy, boolean getLinkedObjects) {
         Comparator<Book> comparator = switch (sortBy) {
             case TITLE -> new BookTitleComparator();
             case PRICE -> new BookPriceComparator();

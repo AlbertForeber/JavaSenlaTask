@@ -22,18 +22,10 @@ public class StateLoadSaveFacade {
 
     public void loadState(String path) throws IOException, ClassNotFoundException, IllegalArgumentException {
         checkPath(path);
-
-        storageQueryService.loadState(path);
-        orderQueryService.loadState(path);
-        requestQueryService.loadState(path);
     }
 
     public void saveState(String path) throws IOException, IllegalArgumentException {
         checkPath(path);
-
-        storageQueryService.saveState(path);
-        orderQueryService.saveState(path);
-        requestQueryService.saveState(path);
     }
 
     private void checkPath(String path) throws IllegalArgumentException {
