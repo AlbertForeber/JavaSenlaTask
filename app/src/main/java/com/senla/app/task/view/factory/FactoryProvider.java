@@ -1,6 +1,7 @@
 package com.senla.app.task.view.factory;
 
 import org.springframework.stereotype.Component;
+
 import java.util.Map;
 
 @Component
