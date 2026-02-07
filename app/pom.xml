@@ -8,6 +8,7 @@
     </parent>
 
     <artifactId>app</artifactId>
+    <packaging>war</packaging>
 
     <dependencies>
         <dependency>
@@ -69,6 +70,30 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven3-plugin</artifactId>
+                <version>1.10.9</version>
+                <configuration>
+                    <container>
+                        <containerId>tomcat10x</containerId>
+                        <!--Путь к Tomcat-->
+                        <home>/Users/albert/apache-tomcat-10.1.52</home>
+                    </container>
+                    <configuration>
+                        <type>existing</type>
+                        <home>/Users/albert/apache-tomcat-10.1.52</home>
+                    </configuration>
+                </configuration>
             </plugin>
         </plugins>
     </build>

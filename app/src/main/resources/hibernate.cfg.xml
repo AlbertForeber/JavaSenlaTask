@@ -22,9 +22,9 @@
         <property name="logging.level.org.hibernate.type.descriptor.sql.BasicBinder">TRACE</property>
 
         <!-- классы сущностей -->
-        <mapping class="com.senla.app.task.model.entity.Book"/>
-        <mapping class="com.senla.app.task.model.entity.Order"/>
-        <mapping class="com.senla.app.task.model.entity.Request"/>
+        <mapping class="com.senla.app.model.entity.Book"/>
+        <mapping class="com.senla.app.model.entity.Order"/>
+        <mapping class="com.senla.app.model.entity.Request"/>
 
     </session-factory>
 </hibernate-configuration>
