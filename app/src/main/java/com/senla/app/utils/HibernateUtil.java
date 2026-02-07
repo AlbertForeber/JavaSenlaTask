@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 // Концептуально остался Singleton
 @Component
 @Hibernate
-@DependsOn("liquibase")
+@DependsOn("liquibase") // liquibase согласно названию метода из LiquibaseConfigration
 public final class HibernateUtil {
 
     private static final Logger logger = LogManager.getLogger(HibernateUtil.class);

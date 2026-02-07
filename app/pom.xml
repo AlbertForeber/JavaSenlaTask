@@ -56,21 +56,21 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.6.3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>com.senla.app.Application</mainClass>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.codehaus.mojo</groupId>-->
+<!--                <artifactId>exec-maven-plugin</artifactId>-->
+<!--                <version>3.6.3</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>java</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <mainClass>com.senla.app.Application</mainClass>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -86,12 +86,15 @@
                 <configuration>
                     <container>
                         <containerId>tomcat10x</containerId>
-                        <!--Путь к Tomcat-->
-                        <home>/Users/albert/apache-tomcat-10.1.52</home>
+                        <type>remote</type>
                     </container>
                     <configuration>
-                        <type>existing</type>
-                        <home>/Users/albert/apache-tomcat-10.1.52</home>
+                        <type>runtime</type>
+                        <properties>
+                            <cargo.remote.url>http://localhost:8080/manager/text</cargo.remote.url>
+                            <cargo.remote.username>robot</cargo.remote.username>
+                            <cargo.remote.password>123123</cargo.remote.password>
+                        </properties>
                     </configuration>
                 </configuration>
             </plugin>
