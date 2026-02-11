@@ -5,6 +5,7 @@ import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.task.db.dao.GenericDao;
 import com.senla.app.task.model.entity.Book;
 import com.senla.app.task.model.entity.sortby.BookSortBy;
+import com.senla.app.task.model.entity.sortby.RequestSortBy;
 import com.senla.app.task.repository.StorageRepository;
 import org.springframework.stereotype.Repository;
 
