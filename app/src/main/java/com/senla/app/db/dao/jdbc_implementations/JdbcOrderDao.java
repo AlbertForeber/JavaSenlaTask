@@ -46,6 +46,11 @@ public class JdbcOrderDao extends AbstractJdbcDao<Order, Integer, OrderSortBy> {
     }
 
     @Override
+    protected void setId(Order entity, int id) {
+        entity.setId(id);
+    }
+
+    @Override
     protected final String additionalGroupQuery() {
         return "GROUP BY o.id";
     }

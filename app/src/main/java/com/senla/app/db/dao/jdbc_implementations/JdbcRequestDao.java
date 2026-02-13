@@ -43,6 +43,11 @@ public class JdbcRequestDao extends AbstractJdbcDao<Request, Integer, RequestSor
     }
 
     @Override
+    protected void setId(Request entity, int id) {
+        entity.setId(id);
+    }
+
+    @Override
     protected String getTableName() {
         return "requests";
     }

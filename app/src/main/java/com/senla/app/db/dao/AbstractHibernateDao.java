@@ -1,16 +1,17 @@
 package com.senla.app.db.dao;
 
 import com.senla.app.db.DatabaseException;
-import com.senla.app.utils.HibernateUtil;
+import com.senla.app.exceptions.DataManipulationException;
 import jakarta.persistence.NoResultException;
 import org.hibernate.HibernateException;
+import org.hibernate.SessionFactory;
 
 import java.util.List;
 
 public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, PK, SB> {
 
     private final Class<T> type;
-    private final HibernateUtil hibernateUtil;
+    private final SessionFactory factory;
     private final String sql = "SELECT " + getEntityAlias()
             + " FROM " + getEntityName() + " " + getEntityAlias();
 
@@ -24,9 +25,9 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
         return "";
     }
 
-    public AbstractHibernateDao(Class<T> type, HibernateUtil hibernateUtil) {
+    public AbstractHibernateDao(Class<T> type, SessionFactory factory) {
         this.type = type;
-        this.hibernateUtil = hibernateUtil;
+        this.factory = factory;
     }
 
     @Override
@@ -38,18 +39,18 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
                 findByIdSql.append(" ").append(additionalJoinFetchQuery());
             findByIdSql.append(" WHERE ").append(getEntityAlias()).append(".id = :id");
 
-            return hibernateUtil.getSession().createQuery(findByIdSql.toString(), type).setParameter("id", pk).getSingleResult();
+            return factory.getCurrentSession().createQuery(findByIdSql.toString(), type).setParameter("id", pk).getSingleResult();
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DataManipulationException(e.getMessage());
         }
     }
 
     @Override
     public List<T> findAll(SB sortBy, boolean useJoin) {
         try {
-            hibernateUtil.getSession().clear();
+            factory.getCurrentSession().clear();
 
             StringBuilder findAllSql = new StringBuilder(sql);
 
@@ -64,9 +65,13 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
                     );
             }
 
-            return hibernateUtil.getSession().createQuery(findAllSql.toString(), type).getResultList();
+            List<T> result = factory.getCurrentSession().createQuery(findAllSql.toString(), type).getResultList();
+
+            if (result.isEmpty()) return null;
+
+            return result;
 /*
-            CriteriaBuilder criteriaBuilder = hibernateUtil.getSession().getCriteriaBuilder();
+            CriteriaBuilder criteriaBuilder = factory.getCurrentSession().getCriteriaBuilder();
             CriteriaQuery<T> cq = criteriaBuilder.createQuery(type);
             Root<T> root = cq.from(type);
 
@@ -77,41 +82,41 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
 
             // root.fetch()
 
-            return hibernateUtil.getSession().createQuery(cq).getResultList();
+            return factory.getCurrentSession().createQuery(cq).getResultList();
 */
         } catch (HibernateException e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DataManipulationException(e.getMessage());
         }
     }
 
     @Override
-    public void save(T entity) {
+    public T save(T entity) {
         try {
-            hibernateUtil.getSession().merge(entity);
+            return factory.getCurrentSession().merge(entity);
         } catch (HibernateException e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DataManipulationException(e.getMessage());
         }
     }
 
     @Override
     public void update(T entity) {
         try {
-            hibernateUtil.getSession().merge(entity);
+            factory.getCurrentSession().merge(entity);
         } catch (HibernateException e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DataManipulationException(e.getMessage());
         }
     }
 
     @Override
     public void delete(PK pk) {
         try {
-            if (hibernateUtil
-                    .getSession()
+            if (factory
+                    .getCurrentSession()
                     .createMutationQuery("DELETE FROM " + getEntityName() + " WHERE id = :id")
                     .setParameter("id", pk)
                     .executeUpdate() == 0) throw new DatabaseException("Неверный id для удаления");
         } catch (HibernateException e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DataManipulationException(e.getMessage());
         }
     }
 }

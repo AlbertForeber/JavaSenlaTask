@@ -2,6 +2,7 @@ package com.senla.app.repository.db;
 
 import com.senla.annotation.db_qualifiers.Hibernate;
 import com.senla.annotation.repo_qualifiers.Db;
+import com.senla.app.db.DatabaseException;
 import com.senla.app.db.dao.GenericDao;
 import com.senla.app.model.entity.Book;
 import com.senla.app.model.entity.sortby.BookSortBy;
@@ -21,49 +22,28 @@ public class DbStorageRepository implements StorageRepository {
     }
 
     @Override
-    public void addBook(Book book) throws IllegalArgumentException {
-        try {
-            bookDao.save(book);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Исключение БД: " + e);
-        }
+    public void addBook(Book book) throws DatabaseException {
+        bookDao.save(book);
     }
 
     @Override
-    public void updateBook(Book book) {
-        try {
-            bookDao.update(book);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Исключение БД: " + e);
-        }
+    public void updateBook(Book book) throws DatabaseException {
+        bookDao.update(book);
     }
 
     @Override
-    public Book getBook(int bookId, boolean getLinkedObjects) {
-        try {
-            return bookDao.findById(bookId, getLinkedObjects);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Исключение БД: " + e);
-        }
+    public Book getBook(int bookId, boolean getLinkedObjects) throws DatabaseException {
+        return bookDao.findById(bookId, getLinkedObjects);
     }
 
     @Override
-    public List<Book> getSortedBooks(BookSortBy sortBy, boolean getLinkedObjects) {
-        try {
-            return bookDao.findAll(sortBy != BookSortBy.NO_SORT ? sortBy : null, getLinkedObjects);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Исключение БД: " + e);
-        }
+    public List<Book> getSortedBooks(BookSortBy sortBy, boolean getLinkedObjects) throws DatabaseException {
+        return bookDao.findAll(sortBy != BookSortBy.NO_SORT ? sortBy : null, getLinkedObjects);
     }
 
     @Override
-    public boolean removeBook(int bookId) {
-        try {
-            bookDao.delete(bookId);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Исключение БД: " + e);
-        }
-
+    public boolean removeBook(int bookId) throws DatabaseException {
+        bookDao.delete(bookId);
         return true;
     }
 }

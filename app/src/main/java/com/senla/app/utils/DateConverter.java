@@ -58,6 +58,8 @@ public final class DateConverter {
     }
 
     static public LocalDate calendarToLocalDate(Calendar calendar) {
+        if (calendar == null) return null;
+
         TimeZone tz = calendar.getTimeZone();
         ZoneId zid = tz == null ? ZoneId.systemDefault() : tz.toZoneId();
 

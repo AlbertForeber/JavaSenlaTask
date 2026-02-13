@@ -62,6 +62,10 @@ public class Order implements Serializable {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public List<Book> getOrderedBooks() {
         return orderedBooks;
     }

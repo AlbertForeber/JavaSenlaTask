@@ -1,12 +1,12 @@
 package com.senla.app.db.dao;
 
-import com.senla.app.db.DatabaseException;
 import com.senla.app.db.DbConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.senla.app.exceptions.DataManipulationException;
 
 public abstract class AbstractJdbcDao<T, ID, SB> implements GenericDao<T, ID, SB> {
 
@@ -42,10 +42,12 @@ public abstract class AbstractJdbcDao<T, ID, SB> implements GenericDao<T, ID, SB
         return "*";
     }
 
+    protected abstract void setId(T entity, int id);
+
     protected void clearCache() { }
 
     @Override
-    public T findById(ID id, boolean useJoin) throws DatabaseException {
+    public T findById(ID id, boolean useJoin) {
         try (
                 PreparedStatement preparedStatement = connection
                         .prepareStatement(
@@ -75,12 +77,12 @@ public abstract class AbstractJdbcDao<T, ID, SB> implements GenericDao<T, ID, SB
 
         // Отлавливаем ошибки БД и переводим их в кастомные для консистентности
         } catch (Exception e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DataManipulationException(e.getMessage());
         }
     }
 
     @Override
-    public List<T> findAll(SB sortBy, boolean useJoin) throws DatabaseException {
+    public List<T> findAll(SB sortBy, boolean useJoin) {
         try (
                 PreparedStatement preparedStatement = connection
                         .prepareStatement(
@@ -110,25 +112,36 @@ public abstract class AbstractJdbcDao<T, ID, SB> implements GenericDao<T, ID, SB
                 clearCache();
             }
         } catch (Exception e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DataManipulationException(e.getMessage());
         }
     }
 
     @Override
-    public void save(T entity) throws DatabaseException {
+    public T save(T entity) {
         String query = "INSERT INTO " + getTableName() + "(" + getInsertFields(entity) + ")" + " VALUES (" + generatePlaceholders(getFieldsCount(entity)) + ")";
         try (
-                PreparedStatement preparedStatement = connection.prepareStatement(query)
+                PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
         ) {
             setInsertValues(entity, preparedStatement);
             preparedStatement.executeUpdate();
+
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    // Устанавливаем ID в объект (вам нужно будет реализовать метод setId)
+                    setId(entity, generatedKeys.getInt(1));
+                } else {
+                    throw new DataManipulationException("Creating entity failed, no ID obtained.");
+                }
+            }
+
+            return entity;
         } catch (Exception e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DataManipulationException(e.getMessage());
         }
     }
 
     @Override
-    public void update(T entity) throws DatabaseException {
+    public void update(T entity) {
         String query = "UPDATE " + getTableName() + " SET " + generateUpdatePlaceholders(entity) + " WHERE id=?";
 
         try (
@@ -136,29 +149,21 @@ public abstract class AbstractJdbcDao<T, ID, SB> implements GenericDao<T, ID, SB
         ) {
             setInsertValues(entity, preparedStatement);
             preparedStatement.setObject(getFieldsCount(entity) + 1, getIdOf(entity));
-            int affected = preparedStatement.executeUpdate();
-
-            if (affected == 0) {
-                throw new SQLException("Ошибка обновления - сущность не найдена");
-            }
+            preparedStatement.executeUpdate();
         } catch (Exception e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DataManipulationException(e.getMessage());
         }
     }
 
     @Override
-    public void delete(ID id) throws DatabaseException {
+    public void delete(ID id) {
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM " + getTableName() + "WHERE id=?")
         ) {
             preparedStatement.setObject(1, id);
-            int affected = preparedStatement.executeUpdate();
-
-            if (affected == 0) {
-                throw new SQLException("Ошибка удаления - сущность не найдена");
-            }
+            preparedStatement.executeUpdate();
         } catch (Exception e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DataManipulationException(e.getMessage());
         }
     }
 

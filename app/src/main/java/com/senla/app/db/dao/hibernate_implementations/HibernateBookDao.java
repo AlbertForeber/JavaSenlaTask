@@ -5,7 +5,7 @@ import com.senla.app.db.DatabaseException;
 import com.senla.app.db.dao.AbstractHibernateDao;
 import com.senla.app.model.entity.Book;
 import com.senla.app.model.entity.sortby.BookSortBy;
-import com.senla.app.utils.HibernateUtil;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -24,9 +24,9 @@ public class HibernateBookDao extends AbstractHibernateDao<Book, Integer, BookSo
     );
 
     public HibernateBookDao(
-            HibernateUtil hibernateUtil
+            SessionFactory factory
     ) {
-        super(Book.class, hibernateUtil);
+        super(Book.class, factory);
     }
 
     @Override

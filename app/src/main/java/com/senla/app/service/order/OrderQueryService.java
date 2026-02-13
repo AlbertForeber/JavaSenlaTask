@@ -1,18 +1,16 @@
 package com.senla.app.service.order;
 
-import com.senla.annotation.InjectTo;
 import com.senla.annotation.db_qualifiers.Hibernate;
 import com.senla.annotation.repo_qualifiers.Db;
+import com.senla.app.exceptions.ResourceNotFound;
 import com.senla.app.repository.OrderManagerRepository;
 import com.senla.app.model.entity.Order;
 import com.senla.app.model.entity.sortby.OrderSortBy;
 import com.senla.app.model.entity.status.OrderStatus;
-import com.senla.app.repository.db.DbOrderManagerRepository;
 import com.senla.app.service.unit_of_work.UnitOfWork;
-import com.senla.app.service.unit_of_work.implementations.HibernateUnitOfWork;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -24,10 +22,8 @@ import java.util.List;
 @Service
 public class OrderQueryService {
 
-    @InjectTo(useImplementation = DbOrderManagerRepository.class)
     private final OrderManagerRepository orderManagerRepository;
 
-    @InjectTo(useImplementation = HibernateUnitOfWork.class)
     private final UnitOfWork unitOfWork;
 
     public OrderQueryService(
@@ -38,10 +34,16 @@ public class OrderQueryService {
         this.unitOfWork = unitOfWork;
     }
 
+    @Transactional
     public List<Order> getSorted(OrderSortBy sortBy) {
-        return unitOfWork.execute(() -> orderManagerRepository.getSortedOrders(sortBy, true));
+
+        List<Order> result = orderManagerRepository.getSortedOrders(sortBy, true);
+        if (result == null) throw new ResourceNotFound("заказов нет");
+
+        return result;
     }
 
+    @Transactional
     public List<Order> getCompletedOrdersInInterval(
             int fromYear,
             int fromMonth,
@@ -52,27 +54,28 @@ public class OrderQueryService {
 
             boolean getBooks
     ) {
-        return unitOfWork.execute(() -> {
-                List<Order> orders = orderManagerRepository.getSortedOrders(OrderSortBy.PRICE_DATE, getBooks);
-                List<Order> toReturn = new ArrayList<>();
 
-                long from = new GregorianCalendar(fromYear, fromMonth - 1, fromDate).getTimeInMillis();
-                long to = new GregorianCalendar(toYear, toMonth - 1, toDate).getTimeInMillis();
+        List<Order> orders = orderManagerRepository.getSortedOrders(OrderSortBy.PRICE_DATE, getBooks);
+        if (orders == null) throw new ResourceNotFound("заказов нет");
 
-                for (Order order : orders) {
-                    if (order.getCompletionDate() == null) continue;
+        List<Order> toReturn = new ArrayList<>();
 
-                    long orderTime = order.getCompletionDate().getTimeInMillis();
-                    if (from <= orderTime && orderTime <= to && order.getStatus() == OrderStatus.COMPLETED) {
-                        toReturn.add(order);
-                    }
-                }
+        long from = new GregorianCalendar(fromYear, fromMonth - 1, fromDate).getTimeInMillis();
+        long to = new GregorianCalendar(toYear, toMonth - 1, toDate).getTimeInMillis();
 
-                return toReturn;
+        for (Order order : orders) {
+            if (order.getCompletionDate() == null) continue;
+
+            long orderTime = order.getCompletionDate().getTimeInMillis();
+            if (from <= orderTime && orderTime <= to && order.getStatus() == OrderStatus.COMPLETED) {
+                toReturn.add(order);
             }
-        );
+        }
+
+        return toReturn;
     }
 
+    @Transactional
     public long getIncomeInInterval(
             int fromYear,
             int fromMonth,
@@ -91,6 +94,7 @@ public class OrderQueryService {
         return toReturn;
     }
 
+    @Transactional
     public int getOrderAmountInInterval(
             int fromYear,
             int fromMonth,
@@ -102,32 +106,11 @@ public class OrderQueryService {
         return getCompletedOrdersInInterval(fromYear, fromMonth, fromDate, toYear, toMonth, toDate, false).size();
     }
 
-    public String getOrderDetails(int orderId) {
-        return unitOfWork.execute(() -> {
-            Order order = orderManagerRepository.getOrder(orderId, true);
-            return order == null ? null : order.toString();
-        });
-    }
+    @Transactional
+    public Order getOrderDetails(int orderId) {
+        Order order = orderManagerRepository.getOrder(orderId, true);
+        if (order == null) throw new ResourceNotFound("заказа #" + orderId + "не существует");
 
-    public void saveState(String path) throws IOException {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path + "order"))) {
-            for (Order order : orderManagerRepository.getSortedOrders(OrderSortBy.NO_SORT, true)) {
-                oos.writeObject(order);
-            }
-        }
-    }
-
-    public void loadState(String path) throws IOException, ClassNotFoundException {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path + "order"))) {
-            Order order;
-            while (true) {
-                try {
-                    order = (Order) ois.readObject();
-                    orderManagerRepository.addOrder(order.getId(), order);
-                } catch (EOFException e) {
-                    break;
-                }
-            }
-        }
+        return order;
     }
 }

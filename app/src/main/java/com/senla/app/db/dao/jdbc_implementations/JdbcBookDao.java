@@ -72,6 +72,11 @@ public class JdbcBookDao extends AbstractJdbcDao<Book, Integer, BookSortBy> {
     }
 
     @Override
+    protected void setId(Book entity, int id) {
+        entity.setId(id);
+    }
+
+    @Override
     protected Book toEntity(ResultSet resultSet) throws SQLException {
         Order order = provideOrder(resultSet);
 

@@ -1,4 +1,4 @@
-package com.senla.app.controller;
+package com.senla.app.controller.legacy;
 
 import com.senla.app.utils.Colors;
 import org.springframework.web.bind.annotation.GetMapping;

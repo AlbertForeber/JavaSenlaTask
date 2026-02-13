@@ -3,7 +3,6 @@ package com.senla.app.view.console;
 import com.senla.annotation.ui_qualifiers.Console;
 import com.senla.app.utils.Colors;
 import com.senla.app.view.IOHandler;
-import com.senla.app.view.menu.Menu;
 import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
@@ -15,14 +14,12 @@ public class ConsoleIOHandler implements IOHandler {
     private final Scanner scanner = new Scanner(System.in);
 
     @Override
-    public void handleOptionInput(Menu currentMenu) {
+    public void handleOptionInput() {
         System.out.print(">> ");
 
         try {
-            currentMenu.executeAction(Integer.parseInt(scanner.nextLine()));
         } catch (NumberFormatException e) {
             showMessage(Colors.YELLOW + "ПУНКТ МЕНЮ ДОЛЖЕН БЫТЬ ЧИСЛОМ" + Colors.RESET);
-            currentMenu.executeAction(-1);
         }
     }
 

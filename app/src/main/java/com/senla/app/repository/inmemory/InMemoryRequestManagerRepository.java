@@ -24,18 +24,20 @@ public class InMemoryRequestManagerRepository implements RequestManagerRepositor
     }
 
     @Override
-    public void addRequest(Book book) {
+    public Request addRequest(Book book) {
 
         int lastId = 0;
 
         for (Request request : requests.values()) {
             if (Objects.equals(request.getBook(), book)) {
                 request.incrementAmount();
-                return;
+                return null;
             }
             lastId = request.getId();
         }
-        requests.put(lastId + 1, new Request(lastId + 1, book));
+        Request newRequest = new Request(lastId + 1, book);
+        requests.put(lastId + 1, newRequest);
+        return newRequest;
     }
 
 

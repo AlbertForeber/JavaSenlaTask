@@ -1,23 +1,19 @@
-package com.senla.app.controller;
+package com.senla.app.controller.legacy;
 
-import com.senla.annotation.InjectTo;
 import com.senla.annotation.ui_qualifiers.Console;
 import com.senla.annotation_processor.InjectProcessor;
 import com.senla.app.utils.Colors;
 import com.senla.app.utils.Routes;
 import com.senla.app.view.IOHandler;
-import com.senla.app.view.console.ConsoleIOHandler;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+
 public class MainController {
 
     private final String STATE_PATH = Routes.PATH_TO_STATE;
 
-    @InjectTo(useImplementation = ConsoleIOHandler.class)
     private final IOHandler ioHandler;
 
     private final List<Object> needDI = new ArrayList<>();

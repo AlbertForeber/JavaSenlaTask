@@ -1,3 +1,4 @@
+
 package com.senla.app.utils;
 
 import com.senla.annotation.db_qualifiers.Hibernate;

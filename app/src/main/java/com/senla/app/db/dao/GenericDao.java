@@ -10,7 +10,7 @@ public interface GenericDao<T, ID, SB> {
 
     T findById(ID id, boolean useJoin) throws DatabaseException;
     List<T> findAll(SB sortBy, boolean useJoin) throws DatabaseException;
-    void save(T entity) throws DatabaseException;
+    T save(T entity) throws DatabaseException;
     void update(T entity) throws DatabaseException;
     void delete(ID id) throws DatabaseException;
 }
