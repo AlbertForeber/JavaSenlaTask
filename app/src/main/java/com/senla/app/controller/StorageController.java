@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/books/")
+@RequestMapping("/api/books")
 public class StorageController {
 
     private static final Logger logger = LogManager.getLogger(StorageController.class);
@@ -50,7 +50,7 @@ public class StorageController {
         return ResponseEntity.ok(new BookResponse(addedBook));
     }
 
-    @GetMapping("/")
+    @GetMapping({"/", ""})
     @LoggingOperation("получение отсортированных книг")
     public ResponseEntity<CollectionResponse<BookResponse>> getSorted(
             @RequestParam(defaultValue = "NO_SORT") BookSortBy sort

@@ -3,7 +3,6 @@ package com.senla.app.db.dao;
 import com.senla.app.db.DatabaseException;
 import com.senla.app.exceptions.DataManipulationException;
 import jakarta.persistence.NoResultException;
-import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
@@ -42,7 +41,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
             return factory.getCurrentSession().createQuery(findByIdSql.toString(), type).setParameter("id", pk).getSingleResult();
         } catch (NoResultException e) {
             return null;
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             throw new DataManipulationException(e.getMessage());
         }
     }
@@ -65,26 +64,8 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
                     );
             }
 
-            List<T> result = factory.getCurrentSession().createQuery(findAllSql.toString(), type).getResultList();
-
-            if (result.isEmpty()) return null;
-
-            return result;
-/*
-            CriteriaBuilder criteriaBuilder = factory.getCurrentSession().getCriteriaBuilder();
-            CriteriaQuery<T> cq = criteriaBuilder.createQuery(type);
-            Root<T> root = cq.from(type);
-
-            if (sortBy != null) {
-                List<Order> orders = sortBy.stream().map(o -> criteriaBuilder.asc(root.get(o))).toList();
-                cq.orderBy(orders);
-            }
-
-            // root.fetch()
-
-            return factory.getCurrentSession().createQuery(cq).getResultList();
-*/
-        } catch (HibernateException e) {
+            return factory.getCurrentSession().createQuery(findAllSql.toString(), type).getResultList();
+        } catch (Exception e) {
             throw new DataManipulationException(e.getMessage());
         }
     }
@@ -93,7 +74,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
     public T save(T entity) {
         try {
             return factory.getCurrentSession().merge(entity);
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             throw new DataManipulationException(e.getMessage());
         }
     }
@@ -102,7 +83,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
     public void update(T entity) {
         try {
             factory.getCurrentSession().merge(entity);
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             throw new DataManipulationException(e.getMessage());
         }
     }
@@ -115,7 +96,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
                     .createMutationQuery("DELETE FROM " + getEntityName() + " WHERE id = :id")
                     .setParameter("id", pk)
                     .executeUpdate() == 0) throw new DatabaseException("Неверный id для удаления");
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             throw new DataManipulationException(e.getMessage());
         }
     }

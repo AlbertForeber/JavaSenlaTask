@@ -39,7 +39,10 @@ public class DbRequestManagerRepository implements RequestManagerRepository {
             requestDao.update(toUpdate);
             return toUpdate;
         } else {
-            return requestDao.save(new Request(0, book, 1));
+            Request toAdd = new Request(0, book, 1);
+            toAdd.setId(requestDao.save(toAdd).getId());
+
+            return toAdd;
         }
     }
 

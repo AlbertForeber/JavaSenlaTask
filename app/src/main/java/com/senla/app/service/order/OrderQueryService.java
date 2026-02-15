@@ -38,7 +38,7 @@ public class OrderQueryService {
     public List<Order> getSorted(OrderSortBy sortBy) {
 
         List<Order> result = orderManagerRepository.getSortedOrders(sortBy, true);
-        if (result == null) throw new ResourceNotFound("заказов нет");
+        if (result.isEmpty()) throw new ResourceNotFound("заказов нет");
 
         return result;
     }
@@ -56,7 +56,7 @@ public class OrderQueryService {
     ) {
 
         List<Order> orders = orderManagerRepository.getSortedOrders(OrderSortBy.PRICE_DATE, getBooks);
-        if (orders == null) throw new ResourceNotFound("заказов нет");
+        if (orders.isEmpty()) throw new ResourceNotFound("заказов нет");
 
         List<Order> toReturn = new ArrayList<>();
 

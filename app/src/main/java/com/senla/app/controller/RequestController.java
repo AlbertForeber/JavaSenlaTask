@@ -42,7 +42,7 @@ public class RequestController {
         return ResponseEntity.created(url).body(new RequestResponse(request));
     }
 
-    @GetMapping("/")
+    @GetMapping({"/", ""})
     @LoggingOperation("получение отсортированных запросов")
     public ResponseEntity<CollectionResponse<RequestResponse>> getSorted(
             @RequestParam(defaultValue = "NO_SORT") RequestSortBy sort

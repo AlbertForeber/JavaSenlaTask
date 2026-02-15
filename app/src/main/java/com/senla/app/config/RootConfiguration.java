@@ -31,6 +31,7 @@ public class RootConfiguration {
         return new HibernateTransactionManager(factory); // Управляет сессиями
     }
 
+    @DependsOn("liquibase")
     @Bean
     public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
         LocalSessionFactoryBean factory = new LocalSessionFactoryBean();
