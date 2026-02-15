@@ -30,7 +30,7 @@ public class RequestQueryService {
     public List<Request> getSorted(RequestSortBy sortBy) {
         List<Request> list = requestManagerRepository.getSortedRequests(sortBy);
 
-        if (list == null) {
+        if (list.isEmpty()) {
             throw new ResourceNotFound("запросов нет");
         }
 

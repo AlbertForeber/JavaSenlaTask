@@ -90,7 +90,7 @@ public class RestExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "Wrong Id",
-                "Неверный идентификатор сущности " + exception.getMessage(),
+                "Неверный идентификатор сущности (" + exception.getMessage() + ")",
                 request.getRequestURI()
         );
 

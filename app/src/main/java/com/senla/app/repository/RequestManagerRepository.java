@@ -3,8 +3,6 @@ package com.senla.app.repository;
 import com.senla.app.model.entity.Book;
 import com.senla.app.model.entity.Request;
 import com.senla.app.model.entity.sortby.RequestSortBy;
-
-
 import java.util.List;
 
 public interface RequestManagerRepository {

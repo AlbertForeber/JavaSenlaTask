@@ -34,6 +34,7 @@ public class RequestService {
         Book book = storageRepository.getBook(bookId, false);
 
         if (book == null) throw new WrongId("книга с артикулом #" + bookId);
+
         return requestManagerRepository.addRequest(book);
     }
 }

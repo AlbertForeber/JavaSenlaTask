@@ -40,7 +40,7 @@ public class StorageQueryService {
     public List<Book> getSorted(BookSortBy sortBy) {
         List<Book> books = bookStorageRepository.getSortedBooks(sortBy, true);
 
-        if (books == null) throw new ResourceNotFound("книг не найдено");
+        if (books.isEmpty()) throw new ResourceNotFound("книг не найдено");
         return books;
     }
 
@@ -51,7 +51,7 @@ public class StorageQueryService {
             int nowDate
     ) {
         List<Book> books = bookStorageRepository.getSortedBooks(BookSortBy.DATE_PRICE, true);
-        if (books == null) throw new ResourceNotFound("книг не найдено");
+        if (books.isEmpty()) throw new ResourceNotFound("книг не найдено");
 
         ArrayList<Book> toReturn = new ArrayList<>();
 

@@ -80,7 +80,7 @@ public class OrderController {
         return ResponseEntity.ok(new OrderResponse(updatedOrder));
     }
 
-    @GetMapping("/")
+    @GetMapping({"/", ""})
     @LoggingOperation("получение отсортированных заказов")
     public ResponseEntity<CollectionResponse<OrderResponse>> getSorted(
             @RequestParam(defaultValue = "NO_SORT") OrderSortBy sort
@@ -120,7 +120,7 @@ public class OrderController {
                     from.getYear(), from.getMonthValue(), from.getDayOfMonth(),
                     to.getYear(), to.getMonthValue(), to.getDayOfMonth()
             );
-            default -> throw new ResourceNotFound("Запрошенная статистика '" + stat + "' не найдена");
+            default -> throw new ResourceNotFound("Статистики '" + stat + "' не существует");
         }
         return ResponseEntity.ok(statValue);
     }
