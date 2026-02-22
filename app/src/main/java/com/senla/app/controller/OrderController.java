@@ -11,8 +11,6 @@ import com.senla.app.model.entity.status.OrderStatus;
 import com.senla.app.service.order.OrderQueryService;
 import com.senla.app.service.order.OrderService;
 import jakarta.validation.Valid;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +23,6 @@ import java.util.List;
 @RequestMapping("/api/orders")
 public class OrderController {
 
-    private static final Logger logger = LogManager.getLogger(OrderController.class);
     private final OrderService orderService;
     private final OrderQueryService orderQueryService;
 
@@ -42,7 +39,6 @@ public class OrderController {
             @Valid @RequestBody CreateOrderRequest request
     ) {
 
-        logger.info("Начало обработки добавления заказа");
 
         Order order = orderService.createOrder(
                 request.getId(),
@@ -53,8 +49,6 @@ public class OrderController {
         // Хороший тон - возвращать в заголовке
         // URL созданного ресусра
         URI location = URI.create("/api/orders/" + order.getId());
-
-        logger.info("Обработки заказа завершена");
 
         return ResponseEntity
                     .created(location)

@@ -7,8 +7,6 @@ import com.senla.app.model.entity.Book;
 import com.senla.app.model.entity.sortby.BookSortBy;
 import com.senla.app.service.storage.StorageQueryService;
 import com.senla.app.service.storage.StorageService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +18,6 @@ import java.util.List;
 @RequestMapping("/api/books")
 public class StorageController {
 
-    private static final Logger logger = LogManager.getLogger(StorageController.class);
     private final StorageService storageService;
     private final StorageQueryService storageQueryService;
 
