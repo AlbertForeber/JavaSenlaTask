@@ -1,0 +1,11 @@
+com/senla/db/SimpleGenericDao.class
+com/senla/entity/Account.class
+com/senla/entity/Status.class
+com/senla/config/RootConfig.class
+com/senla/config/KafkaListeners.class
+com/senla/config/KafkaConsumerConfig.class
+com/senla/db/TransferDao.class
+com/senla/Application.class
+com/senla/entity/MoneyTransfer.class
+com/senla/repository/HibernateRepository.class
+com/senla/db/AccountDao.class
