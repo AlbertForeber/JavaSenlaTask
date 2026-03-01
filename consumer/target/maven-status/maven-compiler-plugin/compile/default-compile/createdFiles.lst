@@ -4,8 +4,10 @@ com/senla/entity/Status.class
 com/senla/config/RootConfig.class
 com/senla/config/KafkaListeners.class
 com/senla/config/KafkaConsumerConfig.class
+com/senla/db/DbActions.class
 com/senla/db/TransferDao.class
 com/senla/Application.class
 com/senla/entity/MoneyTransfer.class
 com/senla/repository/HibernateRepository.class
+com/senla/entity/MoneyTransferProducer.class
 com/senla/db/AccountDao.class

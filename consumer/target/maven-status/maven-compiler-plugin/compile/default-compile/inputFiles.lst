@@ -3,9 +3,11 @@
 /home/dministrator/senlajava/consumer/src/main/java/com/senla/config/KafkaListeners.java
 /home/dministrator/senlajava/consumer/src/main/java/com/senla/config/RootConfig.java
 /home/dministrator/senlajava/consumer/src/main/java/com/senla/db/AccountDao.java
+/home/dministrator/senlajava/consumer/src/main/java/com/senla/db/DbActions.java
 /home/dministrator/senlajava/consumer/src/main/java/com/senla/db/SimpleGenericDao.java
 /home/dministrator/senlajava/consumer/src/main/java/com/senla/db/TransferDao.java
 /home/dministrator/senlajava/consumer/src/main/java/com/senla/entity/Account.java
 /home/dministrator/senlajava/consumer/src/main/java/com/senla/entity/MoneyTransfer.java
+/home/dministrator/senlajava/consumer/src/main/java/com/senla/entity/MoneyTransferProducer.java
 /home/dministrator/senlajava/consumer/src/main/java/com/senla/entity/Status.java
 /home/dministrator/senlajava/consumer/src/main/java/com/senla/repository/HibernateRepository.java

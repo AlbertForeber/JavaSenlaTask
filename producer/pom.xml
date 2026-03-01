@@ -13,8 +13,6 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>6.2.11</spring.version>
-        <postgre.version>42.7.7</postgre.version>
-        <hibernate.version>6.4.1.Final</hibernate.version>
     </properties>
 
     <dependencies>
@@ -33,10 +31,12 @@
             <artifactId>spring-kafka</artifactId>
             <version>3.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
+
+        <!--Для десериализации объекта-->
+        <dependency> <!-- Для работы с Jackson -->
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.16.1</version>
         </dependency>
 
         <!-- Логирование -->
@@ -50,11 +50,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.5.16</version>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgre.version}</version>
         </dependency>
     </dependencies>
     <build>

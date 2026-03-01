@@ -1,19 +1,16 @@
 package com.senla;
 
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
-import org.springframework.transaction.TransactionManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,10 +26,10 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, String> producerFactory() {
+    public ProducerFactory<String, MoneyTransfer> producerFactory() {
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 
         // Для exactly-once
@@ -45,22 +42,22 @@ public class KafkaProducerConfig {
             // Для транзакционности
         config.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "producer-service-1");
 
-        DefaultKafkaProducerFactory<String, String> producerFactory = new DefaultKafkaProducerFactory<>(config);
+        DefaultKafkaProducerFactory<String, MoneyTransfer> producerFactory = new DefaultKafkaProducerFactory<>(config);
 //        producerFactory.setTransactionIdPrefix("producer-service-1");
 
         return producerFactory;
     }
 
     @Bean
-    public KafkaTemplate<String, String> kafkaTemplate() {
-        KafkaTemplate<String, String> template = new KafkaTemplate<>(producerFactory());
+    public KafkaTemplate<String, MoneyTransfer> kafkaTemplate() {
+        KafkaTemplate<String, MoneyTransfer> template = new KafkaTemplate<>(producerFactory());
 
         template.setDefaultTopic("test-topic");
         return template;
     }
 
     @Bean
-    public KafkaTransactionManager<String, String> kafkaTransactionManager() {
+    public KafkaTransactionManager<String, MoneyTransfer> kafkaTransactionManager() {
         return new KafkaTransactionManager<>(producerFactory());
     }
 }

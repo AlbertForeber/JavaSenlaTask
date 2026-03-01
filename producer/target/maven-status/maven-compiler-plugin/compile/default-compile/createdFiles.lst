@@ -1,0 +1,5 @@
+com/senla/MessageProduceService.class
+com/senla/MessageProduceScheduler.class
+com/senla/KafkaProducerConfig.class
+com/senla/Application.class
+com/senla/MoneyTransfer.class

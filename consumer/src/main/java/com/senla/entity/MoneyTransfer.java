@@ -27,11 +27,12 @@ public class MoneyTransfer {
 
     public MoneyTransfer() {}
 
-    public MoneyTransfer(Integer id, Account sender, Account receiver, int transferAmount) {
+    public MoneyTransfer(Integer id, Account sender, Account receiver, int transferAmount, Status status) {
         this.id = id;
         this.sender = sender;
         this.receiver = receiver;
         this.transferAmount = transferAmount;
+        this.status = status;
     }
 
     public Integer getId() {
