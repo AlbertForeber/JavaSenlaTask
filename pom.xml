@@ -28,6 +28,8 @@
         <jackson.version>2.16.1</jackson.version>
         <jakarta.validation.version>3.0.2</jakarta.validation.version>
         <hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
+        <spring-security.version>6.2.2</spring-security.version>
+        <jjwt.version>0.12.5</jjwt.version>
     </properties>
 
     <dependencyManagement>
@@ -148,7 +150,50 @@
             <scope>provided</scope>
         </dependency>
 
-        <!---->
+        <!--Task 18-->
+
+        <!-- Spring Security -->
+        <!-- Основной модуль Spring Security для веб-приложений -->
+        <!-- Транзитивно подгружает spring-security-core -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+
+        <!-- Модуль конфигурации Spring Security -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+
+        <!-- JJWT для работы с JWT токенами -->
+        <!-- API модуль - compile зависимость -->
+        <!-- Классы нам нужны в импорте -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+
+        <!-- Реализация JJWT - runtime зависимость -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Jackson интеграцяи для JJWT - runtime зависимость -->
+        <!-- реализации нам в виде классов не нужны -->
+        <!-- достаточно абстракций -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
 
         <dependency>
             <groupId>jakarta.annotation</groupId>
