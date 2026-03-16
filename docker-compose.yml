@@ -25,7 +25,8 @@ services:
     container_name: main_app
     restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - db_app
     ports:

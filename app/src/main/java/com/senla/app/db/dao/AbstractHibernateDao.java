@@ -20,6 +20,10 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
 
     protected abstract String getAliasesForSortBy(SB sortBy);
 
+    protected String getIdFieldName() {
+        return "id";
+    }
+
     protected String additionalJoinFetchQuery() {
         return "";
     }
@@ -36,9 +40,18 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
 
             if (useJoin)
                 findByIdSql.append(" ").append(additionalJoinFetchQuery());
-            findByIdSql.append(" WHERE ").append(getEntityAlias()).append(".id = :id");
 
-            return factory.getCurrentSession().createQuery(findByIdSql.toString(), type).setParameter("id", pk).getSingleResult();
+            findByIdSql
+                    .append(" WHERE ")
+                    .append(getEntityAlias())
+                    .append(".")
+                    .append(getIdFieldName())
+                    .append(" = :id");
+
+            return factory.getCurrentSession()
+                    .createQuery(findByIdSql.toString(), type)
+                    .setParameter("id", pk.toString())
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         } catch (Exception e) {
@@ -90,10 +103,18 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
 
     @Override
     public void delete(PK pk) {
+        StringBuilder hql = new StringBuilder("DELETE FROM ");
+        hql
+                .append(
+                    getEntityAlias())
+                .append("WHERE ")
+                .append(getIdFieldName())
+                .append(" = :id");
+
         try {
             if (factory
                     .getCurrentSession()
-                    .createMutationQuery("DELETE FROM " + getEntityName() + " WHERE id = :id")
+                    .createMutationQuery(hql.toString())
                     .setParameter("id", pk)
                     .executeUpdate() == 0) throw new DatabaseException("Неверный id для удаления");
         } catch (Exception e) {
