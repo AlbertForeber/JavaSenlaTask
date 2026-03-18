@@ -1,4 +1,4 @@
--- db/changelog/changes/8-create-auth-tables.sql
+-- db/changelog/changes/8-create-user-tables.sql
 
 -- liquibase formatted sql
 
