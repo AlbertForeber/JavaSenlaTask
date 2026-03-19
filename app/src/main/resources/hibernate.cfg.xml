@@ -27,6 +27,7 @@
         <mapping class="com.senla.app.model.entity.Request"/>
         <mapping class="com.senla.app.model.entity.auth.User"/>
         <mapping class="com.senla.app.model.entity.auth.Scope"/>
+        <mapping class="com.senla.app.model.entity.auth.RefreshToken"/>
 
     </session-factory>
 </hibernate-configuration>

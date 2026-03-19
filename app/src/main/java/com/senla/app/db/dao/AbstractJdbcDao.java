@@ -167,6 +167,11 @@ public abstract class AbstractJdbcDao<T, ID, SB> implements GenericDao<T, ID, SB
         }
     }
 
+    @Override
+    public List<T> findByField(String fieldName, Object value, boolean useJoin) {
+        throw new UnsupportedOperationException("Функция не реализована");
+    }
+
     private String generatePlaceholders(int count) {
         return String.join(", ", Collections.nCopies(count, "?"));
     }

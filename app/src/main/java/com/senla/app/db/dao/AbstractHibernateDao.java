@@ -3,6 +3,9 @@ package com.senla.app.db.dao;
 import com.senla.app.db.DatabaseException;
 import com.senla.app.exceptions.DataManipulationException;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
@@ -50,7 +53,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
 
             return factory.getCurrentSession()
                     .createQuery(findByIdSql.toString(), type)
-                    .setParameter("id", pk.toString())
+                    .setParameter("id", pk)
                     .getSingleResult();
         } catch (NoResultException e) {
             return null;
@@ -120,5 +123,19 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
         } catch (Exception e) {
             throw new DataManipulationException(e.getMessage());
         }
+    }
+
+    @Override
+    public List<T> findByField(String fieldName, Object value, boolean useJoin) {
+        // Используем Criteria API
+        // В случае динамического выбора колонки фильтрации безопаснее, чем HQL
+
+        CriteriaBuilder cb = factory.getCriteriaBuilder();
+        CriteriaQuery<T> query = cb.createQuery(type);
+
+        Root<T> root = query.from(type);
+        query = query.select(root).where(cb.equal(root.get(fieldName), value));
+
+        return factory.getCurrentSession().createQuery(query).getResultList();
     }
 }
