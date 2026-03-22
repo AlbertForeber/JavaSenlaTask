@@ -19,7 +19,7 @@ public class RefreshToken {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "expiry_date")
     private Instant expiryDate;
 
@@ -29,7 +29,7 @@ public class RefreshToken {
     @Column(name = "revoked")
     private Boolean revoked = false;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Instant createdAt;
 
@@ -98,6 +98,6 @@ public class RefreshToken {
     }
 
     public boolean isValid() {
-        return isExpired() && !revoked && !used;
+        return !isExpired() && !revoked && !used;
     }
 }

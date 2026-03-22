@@ -56,7 +56,7 @@ public class DbRefreshTokenRepository implements RefreshTokenRepository {
     public void revokeAllTokensForUser(String username) {
         findByUsername(username).forEach(o -> {
             o.setRevoked(true);
-            refreshTokenDao.update(o);
+            // update произойдет автоматически по окончанию транзакции
         });
     }
 }

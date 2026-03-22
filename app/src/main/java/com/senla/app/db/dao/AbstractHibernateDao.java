@@ -4,12 +4,16 @@ import com.senla.app.db.DatabaseException;
 import com.senla.app.exceptions.DataManipulationException;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, PK, SB> {
+
+    private static final Logger logger = LogManager.getLogger(AbstractHibernateDao.class);
 
     private final Class<T> type;
     private final SessionFactory factory;
@@ -61,6 +65,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
         } catch (NoResultException e) {
             return null;
         } catch (Exception e) {
+            logger.error(e);
             throw new DataManipulationException(e.getMessage());
         }
     }
@@ -85,6 +90,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
 
             return factory.getCurrentSession().createQuery(findAllSql.toString(), type).getResultList();
         } catch (Exception e) {
+            logger.error(e);
             throw new DataManipulationException(e.getMessage());
         }
     }
@@ -103,6 +109,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
         try {
             factory.getCurrentSession().merge(entity);
         } catch (Exception e) {
+            logger.error(e);
             throw new DataManipulationException(e.getMessage());
         }
     }
@@ -124,11 +131,13 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
                     .setParameter("id", pk)
                     .executeUpdate() == 0) throw new DatabaseException("Неверный id для удаления");
         } catch (Exception e) {
+            logger.error(e);
             throw new DataManipulationException(e.getMessage());
         }
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<T> findByField(String fieldName, Object value, boolean useJoin, boolean isJoinField) {
         // Используем Criteria API
         // В случае динамического выбора колонки фильтрации безопаснее, чем HQL
@@ -147,8 +156,8 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
             if (useJoin) {
                 Map.Entry<String, JoinType> joinParams = additionalJoinFetchQueryCriteria();
 
-                root.fetch(joinParams.getKey(), joinParams.getValue());
-                join = root.join(joinParams.getKey(), joinParams.getValue());
+                // Безопасный каст, JPA Fetch расширяет Join
+                join = (Join<T, ?>) root.fetch(joinParams.getKey(), joinParams.getValue());
             }
 
             query = query.select(root).where(cb.equal(
@@ -157,7 +166,37 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
 
             return factory.getCurrentSession().createQuery(query).getResultList();
         } catch (Exception e) {
+
+            logger.error(e);
             throw new DataManipulationException(e.getMessage());
         }
     }
+
+//    @Override
+//    public List<T> findByField(String fieldName, Object value, boolean useJoin, boolean isJoinField) {
+//        if (isJoinField && !useJoin) {
+//            throw new DataManipulationException("Невозможно выполнить поиск по полю из JOIN таблицы, при выключенном useJoin");
+//        }
+//
+//        try {
+//            StringBuilder hql = new StringBuilder(sql);
+//
+//            if (useJoin) {
+//                hql.append(" ").append(additionalJoinFetchQueryHql());
+//            }
+//
+//            hql.append(" WHERE ")
+//                    .append(isJoinField ? "" : getEntityAlias() + ".")
+//                    .append(fieldName)
+//                    .append(" = :value");
+//
+//            return factory.getCurrentSession()
+//                    .createQuery(hql.toString(), type)
+//                    .setParameter("value", value)
+//                    .getResultList();
+//        } catch (Exception e) {
+//            logger.trace("Full Error", e);
+//            throw new DataManipulationException(e.getMessage());
+//        }
+//    }
 }

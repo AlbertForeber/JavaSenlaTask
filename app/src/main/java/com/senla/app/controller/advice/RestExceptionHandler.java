@@ -1,8 +1,5 @@
 package com.senla.app.controller.advice;
-import com.senla.app.exceptions.DataManipulationException;
-import com.senla.app.exceptions.ResourceNotFound;
-import com.senla.app.exceptions.UnavailableAction;
-import com.senla.app.exceptions.WrongId;
+import com.senla.app.exceptions.*;
 import com.senla.app.model.dto.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -125,6 +122,21 @@ public class RestExceptionHandler {
         );
 
         errorResponse.setDetails(List.of(exception.getReason()));
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(
+            AuthenticationException exception,
+            HttpServletRequest request
+    ) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Authorization Exception",
+                exception.getMessage(),
+                request.getRequestURI()
+        );
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }

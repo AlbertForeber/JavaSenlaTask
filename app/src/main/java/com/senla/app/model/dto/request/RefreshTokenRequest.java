@@ -2,16 +2,16 @@ package com.senla.app.model.dto.request;
 
 public class RefreshTokenRequest {
 
-    private String requestToken;
+    private String refreshToken;
 
     public RefreshTokenRequest() {
     }
 
-    public String getRequestToken() {
-        return requestToken;
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
-    public void setRequestToken(String requestToken) {
-        this.requestToken = requestToken;
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

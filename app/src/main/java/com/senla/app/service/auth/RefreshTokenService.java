@@ -1,7 +1,7 @@
 package com.senla.app.service.auth;
 
 import com.senla.annotation.repo_qualifiers.Db;
-import com.senla.app.exceptions.UnavailableAction;
+import com.senla.app.exceptions.AuthenticationException;
 import com.senla.app.exceptions.WrongId;
 import com.senla.app.model.entity.auth.RefreshToken;
 import com.senla.app.model.entity.auth.User;
@@ -36,13 +36,13 @@ public class RefreshTokenService {
         RefreshToken refreshToken = new RefreshToken(
                 tokenValue,
                 user,
-                now,
-                now.plusMillis(this.tokenDuration)
+                now.plusMillis(this.tokenDuration),
+                now
         );
         return repository.createOrUpdateToken(refreshToken);
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = AuthenticationException.class)
     public RefreshToken rotateToken(String token) {
         RefreshToken oldToken = repository.findByToken(token);
         if (oldToken == null) throw new WrongId("refresh-токен '" + token + "' не найден");
@@ -52,7 +52,7 @@ public class RefreshTokenService {
                 handleReuse(oldToken);
             }
 
-            throw new UnavailableAction("обновление refresh-токена", "токен истек или невалиден");
+            throw new AuthenticationException("Refresh-токен истек или невалиден");
         }
 
         RefreshToken newToken = createToken(oldToken.getUser());

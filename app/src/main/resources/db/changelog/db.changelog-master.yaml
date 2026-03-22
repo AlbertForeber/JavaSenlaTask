@@ -1,3 +1,25 @@
 databaseChangeLog:
-  - includeAll:
-      path: db/changelog/changes/
+#  - includeAll:
+#      path: db/changelog/changes/
+  - include:
+      file: db/changelog/changes/1-create-order-table.sql
+  - include:
+      file: db/changelog/changes/2-create-books-table.sql
+  - include:
+      file: db/changelog/changes/3-create-requests-table.sql
+  - include:
+      file: db/changelog/changes/4-create-book-order-table.sql
+  - include:
+      file: db/changelog/changes/5-fill-orders.sql
+  - include:
+      file: db/changelog/changes/6-fill-books.sql
+  - include:
+      file: db/changelog/changes/7-fill-book-order.sql
+  - include:
+      file: db/changelog/changes/8-create-user-tables.sql
+  - include:
+      file: db/changelog/changes/9-create-refresh-token-table.sql
+  - include:
+      file: db/changelog/changes/10-fill-scopes_and_roles.sql
+  - include:
+      file: db/changelog/changes/11-fill-users.sql

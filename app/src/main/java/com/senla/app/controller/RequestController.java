@@ -10,6 +10,7 @@ import com.senla.app.service.request.RequestService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -33,6 +34,7 @@ public class RequestController {
 
     @PostMapping("/add")
     @LoggingOperation("добавление запроса")
+    @PreAuthorize("hasAuthority('SCOPE_request:add')")
     public ResponseEntity<RequestResponse> addRequests(
             @RequestParam Integer bookId
     ) {
@@ -44,6 +46,7 @@ public class RequestController {
 
     @GetMapping({"/", ""})
     @LoggingOperation("получение отсортированных запросов")
+    @PreAuthorize("hasAuthority('SCOPE_request:view_all')")
     public ResponseEntity<CollectionResponse<RequestResponse>> getSorted(
             @RequestParam(defaultValue = "NO_SORT") RequestSortBy sort
     ) {

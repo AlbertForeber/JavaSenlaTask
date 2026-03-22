@@ -1,9 +1,8 @@
 package com.senla.app.config;
 
-import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.config.filters.JwtAuthenticationFilter;
 import com.senla.app.model.entity.auth.User;
-import com.senla.app.repository.UserRepository;
+import com.senla.app.service.auth.user.UserQueryService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,6 +26,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final Logger logger = LogManager.getLogger(SecurityConfig.class);
@@ -39,7 +40,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
                     auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/refresh").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
@@ -77,10 +79,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(@Db UserRepository userRepository) {
+    public UserDetailsService userDetailsService(UserQueryService service) {
         return (username -> {
             logger.info(username);
-            User result = userRepository.getUserByUsername(username);
+            User result = service.getUserByUsername(username);
             logger.info(result);
             return result;
         });
