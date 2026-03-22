@@ -9,8 +9,8 @@ public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "refresh_seq")
-    @SequenceGenerator(name = "refresh_seq", sequenceName = "refresh_tokens_id_seq")
-    private Long id;
+    @SequenceGenerator(name = "refresh_seq", sequenceName = "refresh_tokens_id_seq", allocationSize = 1)
+    private Integer id = null;
 
     @Column(name = "token", unique = true)
     private String token;
@@ -24,40 +24,32 @@ public class RefreshToken {
     private Instant expiryDate;
 
     @Column(name = "used")
-    private Boolean used;
+    private Boolean used = false;
 
     @Column(name = "revoked")
-    private Boolean revoked;
+    private Boolean revoked = false;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "created_at")
     private Instant createdAt;
 
     @Column(name = "replaced_by_token")
-    private String replacedByToken;
+    private String replacedByToken = "";
 
     public RefreshToken() {
     }
 
-    public RefreshToken(Long id,
-                        String token,
+    public RefreshToken(String token,
                         User user,
                         Instant expiryDate,
-                        Boolean used,
-                        Boolean revoked,
-                        Instant createdAt,
-                        String replacedByToken) {
-        this.id = id;
+                        Instant createdAt) {
         this.token = token;
         this.user = user;
         this.expiryDate = expiryDate;
-        this.used = used;
-        this.revoked = revoked;
         this.createdAt = createdAt;
-        this.replacedByToken = replacedByToken;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -87,5 +79,25 @@ public class RefreshToken {
 
     public String getReplacedByToken() {
         return replacedByToken;
+    }
+
+    public void setUsed(Boolean used) {
+        this.used = used;
+    }
+
+    public void setRevoked(Boolean revoked) {
+        this.revoked = revoked;
+    }
+
+    public void setReplacedByToken(String replacedByToken) {
+        this.replacedByToken = replacedByToken;
+    }
+
+    public boolean isExpired() {
+        return Instant.now().isAfter(this.expiryDate);
+    }
+
+    public boolean isValid() {
+        return isExpired() && !revoked && !used;
     }
 }

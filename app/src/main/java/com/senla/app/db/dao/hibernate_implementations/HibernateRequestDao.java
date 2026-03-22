@@ -5,6 +5,7 @@ import com.senla.app.db.DatabaseException;
 import com.senla.app.db.dao.AbstractHibernateDao;
 import com.senla.app.model.entity.Request;
 import com.senla.app.model.entity.sortby.RequestSortBy;
+import jakarta.persistence.criteria.JoinType;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +44,12 @@ public class HibernateRequestDao extends AbstractHibernateDao<Request, Integer, 
     }
 
     @Override
-    protected String additionalJoinFetchQuery() {
+    protected String additionalJoinFetchQueryHql() {
         return "JOIN FETCH r.book b";
+    }
+
+    @Override
+    protected Map.Entry<String, JoinType> additionalJoinFetchQueryCriteria() {
+        return Map.entry("book", JoinType.INNER);
     }
 }

@@ -3,12 +3,11 @@ package com.senla.app.db.dao;
 import com.senla.app.db.DatabaseException;
 import com.senla.app.exceptions.DataManipulationException;
 import jakarta.persistence.NoResultException;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, PK, SB> {
 
@@ -27,8 +26,12 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
         return "id";
     }
 
-    protected String additionalJoinFetchQuery() {
+    protected String additionalJoinFetchQueryHql() {
         return "";
+    }
+
+    protected Map.Entry<String, JoinType> additionalJoinFetchQueryCriteria() {
+        return Map.entry("", JoinType.INNER);
     }
 
     public AbstractHibernateDao(Class<T> type, SessionFactory factory) {
@@ -42,7 +45,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
             StringBuilder findByIdSql = new StringBuilder(sql);
 
             if (useJoin)
-                findByIdSql.append(" ").append(additionalJoinFetchQuery());
+                findByIdSql.append(" ").append(additionalJoinFetchQueryHql());
 
             findByIdSql
                     .append(" WHERE ")
@@ -70,7 +73,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
             StringBuilder findAllSql = new StringBuilder(sql);
 
             if (useJoin)
-                findAllSql.append(" ").append(additionalJoinFetchQuery());
+                findAllSql.append(" ").append(additionalJoinFetchQueryHql());
 
             if (sortBy != null) {
                 findAllSql
@@ -126,16 +129,35 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
     }
 
     @Override
-    public List<T> findByField(String fieldName, Object value, boolean useJoin) {
+    public List<T> findByField(String fieldName, Object value, boolean useJoin, boolean isJoinField) {
         // Используем Criteria API
         // В случае динамического выбора колонки фильтрации безопаснее, чем HQL
 
-        CriteriaBuilder cb = factory.getCriteriaBuilder();
-        CriteriaQuery<T> query = cb.createQuery(type);
+        if (isJoinField && !useJoin) {
+            throw new DataManipulationException("Невозможно выполнить поиск по полю из JOIN таблицы, при выключенном useJoin");
+        }
 
-        Root<T> root = query.from(type);
-        query = query.select(root).where(cb.equal(root.get(fieldName), value));
+        try {
+            CriteriaBuilder cb = factory.getCriteriaBuilder();
+            CriteriaQuery<T> query = cb.createQuery(type);
 
-        return factory.getCurrentSession().createQuery(query).getResultList();
+            Root<T> root = query.from(type);
+            Join<T, ?> join = null;
+
+            if (useJoin) {
+                Map.Entry<String, JoinType> joinParams = additionalJoinFetchQueryCriteria();
+
+                root.fetch(joinParams.getKey(), joinParams.getValue());
+                join = root.join(joinParams.getKey(), joinParams.getValue());
+            }
+
+            query = query.select(root).where(cb.equal(
+                    isJoinField ? join.get(fieldName) : root.get(fieldName), value)
+            );
+
+            return factory.getCurrentSession().createQuery(query).getResultList();
+        } catch (Exception e) {
+            throw new DataManipulationException(e.getMessage());
+        }
     }
 }

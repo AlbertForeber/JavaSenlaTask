@@ -9,7 +9,7 @@ import java.util.List;
 public interface GenericDao<T, ID, SB> {
 
     T findById(ID id, boolean useJoin) throws DatabaseException;
-    List<T> findByField(String fieldName, Object value, boolean useJoin);
+    List<T> findByField(String fieldName, Object value, boolean useJoin, boolean isJoinField);
     List<T> findAll(SB sortBy, boolean useJoin) throws DatabaseException;
     T save(T entity) throws DatabaseException;
     void update(T entity) throws DatabaseException;

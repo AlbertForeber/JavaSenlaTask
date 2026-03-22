@@ -50,5 +50,5 @@ INSERT INTO role_scope VALUES (1, 1);
 -- rollback DELETE FROM role_scope WHERE role_id=1;
 
 -- changeset albert:8-fill-role-scope-table
-INSERT INTO users VALUES (1, 'user', 'password', 1);
+INSERT INTO users VALUES (1, 'user', '$2a$10$GhqKmKI.Aw/w6HXB8hYqtubUHpFAdN//4SuVZW1ZRQq6z6kwursM6', 1);
 -- rollback DELETE FROM role_scope WHERE role_id=1;
