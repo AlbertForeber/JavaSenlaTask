@@ -84,7 +84,7 @@ public class RequestQueryServiceTest {
                 );
 
                 // Провяряем, что Deprecated функционал не используется
-                verifyNoInteractions(unitOfWork.execute(any()));
+                verifyNoInteractions(unitOfWork);
             }
         }
     }

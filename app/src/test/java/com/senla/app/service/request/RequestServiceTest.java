@@ -46,7 +46,7 @@ public class RequestServiceTest {
     @Tag("unit")
     @Tag("service")
     public void shouldThrowExceptionWhenNoBook() {
-        when(storageRepository.getBook(1, anyBoolean())).thenReturn(null);
+        when(storageRepository.getBook(eq(1), anyBoolean())).thenReturn(null);
 
         Throwable throwable = assertThrows(WrongId.class, () -> service.createRequest(1));
         assertTrue(throwable.getMessage().contains("1")); // В сообщении об ошибке должен быть id книги
@@ -56,13 +56,13 @@ public class RequestServiceTest {
     }
 
     @Test
-    @DisplayName("должен выбросить исключение, если книги нет")
+    @DisplayName("должен вернуть созданный запрос")
     @Tag("unit")
     @Tag("service")
     public void shouldReturnIfThereBook() {
         Book book = new Book(1, "", "", 1, 1, 1, BookStatus.FREE);
 
-        when(storageRepository.getBook(1, anyBoolean())).thenReturn(book);
+        when(storageRepository.getBook(eq(1), anyBoolean())).thenReturn(book);
         when(requestManagerRepository.addRequest(book)).thenReturn(new Request(1, book, 1));
 
         Request result = service.createRequest(1);
