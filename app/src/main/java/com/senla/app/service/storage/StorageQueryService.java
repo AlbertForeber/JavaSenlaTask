@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 public class StorageQueryService {
 
-    private StorageRepository bookStorageRepository;
+    private final StorageRepository bookStorageRepository;
     private final int liquidMonthAmount;
 
     private final UnitOfWork unitOfWork;
@@ -40,7 +40,7 @@ public class StorageQueryService {
     public List<Book> getSorted(BookSortBy sortBy) {
         List<Book> books = bookStorageRepository.getSortedBooks(sortBy, true);
 
-        if (books.isEmpty()) throw new ResourceNotFound("книг не найдено");
+        if (books.isEmpty()) throw new ResourceNotFound("книг нет");
         return books;
     }
 
@@ -51,7 +51,7 @@ public class StorageQueryService {
             int nowDate
     ) {
         List<Book> books = bookStorageRepository.getSortedBooks(BookSortBy.DATE_PRICE, true);
-        if (books.isEmpty()) throw new ResourceNotFound("книг не найдено");
+        if (books.isEmpty()) throw new ResourceNotFound("книг нет");
 
         ArrayList<Book> toReturn = new ArrayList<>();
 

@@ -7,6 +7,8 @@ import com.senla.app.repository.RequestManagerRepository;
 import com.senla.app.service.unit_of_work.UnitOfWork;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -47,14 +49,15 @@ public class RequestQueryServiceTest {
             repoReturn = new ArrayList<>();
         }
 
-        @Test
+        @ParameterizedTest
         @DisplayName("должен выбросить исключение")
         @Tag("unit")
         @Tag("service")
-        public void shouldThrowExceptionWhenEmpty() {
+        @EnumSource(RequestSortBy.class)
+        public void shouldThrowExceptionWhenEmpty(RequestSortBy sortBy) {
             when(repository.getSortedRequests(any(RequestSortBy.class))).thenReturn(repoReturn);
 
-            Throwable throwable = assertThrows(ResourceNotFound.class, () -> service.getSorted(RequestSortBy.NO_SORT));
+            Throwable throwable = assertThrows(ResourceNotFound.class, () -> service.getSorted(sortBy));
             assertEquals("запросов нет", throwable.getMessage(),
                     "Исключение должно содержать сообщение 'запросов нет'");
         }
@@ -68,13 +71,14 @@ public class RequestQueryServiceTest {
                 repoReturn.add(new Request(1, null, 1));
             }
 
-            @Test
-            @DisplayName("возврат непустого списка запросов")
+            @ParameterizedTest
+            @DisplayName("должен вернуть список запросов")
             @Tag("unit")
             @Tag("service")
-            public void shouldReturnRequestListWhenNotEmpty() {
+            @EnumSource(RequestSortBy.class)
+            public void shouldReturnRequestListWhenNotEmpty(RequestSortBy sortBy) {
                 when(repository.getSortedRequests(any(RequestSortBy.class))).thenReturn(repoReturn);
-                List<Request> result = service.getSorted(RequestSortBy.NO_SORT);
+                List<Request> result = service.getSorted(sortBy);
 
                 assertAll("свойства списка Request",
                         () -> assertEquals(1, result.size(),
@@ -83,7 +87,7 @@ public class RequestQueryServiceTest {
                                 "Единственный элемент в списке должен иметь идентификатор 1")
                 );
 
-                // Провяряем, что Deprecated функционал не используется
+                // Проверяем, что Deprecated функционал не используется
                 verifyNoInteractions(unitOfWork);
             }
         }

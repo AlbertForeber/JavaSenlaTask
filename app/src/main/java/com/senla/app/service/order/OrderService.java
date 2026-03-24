@@ -73,7 +73,7 @@ public class OrderService {
             for (Book book : presentBooks) {
 
                 if (book.getStatus() != BookStatus.FREE) {
-                    requestManagerRepository.addRequest(book);
+                    requestManagerReposit ory.addRequest(book);
                 } else {
                     book.setStatus(BookStatus.RESERVED, order);
                 }
@@ -91,22 +91,20 @@ public class OrderService {
 
     @Transactional
     public Order cancelOrder(int orderId) {
-        return unitOfWork.execute(() -> {
-            Order order = orderManagerRepository.getOrder(orderId, false);
+        Order order = orderManagerRepository.getOrder(orderId, false);
 
-            if (order == null) throw new WrongId("заказ #" + orderId + "не существует");
+        if (order == null) throw new WrongId("заказ #" + orderId + "не существует");
 
-            order.setStatus(OrderStatus.CANCELED);
-            orderManagerRepository.updateOrder(order);
+        order.setStatus(OrderStatus.CANCELED);
+        orderManagerRepository.updateOrder(order);
 
-            for (Book book : order.getOrderedBooks()) {
-                book.setStatus(BookStatus.FREE);
+        for (Book book : order.getOrderedBooks()) {
+            book.setStatus(BookStatus.FREE);
 
-                bookStorageRepository.updateBook(book);
-            }
+            bookStorageRepository.updateBook(book);
+        }
 
-            return order;
-        });
+        return order;
     }
 
     @Transactional

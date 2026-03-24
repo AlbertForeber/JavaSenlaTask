@@ -29,7 +29,7 @@ public class StorageService {
             @Db                                     StorageRepository bookStorageRepository,
             @Db                                     RequestManagerRepository requestManagerRepository,
             @Hibernate                              UnitOfWork unitOfWork,
-            @Value("${storage.cancel-requests}")    boolean cancelRequests) {
+            @Value("${storage.cancel-requests}")                          boolean cancelRequests) {
         this.bookStorageRepository = bookStorageRepository;
         this.requestManagerRepository = requestManagerRepository;
         this.unitOfWork = unitOfWork;
