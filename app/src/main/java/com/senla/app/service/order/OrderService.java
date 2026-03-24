@@ -73,7 +73,7 @@ public class OrderService {
             for (Book book : presentBooks) {
 
                 if (book.getStatus() != BookStatus.FREE) {
-                    requestManagerReposit ory.addRequest(book);
+                    requestManagerRepository.addRequest(book);
                 } else {
                     book.setStatus(BookStatus.RESERVED, order);
                 }
