@@ -9,7 +9,7 @@ import java.util.List;
 public class CreateOrderRequest {
 
     @NotNull(message = "Заказ должен содержать идентификатор")
-    private int id;
+    private Integer id;
 
     @NotEmpty(message = "В заказе должен быть артикул хотя бы одной книги")
     private List<Integer> orderedBooksNumbers;
@@ -17,11 +17,11 @@ public class CreateOrderRequest {
     @NotBlank(message = "Имя заказчика не должно быть пустым")
     private String customerName;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

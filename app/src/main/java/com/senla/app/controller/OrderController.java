@@ -44,8 +44,6 @@ public class OrderController {
             @Valid @RequestBody CreateOrderRequest request
     ) {
 
-        logger.info("Начало обработки добавления заказа");
-
         Order order = orderService.createOrder(
                 request.getId(),
                 request.getOrderedBooksNumbers(),
@@ -55,8 +53,6 @@ public class OrderController {
         // Хороший тон - возвращать в заголовке
         // URL созданного ресусра
         URI location = URI.create("/api/orders/" + order.getId());
-
-        logger.info("Обработки заказа завершена");
 
         return ResponseEntity
                     .created(location)
