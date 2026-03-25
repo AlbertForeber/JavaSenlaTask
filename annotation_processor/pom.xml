@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>senla-project</artifactId>
+        <groupId>com.senla</groupId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>annotation_processor</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.senla</groupId>
+            <artifactId>annotation</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+
+</project>
