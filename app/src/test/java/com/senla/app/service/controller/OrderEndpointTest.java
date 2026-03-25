@@ -287,4 +287,33 @@ public class OrderEndpointTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("0"));
     }
+
+    @Test
+    @Tag("integrate")
+    @DisplayName("/api/orders/{id}/ без прав должно отклоняться")
+    @WithAnonymousUser
+    public void getDetailsIsNotAccessibleByAnonymous() throws Exception {
+        mockMvc.perform(get("/api/orders/{id}", 1))
+                .andExpect(status().isForbidden());
+
+        verifyNoInteractions(orderQueryServiceMock);
+    }
+
+    @Test
+    @Tag("integrate")
+    @DisplayName("/api/orders/{id} с order:details должен возвращать подробности заказа")
+    @WithMockUser(authorities = "SCOPE_order:details")
+    public void getDetailsShouldReturnWithScope() throws Exception {
+        Order order = new Order(
+                1,
+                Collections.emptyList(),
+                0,
+                ""
+        );
+        when(orderQueryServiceMock.getOrderDetails(1)).thenReturn(order);
+
+        mockMvc.perform(get("/api/orders/{id}", 1))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{'id':  1}"));
+    }
 }
