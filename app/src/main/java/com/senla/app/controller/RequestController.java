@@ -7,8 +7,6 @@ import com.senla.app.model.entity.Request;
 import com.senla.app.model.entity.sortby.RequestSortBy;
 import com.senla.app.service.request.RequestQueryService;
 import com.senla.app.service.request.RequestService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +17,6 @@ import java.util.List;
 @RequestMapping("/api/requests")
 public class RequestController {
 
-    private static final Logger logger = LogManager.getLogger(RequestController.class);
     private final RequestService requestService;
     private final RequestQueryService requestQueryService;
 

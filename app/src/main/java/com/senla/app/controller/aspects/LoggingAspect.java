@@ -15,7 +15,7 @@ public class LoggingAspect {
 
     private static final Logger logger = LogManager.getLogger(LoggingAspect.class);
 
-    @Around("@annotation(loggingOperation")
+    @Around("@annotation(loggingOperation)")
     public Object loggingExecution(ProceedingJoinPoint joinPoint, LoggingOperation loggingOperation) throws Throwable {
         String operationName = loggingOperation.value();
 
