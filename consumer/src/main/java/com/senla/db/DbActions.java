@@ -1,6 +1,5 @@
 package com.senla.db;
 
-import com.senla.config.KafkaListeners;
 import com.senla.entity.Account;
 import com.senla.entity.MoneyTransfer;
 import com.senla.entity.MoneyTransferProducer;
@@ -33,13 +32,15 @@ public class DbActions {
         Account receiver = accountDao.findById(transferInfo.getReceiverId());
 
         Status status = Status.SUCCESS;
+        StringBuilder builder = new StringBuilder();
 
-        if (sender == null) {
-            StringBuilder builder = new StringBuilder(transferInfo.getSenderId());
+        if (sender == null)
+            builder.append(transferInfo.getSenderId());
 
-            if (receiver == null)
-                builder.append(", ").append(transferInfo.getReceiverId());
+        if (receiver == null)
+            builder.append(", ").append(transferInfo.getReceiverId());
 
+        if (!builder.isEmpty()) {
             logger.error("Счет с номерами: {} не найдены", builder);
             status = Status.ERROR;
         }
