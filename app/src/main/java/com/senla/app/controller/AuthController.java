@@ -46,7 +46,6 @@ public class AuthController {
                 request.getPassword()
         );
 
-        logger.info("Before authenticate");
         User user;
 
         // Пробрасываем встроенные ошибки в кастомное исключение
@@ -59,10 +58,7 @@ public class AuthController {
             throw new AuthenticationException(e.getMessage());
         }
 
-        logger.info("Before jwt");
         String accessToken = jwtService.generateToken(user);
-
-        logger.info("Before refresh");
         String refreshToken = refreshTokenService.createToken(user).getToken();
         AuthenticationResponse response = new AuthenticationResponse(accessToken, refreshToken);
 
