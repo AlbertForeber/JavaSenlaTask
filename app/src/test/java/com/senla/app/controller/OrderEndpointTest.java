@@ -1,17 +1,14 @@
-package com.senla.app.service.controller;
+package com.senla.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.senla.app.controller.OrderController;
+import com.senla.app.custom_user.WithMockCustomUser;
 import com.senla.app.model.dto.request.CreateOrderRequest;
 import com.senla.app.model.entity.Order;
 import com.senla.app.model.entity.status.OrderStatus;
 import com.senla.app.service.config.TestSecurityConfig;
 import com.senla.app.service.order.OrderQueryService;
 import com.senla.app.service.order.OrderService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,12 +125,11 @@ public class OrderEndpointTest {
     @Test
     @Tag("integrated")
     @DisplayName("/api/orders/create должен возвращать созданный заказ, если форма верна и SCOPE order:create")
-    @WithMockUser(authorities = "SCOPE_order:create")
+    @WithMockCustomUser(name = "customer", scopes = "order:create")
     public void createOrderShouldReturnWhenValid() throws Exception {
         CreateOrderRequest request = new CreateOrderRequest();
         request.setId(1);
         request.setOrderedBookNumbers(List.of(1));
-        request.setCustomerName("customer");
 
         when(orderServiceMock.createOrder(anyInt(), any(), any())).thenReturn(new Order(
                 1,
@@ -163,7 +159,7 @@ public class OrderEndpointTest {
     @Test
     @Tag("integrated")
     @DisplayName("/api/orders/{id}/cancel с SCOPE order:cancel должен возвращать отмененный заказ")
-    @WithMockUser(authorities = "SCOPE_order:cancel")
+    @WithMockCustomUser(name = "", scopes = "order:cancel")
     public void cancelIsAccessibleAndShouldReturnWithScope() throws Exception {
         Order order = new Order(
                 1,
@@ -172,7 +168,7 @@ public class OrderEndpointTest {
                 ""
         );
 
-        when(orderServiceMock.cancelOrder(anyInt())).thenReturn(order);
+        when(orderServiceMock.cancelOrder(anyInt(), any())).thenReturn(order);
         mockMvc.perform(patch("/api/orders/{id}/cancel", 1))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{'id':  1}"));

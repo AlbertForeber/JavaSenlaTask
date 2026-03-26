@@ -1,7 +1,6 @@
-package com.senla.app.service.controller;
+package com.senla.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.senla.app.controller.AuthController;
 import com.senla.app.model.dto.request.LoginRequest;
 import com.senla.app.model.dto.request.RefreshTokenRequest;
 import com.senla.app.model.entity.auth.RefreshToken;

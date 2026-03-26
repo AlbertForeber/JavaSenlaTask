@@ -1,6 +1,5 @@
-package com.senla.app.service.controller;
+package com.senla.app.controller;
 
-import com.senla.app.controller.RequestController;
 import com.senla.app.model.entity.Book;
 import com.senla.app.model.entity.Request;
 import com.senla.app.model.entity.status.BookStatus;

@@ -4,6 +4,7 @@ import com.senla.app.exceptions.UnavailableAction;
 import com.senla.app.exceptions.WrongId;
 import com.senla.app.model.entity.Book;
 import com.senla.app.model.entity.Order;
+import com.senla.app.model.entity.auth.User;
 import com.senla.app.model.entity.status.BookStatus;
 import com.senla.app.model.entity.status.OrderStatus;
 import com.senla.app.repository.OrderManagerRepository;
@@ -18,10 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -83,7 +81,7 @@ public class OrderServiceTest {
         when(storageRepository.getBook(eq(2), anyBoolean())).thenReturn(null);
 
         Throwable throwable = assertThrows(WrongId.class,
-                () -> service.createOrder(1, List.of(2), ""));
+                () -> service.createOrder(1, List.of(2), null));
         assertEquals("указанных книг не существует", throwable.getMessage());
 
         verifyNoMoreInteractions(storageRepository);
@@ -96,7 +94,9 @@ public class OrderServiceTest {
     @DisplayName("createOrder должен вернуть созданный заказ, если переданы существующие книги")
     public void createOrderShouldReturnOrderIfValidBookIds() {
         when(storageRepository.getBook(eq(1), anyBoolean())).thenReturn(book);
-        Order result = service.createOrder(1, List.of(1), "");
+        Order result = service.createOrder(1, List.of(1), new User(
+                1, "", "", Collections.emptyList()
+        ));
 
         assertEquals(BookStatus.RESERVED, book.getStatus(), "Статус книги должен быть изменен на RESERVED");
 
@@ -120,7 +120,7 @@ public class OrderServiceTest {
         when(orderManagerRepository.getOrder(eq(2), anyBoolean())).thenReturn(null);
 
         Throwable throwable = assertThrows(WrongId.class,
-                () -> service.cancelOrder(2));
+                () -> service.cancelOrder(2, null));
 
         assertTrue(throwable.getMessage().contains("2"), "Сообщение об ошибке должно содержать ID заказа");
         verifyNoInteractions(storageRepository);
@@ -134,7 +134,7 @@ public class OrderServiceTest {
         book.setStatus(BookStatus.RESERVED, order);
 
         when(orderManagerRepository.getOrder(eq(1), anyBoolean())).thenReturn(order);
-        Order result = service.cancelOrder(1);
+        Order result = service.cancelOrder(1, new User(1, "", "", Collections.emptyList()));
 
         assertEquals(BookStatus.FREE, book.getStatus(), "Зарезервированные книги должны освободиться");
         assertAll("свойства возвращенного Order",

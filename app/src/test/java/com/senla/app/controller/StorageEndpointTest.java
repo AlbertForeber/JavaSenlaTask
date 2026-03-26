@@ -1,6 +1,5 @@
-package com.senla.app.service.controller;
+package com.senla.app.controller;
 
-import com.senla.app.controller.StorageController;
 import com.senla.app.model.entity.Book;
 import com.senla.app.model.entity.status.BookStatus;
 import com.senla.app.service.config.TestSecurityConfig;

@@ -49,7 +49,7 @@ public class OrderController {
         Order order = orderService.createOrder(
                 request.getId(),
                 request.getOrderedBooksNumbers(),
-                request.getCustomerName()
+                user
         );
 
         // Хороший тон - возвращать в заголовке
