@@ -9,19 +9,16 @@ import java.util.List;
 public class CreateOrderRequest {
 
     @NotNull(message = "Заказ должен содержать идентификатор")
-    private Integer id;
+    private int id;
 
     @NotEmpty(message = "В заказе должен быть артикул хотя бы одной книги")
     private List<Integer> orderedBooksNumbers;
 
-    @NotBlank(message = "Имя заказчика не должно быть пустым")
-    private String customerName;
-
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -31,13 +28,5 @@ public class CreateOrderRequest {
 
     public void setOrderedBookNumbers(List<Integer> orderedBooksNumbers) {
         this.orderedBooksNumbers = orderedBooksNumbers;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
     }
 }

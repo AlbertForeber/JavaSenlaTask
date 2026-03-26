@@ -6,6 +6,7 @@ import com.senla.app.model.dto.request.CreateOrderRequest;
 import com.senla.app.model.dto.response.CollectionResponse;
 import com.senla.app.model.dto.response.OrderResponse;
 import com.senla.app.model.entity.Order;
+import com.senla.app.model.entity.auth.User;
 import com.senla.app.model.entity.sortby.OrderSortBy;
 import com.senla.app.model.entity.status.OrderStatus;
 import com.senla.app.service.order.OrderQueryService;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -41,9 +43,9 @@ public class OrderController {
     public ResponseEntity<OrderResponse> createOrder(
             // @Valid - валидация
             // @RequestBody - конвертация в JSON
-            @Valid @RequestBody CreateOrderRequest request
+            @Valid @RequestBody CreateOrderRequest request,
+            @AuthenticationPrincipal User user
     ) {
-
         Order order = orderService.createOrder(
                 request.getId(),
                 request.getOrderedBooksNumbers(),
@@ -63,9 +65,10 @@ public class OrderController {
     @LoggingOperation("отмена заказа")
     @PreAuthorize("hasAuthority('SCOPE_order:cancel')")
     public ResponseEntity<OrderResponse> cancelOrder(
-            @PathVariable Integer id
-    ) {
-        Order canceledOrder = orderService.cancelOrder(id);
+            @PathVariable Integer id,
+            @AuthenticationPrincipal User user
+            ) {
+        Order canceledOrder = orderService.cancelOrder(id, user);
         return ResponseEntity.ok(new OrderResponse(canceledOrder));
     }
 
