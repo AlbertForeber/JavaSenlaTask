@@ -34,7 +34,6 @@ public class UserQueryServiceTest {
 
     @Test
     @Tag("unit")
-    @Tag("fast")
     @DisplayName("должен выбросить ошибку, если пользователя с таким псевдонимом нет")
     public void shouldThrowExceptionWhenInvalidUsername() {
         when(repository.getUserByUsername(any(String.class))).thenReturn(null);
@@ -46,7 +45,6 @@ public class UserQueryServiceTest {
 
     @Test
     @Tag("unit")
-    @Tag("fast")
     @DisplayName("должен вернуть сущность пользователя, если пользователь с таким псевдонимом есть")
     public void shouldReturnUserWhenValidUsername() {
         User user = new User(1, "username", "pass", Collections.emptyList());

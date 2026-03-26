@@ -52,7 +52,6 @@ public class RequestQueryServiceTest {
         @ParameterizedTest
         @DisplayName("должен выбросить исключение")
         @Tag("unit")
-        @Tag("service")
         @EnumSource(RequestSortBy.class)
         public void shouldThrowExceptionWhenEmpty(RequestSortBy sortBy) {
             when(repository.getSortedRequests(any(RequestSortBy.class))).thenReturn(repoReturn);
@@ -74,7 +73,6 @@ public class RequestQueryServiceTest {
             @ParameterizedTest
             @DisplayName("должен вернуть список запросов")
             @Tag("unit")
-            @Tag("service")
             @EnumSource(RequestSortBy.class)
             public void shouldReturnRequestListWhenNotEmpty(RequestSortBy sortBy) {
                 when(repository.getSortedRequests(any(RequestSortBy.class))).thenReturn(repoReturn);

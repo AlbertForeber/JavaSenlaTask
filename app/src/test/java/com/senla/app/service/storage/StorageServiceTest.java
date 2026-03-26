@@ -61,7 +61,6 @@ public class StorageServiceTest {
     @Test
     @DisplayName("writeOff должен выбросить исключение, если книга с таким ID не найдена")
     @Tag("unit")
-    @Tag("fast")
     public void writeOffShouldThrowExceptionWhenWrongId() {
         when(storageRepository.getBook(eq(2), anyBoolean())).thenReturn(null);
 
@@ -75,7 +74,6 @@ public class StorageServiceTest {
     @Test
     @DisplayName("writeOff должен вернуть книгу со статусом SOLD_OUT, если книга найдена")
     @Tag("unit")
-    @Tag("fast")
     public void writeOffShouldReturnBookWithNewStatusWhenValidId() {
         when(storageRepository.getBook(eq(1), anyBoolean())).thenReturn(repoReturn);
         Book result = service.writeOffBook(1);
@@ -91,7 +89,6 @@ public class StorageServiceTest {
     @Test
     @DisplayName("addBookToStorage должен выбросить исключение, если книга с таким ID не найдена")
     @Tag("unit")
-    @Tag("fast")
     public void addBookToStorageShouldThrowExceptionWhenWrongId() {
         when(storageRepository.getBook(eq(2), anyBoolean())).thenReturn(null);
 
@@ -105,7 +102,6 @@ public class StorageServiceTest {
     @Test
     @DisplayName("addBookToStorage должен вернуть книгу со статусом FREE, если книга найдена")
     @Tag("unit")
-    @Tag("fast")
     public void addBookToStorageShouldReturnBookWithNewStatusWhenValidId() {
         when(storageRepository.getBook(eq(1), anyBoolean())).thenReturn(repoReturn);
         Book result = service.addBookToStorage(1);

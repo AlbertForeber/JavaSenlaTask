@@ -75,7 +75,6 @@ public class OrderServiceTest {
 
     @Test
     @Tag("unit")
-    @Tag("fast")
     @DisplayName("createOrder должен выбросить исключение, если переданы несуществующие книги")
     public void createOrderShouldThrowExceptionIfUnknownBookIds() {
         when(storageRepository.getBook(eq(2), anyBoolean())).thenReturn(null);
@@ -90,7 +89,6 @@ public class OrderServiceTest {
 
     @Test
     @Tag("unit")
-    @Tag("fast")
     @DisplayName("createOrder должен вернуть созданный заказ, если переданы существующие книги")
     public void createOrderShouldReturnOrderIfValidBookIds() {
         when(storageRepository.getBook(eq(1), anyBoolean())).thenReturn(book);
@@ -114,7 +112,6 @@ public class OrderServiceTest {
 
     @Test
     @Tag("unit")
-    @Tag("fast")
     @DisplayName("createOrder должен выбросить исключение, если заказа с таким ID не существует")
     public void cancelOrderShouldThrowExceptionIfUnknownOrderId() {
         when(orderManagerRepository.getOrder(eq(2), anyBoolean())).thenReturn(null);
@@ -128,7 +125,6 @@ public class OrderServiceTest {
 
     @Test
     @Tag("unit")
-    @Tag("fast")
     @DisplayName("cancelOrder должен вернуть отмененный заказ, если заказ с таким ID существует")
     public void cancelOrderShouldReturnOrderIfValidOrderId() {
         book.setStatus(BookStatus.RESERVED, order);
@@ -148,7 +144,6 @@ public class OrderServiceTest {
 
     @Test
     @Tag("unit")
-    @Tag("fast")
     @DisplayName("changeOrderStatus должен выбросить исключение, если заказ с таким ID не существует")
     public void changeStatusShouldThrowExceptionWhenWrongOrderId() {
         when(orderManagerRepository.getOrder(eq(2), anyBoolean())).thenReturn(null);
@@ -163,7 +158,6 @@ public class OrderServiceTest {
 
     @Test
     @Tag("unit")
-    @Tag("fast")
     @DisplayName("changeOrderStatus должен выбросить исключение, если некоторые книги недоступны")
     public void changeStatusShouldThrowExceptionWhenBooksUnavailable() {
         Order order2 = new Order(
@@ -188,7 +182,6 @@ public class OrderServiceTest {
 
     @Test
     @Tag("unit")
-    @Tag("fast")
     @DisplayName("changeOrderStatus должен вернуть измененный заказ, если все книги доступны")
     public void changeStatusShouldReturnModifiedOrderWhenBooksAvailable() {
         when(orderManagerRepository.getOrder(eq(1), anyBoolean())).thenReturn(order);

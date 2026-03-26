@@ -34,7 +34,6 @@ public class UserServiceTest {
 
     @Test
     @Tag("unit")
-    @Tag("test")
     @DisplayName("должен вернуть сохраненного пользователя")
     public void shouldReturnSavedUser() {
         User user = new User(1, "username", "pass", Collections.emptyList());

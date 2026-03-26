@@ -56,7 +56,6 @@ public class OrderQueryServiceTest {
         @ParameterizedTest
         @DisplayName("getSorted должен выбросить исключение")
         @Tag("unit")
-        @Tag("service")
         @EnumSource(OrderSortBy.class)
         public void getSortedShouldThrowExceptionWhenEmpty(OrderSortBy sortBy) {
             when(repository.getSortedOrders(any(OrderSortBy.class), anyBoolean())).thenReturn(repoReturn);
@@ -69,7 +68,6 @@ public class OrderQueryServiceTest {
         @ParameterizedTest
         @DisplayName("getCompletedOrdersInInterval должен выбросить исключение")
         @Tag("unit")
-        @Tag("service")
         @EnumSource(OrderSortBy.class)
         public void getCompletedShouldThrowExceptionWhenEmpty(OrderSortBy sortBy) {
             when(repository.getSortedOrders(any(OrderSortBy.class), anyBoolean())).thenReturn(repoReturn);
@@ -103,7 +101,6 @@ public class OrderQueryServiceTest {
             @ParameterizedTest
             @DisplayName("getSorted должно вернуть список")
             @Tag("unit")
-            @Tag("fast")
             @EnumSource(OrderSortBy.class)
             public void getSortedShouldReturnListWhenNotEmpty(OrderSortBy sortBy) {
                 when(repository.getSortedOrders(any(OrderSortBy.class), anyBoolean())).thenReturn(repoReturn);
@@ -123,7 +120,6 @@ public class OrderQueryServiceTest {
             @Test
             @DisplayName("getCompletedOrdersInInterval должен вернуть пустой список, если интервал не содержит заказов")
             @Tag("unit")
-            @Tag("fast")
             public void getCompletedShouldReturnEmptyListWhenNotInInterval() {
                 when(repository.getSortedOrders(any(OrderSortBy.class), anyBoolean())).thenReturn(repoReturn);
 
@@ -135,7 +131,6 @@ public class OrderQueryServiceTest {
             @Test
             @DisplayName("getCompletedOrdersInInterval должен вернуть список с заказом, если интервал его включает")
             @Tag("unit")
-            @Tag("fast")
             public void getCompletedShouldReturnListWhenInInterval() {
                 when(repository.getSortedOrders(any(OrderSortBy.class), anyBoolean())).thenReturn(repoReturn);
                 List<Order> result = service.getCompletedOrdersInInterval(
@@ -152,7 +147,6 @@ public class OrderQueryServiceTest {
             @Test
             @DisplayName("getOrderDetails должен выбросить исключение, если заказ с таким ID не найден")
             @Tag("unit")
-            @Tag("fast")
             public void getOrderDetailsShouldThrowExceptionWhenWrongId() {
                 when(repository.getOrder(eq(2), anyBoolean())).thenReturn(null);
 
@@ -164,7 +158,6 @@ public class OrderQueryServiceTest {
             @Test
             @DisplayName("getOrderDetails должен вернуть заказ, если заказ с таким ID найден")
             @Tag("unit")
-            @Tag("fast")
             public void getOrderDetailsShouldReturnDescriptionWhenValidId() {
                 when(repository.getOrder(eq(1), anyBoolean())).thenReturn(repoReturn.getFirst());
 

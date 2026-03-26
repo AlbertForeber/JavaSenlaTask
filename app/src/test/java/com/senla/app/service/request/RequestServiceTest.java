@@ -44,7 +44,6 @@ public class RequestServiceTest {
     @Test
     @DisplayName("должен выбросить исключение, если книги нет")
     @Tag("unit")
-    @Tag("service")
     public void shouldThrowExceptionWhenNoBook() {
         when(storageRepository.getBook(eq(1), anyBoolean())).thenReturn(null);
 
@@ -58,7 +57,6 @@ public class RequestServiceTest {
     @Test
     @DisplayName("должен вернуть созданный запрос")
     @Tag("unit")
-    @Tag("service")
     public void shouldReturnIfThereBook() {
         Book book = new Book(1, "", "", 1, 1, 1, BookStatus.FREE);
 

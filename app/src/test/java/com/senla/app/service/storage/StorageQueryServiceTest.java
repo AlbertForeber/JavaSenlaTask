@@ -53,7 +53,6 @@ public class StorageQueryServiceTest {
         @ParameterizedTest
         @DisplayName("getSorted должен выбросить исключение")
         @Tag("unit")
-        @Tag("service")
         @EnumSource(BookSortBy.class)
         public void getSortedShouldThrowExceptionWhenEmpty(BookSortBy sortBy) {
             when(repository.getSortedBooks(any(BookSortBy.class), anyBoolean())).thenReturn(repoReturn);
@@ -66,7 +65,6 @@ public class StorageQueryServiceTest {
         @Test
         @DisplayName("getHardToSell должен выбросить исключение")
         @Tag("unit")
-        @Tag("service")
         public void getHardToSellShouldThrowExceptionWhenEmpty() {
             when(repository.getSortedBooks(any(BookSortBy.class), anyBoolean())).thenReturn(repoReturn);
 
@@ -97,7 +95,6 @@ public class StorageQueryServiceTest {
             @ParameterizedTest
             @DisplayName("getSorted должно вернуть список")
             @Tag("unit")
-            @Tag("fast")
             @EnumSource(BookSortBy.class)
             public void getSortedShouldReturnListWhenNotEmpty(BookSortBy sortBy) {
                 when(repository.getSortedBooks(any(BookSortBy.class), anyBoolean())).thenReturn(repoReturn);
@@ -117,7 +114,6 @@ public class StorageQueryServiceTest {
             @Test
             @DisplayName("getHardToSell должен вернуть пустой список, если время ликвидности не истекло")
             @Tag("unit")
-            @Tag("fast")
             public void getHardToSellShouldReturnEmptyListWhenLiquidMonthsHaveNotPassed() {
                 when(repository.getSortedBooks(any(BookSortBy.class), anyBoolean())).thenReturn(repoReturn);
 
@@ -128,7 +124,6 @@ public class StorageQueryServiceTest {
             @Test
             @DisplayName("getHardToSell должен вернуть список с книгой, если время ликвидности истекло")
             @Tag("unit")
-            @Tag("fast")
             public void getHardToSellShouldReturnListWhenLiquidMonthsHavePassed() {
                 when(repository.getSortedBooks(any(BookSortBy.class), anyBoolean())).thenReturn(repoReturn);
                 List<Book> result = service.getHardToSell(3, 1, 1);
@@ -144,7 +139,6 @@ public class StorageQueryServiceTest {
             @Test
             @DisplayName("getBookDescription должен выбросить исключение, если книга с таким ID не найдена")
             @Tag("unit")
-            @Tag("fast")
             public void getBookDescriptionShouldThrowExceptionWhenWrongId() {
                 when(repository.getBook(eq(2), anyBoolean())).thenReturn(null);
 
@@ -156,7 +150,6 @@ public class StorageQueryServiceTest {
             @Test
             @DisplayName("getBookDescription должен вернуть описание, если книга с таким ID найдена")
             @Tag("unit")
-            @Tag("fast")
             public void getBookDescriptionShouldReturnDescriptionWhenValidId() {
                 when(repository.getBook(eq(1), anyBoolean())).thenReturn(repoReturn.getFirst());
 
