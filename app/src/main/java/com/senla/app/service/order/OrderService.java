@@ -4,6 +4,8 @@ import com.senla.annotation.db_qualifiers.Hibernate;
 import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.exceptions.UnavailableAction;
 import com.senla.app.exceptions.WrongId;
+import com.senla.app.model.entity.auth.Scope;
+import com.senla.app.model.entity.auth.User;
 import com.senla.app.repository.OrderManagerRepository;
 import com.senla.app.repository.RequestManagerRepository;
 import com.senla.app.repository.StorageRepository;
@@ -45,7 +47,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Order createOrder(int orderId, List<Integer> bookIds, String customerName) {
+    public Order createOrder(int orderId, List<Integer> bookIds, User user) {
         int totalSum = 0;
         List<Book> presentBooks = new ArrayList<>();
 
@@ -61,10 +63,10 @@ public class OrderService {
         }
 
         if (!presentBooks.isEmpty()) {
-            Order order = new Order(orderId, presentBooks, totalSum, customerName);
+            Order order = new Order(orderId, presentBooks, totalSum, user.getUsername());
 
             if (orderManagerRepository.getOrder(orderId, false) != null) {
-                cancelOrder(orderId);
+                cancelOrder(orderId, user);
             }
 
             if (!(unitOfWork instanceof HibernateUnitOfWork))
@@ -90,23 +92,25 @@ public class OrderService {
     }
 
     @Transactional
-    public Order cancelOrder(int orderId) {
-        return unitOfWork.execute(() -> {
-            Order order = orderManagerRepository.getOrder(orderId, false);
+    public Order cancelOrder(int orderId, User user) {
+        Order order = orderManagerRepository.getOrder(orderId, false);
 
-            if (order == null) throw new WrongId("заказ #" + orderId + "не существует");
+        if (order == null) throw new WrongId("заказ #" + orderId + "не существует");
+        if (user.getScopes().stream().map(Scope::getTitle).noneMatch(o -> o.equals("order:cancel_all"))
+            && !order.getCustomerName().equals(user.getUsername())) {
+            throw new UnavailableAction("отмена заказа", "нельзя отменить чужой заказ");
+        }
 
-            order.setStatus(OrderStatus.CANCELED);
-            orderManagerRepository.updateOrder(order);
+        order.setStatus(OrderStatus.CANCELED);
+        orderManagerRepository.updateOrder(order);
 
-            for (Book book : order.getOrderedBooks()) {
-                book.setStatus(BookStatus.FREE);
+        for (Book book : order.getOrderedBooks()) {
+            book.setStatus(BookStatus.FREE);
 
-                bookStorageRepository.updateBook(book);
-            }
+            bookStorageRepository.updateBook(book);
+        }
 
-            return order;
-        });
+        return order;
     }
 
     @Transactional

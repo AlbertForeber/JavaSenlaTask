@@ -17,7 +17,8 @@ INSERT INTO scopes VALUES
     (11, 'book:add'),
     (12, 'book:view_all'),
     (13, 'book:dead_stock'),
-    (14, 'book:view_description');
+    (14, 'book:view_description'),
+    (15, 'order:cancel_all');
 -- rollback DELETE FROM scopes;
 
 -- changeset albert:2-fill-roles-table
@@ -46,5 +47,6 @@ INSERT INTO role_scope VALUES
     (2, 11),
     (2, 12),
     (2, 13),
-    (2, 14);
+    (2, 14),
+    (2, 15);
 -- rollback DELETE FROM role_scope;
