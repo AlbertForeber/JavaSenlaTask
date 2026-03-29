@@ -12,8 +12,6 @@ import com.senla.app.model.entity.status.OrderStatus;
 import com.senla.app.service.order.OrderQueryService;
 import com.senla.app.service.order.OrderService;
 import jakarta.validation.Valid;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +26,6 @@ import java.util.List;
 @RequestMapping("/api/orders")
 public class OrderController {
 
-    private static final Logger logger = LogManager.getLogger(OrderController.class);
     private final OrderService orderService;
     private final OrderQueryService orderQueryService;
 
