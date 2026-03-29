@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+        <!-- показывать SQL для дебага очень полезно -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- стратегия создания схемы -->
+        <property name="hibernate.hbm2ddl.auto">validate</property>
+
+        <!-- настройки пула -->
+        <property name="hibernate.c3po.min_size">5</property>
+        <property name="hibernate.c3p0.max_size">20</property>
+        <property name="hibernate.c3po.timeout">300</property>
+        <property name="logging.level.org.hibernate.type.descriptor.sql.BasicBinder">TRACE</property>
+
+        <!-- классы сущностей -->
+        <mapping class="com.senla.app.model.entity.Book"/>
+        <mapping class="com.senla.app.model.entity.Order"/>
+        <mapping class="com.senla.app.model.entity.Request"/>
+
+    </session-factory>
+</hibernate-configuration>
