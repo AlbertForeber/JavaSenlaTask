@@ -33,7 +33,7 @@ public class RequestService {
     public Request createRequest(int bookId) {
         Book book = storageRepository.getBook(bookId, false);
 
-        if (book == null) throw new WrongId("книга с артикулом #" + bookId);
+        if (book == null) throw new WrongId("книга с артикулом #" + bookId + " не найдена");
 
         return requestManagerRepository.addRequest(book);
     }

@@ -6,6 +6,7 @@ import com.senla.app.model.dto.request.CreateOrderRequest;
 import com.senla.app.model.dto.response.CollectionResponse;
 import com.senla.app.model.dto.response.OrderResponse;
 import com.senla.app.model.entity.Order;
+import com.senla.app.model.entity.auth.User;
 import com.senla.app.model.entity.sortby.OrderSortBy;
 import com.senla.app.model.entity.status.OrderStatus;
 import com.senla.app.service.order.OrderQueryService;
@@ -13,6 +14,8 @@ import com.senla.app.service.order.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -33,17 +36,17 @@ public class OrderController {
 
     @PostMapping("/create")
     @LoggingOperation("создание заказа")
+    @PreAuthorize("hasAuthority('SCOPE_order:create')")
     public ResponseEntity<OrderResponse> createOrder(
             // @Valid - валидация
             // @RequestBody - конвертация в JSON
-            @Valid @RequestBody CreateOrderRequest request
+            @Valid @RequestBody CreateOrderRequest request,
+            @AuthenticationPrincipal User user
     ) {
-
-
         Order order = orderService.createOrder(
                 request.getId(),
                 request.getOrderedBooksNumbers(),
-                request.getCustomerName()
+                user
         );
 
         // Хороший тон - возвращать в заголовке
@@ -57,15 +60,18 @@ public class OrderController {
 
     @PatchMapping("/{id}/cancel")
     @LoggingOperation("отмена заказа")
+    @PreAuthorize("hasAuthority('SCOPE_order:cancel')")
     public ResponseEntity<OrderResponse> cancelOrder(
-            @PathVariable Integer id
-    ) {
-        Order canceledOrder = orderService.cancelOrder(id);
+            @PathVariable Integer id,
+            @AuthenticationPrincipal User user
+            ) {
+        Order canceledOrder = orderService.cancelOrder(id, user);
         return ResponseEntity.ok(new OrderResponse(canceledOrder));
     }
 
     @PatchMapping("{id}/update/status")
     @LoggingOperation("смена статуса заказа")
+    @PreAuthorize("hasAuthority('SCOPE_order:change_status')")
     public ResponseEntity<OrderResponse> changeOrderStatus(
             @PathVariable Integer id,
             @RequestParam OrderStatus newStatus
@@ -76,6 +82,7 @@ public class OrderController {
 
     @GetMapping({"/", ""})
     @LoggingOperation("получение отсортированных заказов")
+    @PreAuthorize("hasAuthority('SCOPE_order:view_all')")
     public ResponseEntity<CollectionResponse<OrderResponse>> getSorted(
             @RequestParam(defaultValue = "NO_SORT") OrderSortBy sort
     ) {
@@ -85,6 +92,7 @@ public class OrderController {
 
     @GetMapping("/completed")
     @LoggingOperation("получение завершенных в интервал заказов")
+    @PreAuthorize("hasAuthority('SCOPE_order:view_completed')")
     public ResponseEntity<CollectionResponse<OrderResponse>> getCompletedOrdersInInterval(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
@@ -98,6 +106,7 @@ public class OrderController {
 
     @GetMapping("/completed/{stat}")
     @LoggingOperation("получение статистики по заказам за интервал")
+    @PreAuthorize("hasAuthority('SCOPE_order:stats')")
     public ResponseEntity<Long> getStatsInInterval(
             @PathVariable String stat,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
@@ -121,6 +130,7 @@ public class OrderController {
 
     @GetMapping("/{id}")
     @LoggingOperation("получение подробностей заказа")
+    @PreAuthorize("hasAuthority('SCOPE_order:details')")
     public ResponseEntity<OrderResponse> getOrderDetails(
             @PathVariable Integer id
     ) {

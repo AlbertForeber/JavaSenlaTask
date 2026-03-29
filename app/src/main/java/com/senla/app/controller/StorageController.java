@@ -9,6 +9,7 @@ import com.senla.app.service.storage.StorageQueryService;
 import com.senla.app.service.storage.StorageService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ public class StorageController {
 
     @PatchMapping("/{id}/write-off")
     @LoggingOperation("списание книги")
+    @PreAuthorize("hasAuthority('SCOPE_book:write_off')")
     public ResponseEntity<BookResponse> writeOffBook(
             @PathVariable Integer id
     ) {
@@ -40,6 +42,7 @@ public class StorageController {
 
     @PatchMapping("/{id}/add")
     @LoggingOperation("добавление книги")
+    @PreAuthorize("hasAuthority('SCOPE_book:add')")
     public ResponseEntity<BookResponse> addBookToStorage(
             @PathVariable Integer id
     ) {
@@ -49,6 +52,7 @@ public class StorageController {
 
     @GetMapping({"/", ""})
     @LoggingOperation("получение отсортированных книг")
+    @PreAuthorize("hasAuthority('SCOPE_book:view_all')")
     public ResponseEntity<CollectionResponse<BookResponse>> getSorted(
             @RequestParam(defaultValue = "NO_SORT") BookSortBy sort
     ) {
@@ -57,7 +61,8 @@ public class StorageController {
     }
 
     @GetMapping("/hard-to-sell")
-    @LoggingOperation("получение отсортированных книг")
+    @LoggingOperation("получение малопродаваемых книг")
+    @PreAuthorize("hasAuthority('SCOPE_book:dead_stock')")
     public ResponseEntity<CollectionResponse<BookResponse>> getHardToSell(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate now
     ) {
@@ -69,6 +74,7 @@ public class StorageController {
 
     @GetMapping("/{id}/description")
     @LoggingOperation("получение описание книги")
+    @PreAuthorize("hasAuthority('SCOPE_book:view_description')")
     public ResponseEntity<String> getBookDescription(
             @PathVariable Integer id
     ) {

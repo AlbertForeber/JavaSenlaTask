@@ -6,7 +6,7 @@
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+<!--        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property> НЕ НАДО УКАЗЫВАТЬ-->
 
         <!-- показывать SQL для дебага очень полезно -->
         <property name="hibernate.show_sql">true</property>
@@ -25,6 +25,9 @@
         <mapping class="com.senla.app.model.entity.Book"/>
         <mapping class="com.senla.app.model.entity.Order"/>
         <mapping class="com.senla.app.model.entity.Request"/>
+        <mapping class="com.senla.app.model.entity.auth.User"/>
+        <mapping class="com.senla.app.model.entity.auth.Scope"/>
+        <mapping class="com.senla.app.model.entity.auth.RefreshToken"/>
 
     </session-factory>
 </hibernate-configuration>

@@ -6,5 +6,5 @@ public enum OrderSortBy {
     PRICE,
     STATUS,
     PRICE_DATE,
-    NO_SORT     // FOR DEBUG
+    NO_SORT
 }

@@ -131,7 +131,12 @@ services:
     container_name: producer-1
     build: producer
     depends_on:
-      - kafka-ui
+      db:
+        condition: service_healthy
+    networks:
+      - db_app
+    ports:
+      - "8080:8080"
 
   producer-2:
     container_name: producer-2

@@ -3,11 +3,17 @@ package com.senla.app.db.dao;
 import com.senla.app.db.DatabaseException;
 import com.senla.app.exceptions.DataManipulationException;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.criteria.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, PK, SB> {
+
+    private static final Logger logger = LogManager.getLogger(AbstractHibernateDao.class);
 
     private final Class<T> type;
     private final SessionFactory factory;
@@ -20,8 +26,16 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
 
     protected abstract String getAliasesForSortBy(SB sortBy);
 
-    protected String additionalJoinFetchQuery() {
+    protected String getIdFieldName() {
+        return "id";
+    }
+
+    protected String additionalJoinFetchQueryHql() {
         return "";
+    }
+
+    protected Map.Entry<String, JoinType> additionalJoinFetchQueryCriteria() {
+        return Map.entry("", JoinType.INNER);
     }
 
     public AbstractHibernateDao(Class<T> type, SessionFactory factory) {
@@ -35,13 +49,23 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
             StringBuilder findByIdSql = new StringBuilder(sql);
 
             if (useJoin)
-                findByIdSql.append(" ").append(additionalJoinFetchQuery());
-            findByIdSql.append(" WHERE ").append(getEntityAlias()).append(".id = :id");
+                findByIdSql.append(" ").append(additionalJoinFetchQueryHql());
 
-            return factory.getCurrentSession().createQuery(findByIdSql.toString(), type).setParameter("id", pk).getSingleResult();
+            findByIdSql
+                    .append(" WHERE ")
+                    .append(getEntityAlias())
+                    .append(".")
+                    .append(getIdFieldName())
+                    .append(" = :id");
+
+            return factory.getCurrentSession()
+                    .createQuery(findByIdSql.toString(), type)
+                    .setParameter("id", pk)
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         } catch (Exception e) {
+            logger.error(e);
             throw new DataManipulationException(e.getMessage());
         }
     }
@@ -54,7 +78,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
             StringBuilder findAllSql = new StringBuilder(sql);
 
             if (useJoin)
-                findAllSql.append(" ").append(additionalJoinFetchQuery());
+                findAllSql.append(" ").append(additionalJoinFetchQueryHql());
 
             if (sortBy != null) {
                 findAllSql
@@ -66,6 +90,7 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
 
             return factory.getCurrentSession().createQuery(findAllSql.toString(), type).getResultList();
         } catch (Exception e) {
+            logger.error(e);
             throw new DataManipulationException(e.getMessage());
         }
     }
@@ -84,20 +109,94 @@ public abstract class AbstractHibernateDao<T, PK, SB> implements GenericDao<T, P
         try {
             factory.getCurrentSession().merge(entity);
         } catch (Exception e) {
+            logger.error(e);
             throw new DataManipulationException(e.getMessage());
         }
     }
 
     @Override
     public void delete(PK pk) {
+        StringBuilder hql = new StringBuilder("DELETE FROM ");
+        hql
+                .append(
+                    getEntityAlias())
+                .append("WHERE ")
+                .append(getIdFieldName())
+                .append(" = :id");
+
         try {
             if (factory
                     .getCurrentSession()
-                    .createMutationQuery("DELETE FROM " + getEntityName() + " WHERE id = :id")
+                    .createMutationQuery(hql.toString())
                     .setParameter("id", pk)
                     .executeUpdate() == 0) throw new DatabaseException("Неверный id для удаления");
         } catch (Exception e) {
+            logger.error(e);
             throw new DataManipulationException(e.getMessage());
         }
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> findByField(String fieldName, Object value, boolean useJoin, boolean isJoinField) {
+        // Используем Criteria API
+        // В случае динамического выбора колонки фильтрации безопаснее, чем HQL
+
+        if (isJoinField && !useJoin) {
+            throw new DataManipulationException("Невозможно выполнить поиск по полю из JOIN таблицы, при выключенном useJoin");
+        }
+
+        try {
+            CriteriaBuilder cb = factory.getCriteriaBuilder();
+            CriteriaQuery<T> query = cb.createQuery(type);
+
+            Root<T> root = query.from(type);
+            Join<T, ?> join = null;
+
+            if (useJoin) {
+                Map.Entry<String, JoinType> joinParams = additionalJoinFetchQueryCriteria();
+
+                // Безопасный каст, JPA Fetch расширяет Join
+                join = (Join<T, ?>) root.fetch(joinParams.getKey(), joinParams.getValue());
+            }
+
+            query = query.select(root).where(cb.equal(
+                    isJoinField ? join.get(fieldName) : root.get(fieldName), value)
+            );
+
+            return factory.getCurrentSession().createQuery(query).getResultList();
+        } catch (Exception e) {
+
+            logger.error(e);
+            throw new DataManipulationException(e.getMessage());
+        }
+    }
+
+//    @Override
+//    public List<T> findByField(String fieldName, Object value, boolean useJoin, boolean isJoinField) {
+//        if (isJoinField && !useJoin) {
+//            throw new DataManipulationException("Невозможно выполнить поиск по полю из JOIN таблицы, при выключенном useJoin");
+//        }
+//
+//        try {
+//            StringBuilder hql = new StringBuilder(sql);
+//
+//            if (useJoin) {
+//                hql.append(" ").append(additionalJoinFetchQueryHql());
+//            }
+//
+//            hql.append(" WHERE ")
+//                    .append(isJoinField ? "" : getEntityAlias() + ".")
+//                    .append(fieldName)
+//                    .append(" = :value");
+//
+//            return factory.getCurrentSession()
+//                    .createQuery(hql.toString(), type)
+//                    .setParameter("value", value)
+//                    .getResultList();
+//        } catch (Exception e) {
+//            logger.trace("Full Error", e);
+//            throw new DataManipulationException(e.getMessage());
+//        }
+//    }
 }

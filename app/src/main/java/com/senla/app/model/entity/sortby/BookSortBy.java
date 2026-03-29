@@ -8,5 +8,5 @@ public enum BookSortBy {
     PRICE,
     AVAILABILITY,
     DATE_PRICE,
-    NO_SORT     // FOR DEBUG
+    NO_SORT
 }
