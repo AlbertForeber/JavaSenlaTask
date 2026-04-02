@@ -1,0 +1,6 @@
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+COPY ./target/consumer-1.0-SNAPSHOT-jar-with-dependencies.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

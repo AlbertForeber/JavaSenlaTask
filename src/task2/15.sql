@@ -1,0 +1,2 @@
+SELECT hd FROM pc
+GROUP by hd HAVING COUNT(hd) > 1;
