@@ -3,6 +3,7 @@ package com.senla.app.service.order;
 import com.senla.annotation.db_qualifiers.Hibernate;
 import com.senla.annotation.repo_qualifiers.Db;
 import com.senla.app.exceptions.ResourceNotFound;
+import com.senla.app.exceptions.WrongId;
 import com.senla.app.repository.OrderManagerRepository;
 import com.senla.app.model.entity.Order;
 import com.senla.app.model.entity.sortby.OrderSortBy;
@@ -109,7 +110,7 @@ public class OrderQueryService {
     @Transactional
     public Order getOrderDetails(int orderId) {
         Order order = orderManagerRepository.getOrder(orderId, true);
-        if (order == null) throw new ResourceNotFound("заказа #" + orderId + "не существует");
+        if (order == null) throw new WrongId("заказа #" + orderId + "не существует");
 
         return order;
     }
